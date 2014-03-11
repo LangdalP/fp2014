@@ -1,4 +1,4 @@
-package server;
+package server_network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
