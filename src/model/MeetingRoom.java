@@ -1,8 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MeetingRoom {
+public class MeetingRoom implements Serializable{
+	
+	private static final long serialVersionUID = 2402190254633613704L;
 
 	private String name;
 	private int maxPeople;

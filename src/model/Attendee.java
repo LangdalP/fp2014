@@ -1,8 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Attendee {
+public class Attendee implements Serializable{
+	
+	private static final long serialVersionUID = 1134253360391058889L;
 	
 	private Employee employee;
 	private boolean hasResponded;

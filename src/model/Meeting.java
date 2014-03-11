@@ -1,10 +1,14 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Meeting {
-	private int meetingID;
+public class Meeting implements Serializable{
+	
+	private static final long serialVersionUID = 5308232820435917628L;
+	
+	private String meetingID;
 	private Date meetingTime;
 	private int duration; //#minute
 	private String description;
@@ -15,7 +19,7 @@ public class Meeting {
 	private MeetingRoom meetingRoom;
 	private boolean meetingRoomBooked = false;
 	
-	public Meeting(int meetingID, Date meetingTime, int duration,
+	public Meeting(String meetingID, Date meetingTime, int duration,
 			String description, String meetingLocation, Employee meetingOwner,
 			List<Attendee> attendees, int guestAmount, MeetingRoom meetingRoom, boolean meetingRoomBooked) {
 		this.meetingID = meetingID;
@@ -92,7 +96,7 @@ public class Meeting {
 		return meetingRoomBooked;
 	}
 
-	public int getMeetingID() {
+	public String getMeetingID() {
 		return meetingID;
 	}
 
