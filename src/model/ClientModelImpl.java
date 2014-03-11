@@ -1,12 +1,9 @@
 package model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ClientModelImpl implements CalendarModel, Serializable{
-	
-	private static final long serialVersionUID = 186799146597882929L;
+public class ClientModelImpl implements CalendarModel{
 	
 	private List<Meeting> futureMeetings;
 	private List<Employee> employeesLoggedIn;
@@ -47,20 +44,6 @@ public class ClientModelImpl implements CalendarModel, Serializable{
 	}
 	
 	public boolean isMeetingRoomAvailable(Date date, String meetingRoomId){
-		for (MeetingRoom room : meetingRooms) {
-			if (room.getName().equals(meetingRoomId)){
-				for (Meeting meeting : room.getUpcomingMeetings()) {
-					Date startDate = meeting.getMeetingTime();
-					long startDateMS = startDate.getTime();
-					long endDateMS = startDateMS + meeting.getDuration()*60*1000;
-					Date endDate = new Date(endDateMS);
-					
-					if (date.after(startDate) && date.before(endDate)){
-						return false;
-					}
-				}
-			}
-		}
 		return true;
 	}
 
@@ -112,8 +95,13 @@ public class ClientModelImpl implements CalendarModel, Serializable{
 		
 	}
 
-	@Override
-	public List<Meeting> getUpcomingMeetings() {
+    @Override
+    public List<Meeting> getMeetingsByEmployee(Employee employee) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    public List<Meeting> getUpcomingMeetings() {
 		// TODO Auto-generated method stub
 		return null;
 	}
