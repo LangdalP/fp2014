@@ -10,11 +10,14 @@ public class ClientConnectionTest {
 		ClientConnection clientConn = new ClientConnection(serverIP, serverPort);
 		ConnectionListener listener = new ConnectionListener(clientConn.getConnectionSocket());
 		
+		// Startar ConnectionListener
 		Thread listenThread = new Thread(listener);
 		listenThread.start();
 		
+		// Sender en beskjed
 		clientConn.sendString("liten beskjed!");
 		
+		// Stoppar klientTråden for å sjekke at listeneren printar uavhengig av vår tråd
 		try {
 			Thread.sleep(5*1000);
 		} catch (InterruptedException e) {

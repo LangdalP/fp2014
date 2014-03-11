@@ -18,7 +18,6 @@ public class ConnectionListener implements Runnable {
 			reader = new BufferedReader(
 					new InputStreamReader(this.clientSocket.getInputStream()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Done with ConnectionListener constructor");
