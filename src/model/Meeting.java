@@ -18,8 +18,12 @@ public class Meeting implements Serializable{
 	private int guestAmount = 0;
 	private MeetingRoom meetingRoom;
 	private boolean meetingRoomBooked = false;
-	
-	public Meeting(String meetingID, Date meetingTime, int duration,
+
+    public Meeting(String meetingID) {
+        this.meetingID = meetingID;
+    }
+
+    public Meeting(String meetingID, Date meetingTime, int duration,
 			String description, String meetingLocation, Employee meetingOwner,
 			List<Attendee> attendees, int guestAmount, MeetingRoom meetingRoom, boolean meetingRoomBooked) {
 		this.meetingID = meetingID;
