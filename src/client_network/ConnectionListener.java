@@ -9,7 +9,7 @@ public class ConnectionListener implements Runnable {
 	
 	private Socket clientSocket;
 	private BufferedReader reader;
-	private boolean listening = false;
+	private boolean isStopped = true;
 	
 	public ConnectionListener(Socket clientSocket) {
 		this.clientSocket = clientSocket;
@@ -26,8 +26,8 @@ public class ConnectionListener implements Runnable {
 
 	@Override
 	public void run() {
-		listening = true;
-		while (listening) {
+		isStopped = false;
+		while (!isStopped) {
 			String incomingMsg;
 			try {
 				System.out.println("Trying to read incoming line from server!");
@@ -35,9 +35,23 @@ public class ConnectionListener implements Runnable {
 				
 				System.out.println(incomingMsg);
 			} catch (IOException e) {
-				e.printStackTrace();
+				if(isStopped()) {
+                    System.out.println("ClientListener stopped!") ;
+                    return;
+                } else {
+                	System.out.println("Socket closed!");
+                	return;
+                }
 			}
 		}
 	}
+	
+	private synchronized boolean isStopped() {
+        return isStopped;
+    }
+	
+	public synchronized void stop(){
+        this.isStopped = true;
+    }
 	
 }
