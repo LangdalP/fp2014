@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import server_network.MultiThreadedServer;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,9 +19,14 @@ public class ServerMain {
 	public static final int SERVER_PORT = 54545;
 	
 	public static void main(String[] args) {
+		// Mykje initialisering her
+		
+		
+		// Lagar multitråda server og startar på eigen tråd
 		MultiThreadedServer server = new MultiThreadedServer(SERVER_PORT);
 		new Thread(server).start();
 		
+		// Tek input frå konsoll, slik at admin kan kalle /stop for å lukke connections
 		BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 		String inLine;
 		try {
