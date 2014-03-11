@@ -1,13 +1,36 @@
 package model;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Christoffer Buvik
- * Date: 07.03.14
- * Time: 14:09
- * To change this template use File | Settings | File Templates.
- */
-public class Group implements Serializable {
+public class Group {
+	
+	private String groupName;
+	private List<Employee> employees;
+	
+	public Group(String groupName){
+		this.groupName = groupName;
+		employees = new ArrayList<Employee>();
+	}
+	
+	public Group(String groupName, List<Employee> employees) {
+		this.groupName = groupName;
+		this.employees = employees;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public List<Employee> getEmployees() {
+		return employees;
+	}
+	
+	public void addEmployees(Employee employee){
+		employees.add(employee);
+	}
+	
+	
+	
+
 }
