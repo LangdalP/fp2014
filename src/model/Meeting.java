@@ -116,7 +116,4 @@ public class Meeting implements Serializable{
 		attendees.remove(attendee);
 	}
 	
-	
-	
-	
 }
