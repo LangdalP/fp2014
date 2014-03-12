@@ -1,4 +1,4 @@
-package network.client;
+package client;
 
 import protocol.MessageType;
 import protocol.RequestType;
