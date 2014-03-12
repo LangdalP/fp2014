@@ -51,4 +51,11 @@ public class Attendee implements Serializable{
 		return alarmTime;
 	}
 
+    public void setAttendeeStatus(boolean attendeeStatus) {
+        this.attendeeStatus = attendeeStatus;
+    }
+
+    public void setHasResponded(boolean hasResponded) {
+        this.hasResponded = hasResponded;
+    }
 }
