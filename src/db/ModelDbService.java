@@ -108,7 +108,8 @@ public class ModelDbService {
         }
     }
     
-    
+//
+//  
 //    private Attendee getAttendee(){
 //    	String sql = "select * from deltager_ansatt;";
 //    	Attendee attendee = null;
