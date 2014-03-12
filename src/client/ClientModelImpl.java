@@ -61,7 +61,7 @@ public class ClientModelImpl implements CalendarModel{
 		return true;
 	}
 
-	@Override
+
 	public void addEmployeeToLoggedIn(Employee emp) {
 		employeesLoggedIn.add(emp);
 	}
