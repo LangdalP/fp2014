@@ -18,4 +18,13 @@ public class RequestHandler {
 		}
 	}
 	
+	 
+	public static TransferObject createTransferObjectRequest(RequestType reqType, Object... inObjects){
+        	return new TransferObject(MessageType.REQUEST, reqType, inObjects);
+    	}
+
+    	public static TransferObject createTransferObjectResponse(ResponseType respType, Object... inObjects){
+        	return new TransferObject(MessageType.RESPONSE, respType, inObjects);
+    	}
+
 }
