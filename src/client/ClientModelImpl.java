@@ -62,32 +62,60 @@ public class ClientModelImpl implements CalendarModel{
 
 	@Override
 	public void addEmployeeToLoggedIn(Employee emp) {
-		// TODO Auto-generated method stub
-		
+		employeesLoggedIn.add(emp);
 	}
-
+	
+	// Metoda tek inn eit attendee, så programmet må lage attendeen først
 	@Override
 	public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
-		// TODO Auto-generated method stub
-		
+		meeting.addAttendee(attendee);
 	}
-
+	
+	// Metoda tek inn ein employee, og set andre attendee-innstillingar til default verdiar
+	public void addEmployteeToMeeting(Meeting meeting, Employee employee) {
+		Date nowDate = new Date();
+		Attendee defaultAttendee = new Attendee(employee, false, false, nowDate, false, nowDate);
+		meeting.addAttendee(defaultAttendee);
+	}
+	
+	
 	@Override
 	public void removeEmployeeFromMeeting(Meeting meeting, Employee emp) {
-		// TODO Auto-generated method stub
+		Attendee empAttendee = null;
+		// Metoda tek inn ein employee, så må først finne den korresponderande attendeen
+		for (Attendee att : meeting.getAttendees()) {
+			if (emp.getUsername().equals(att.getEmployee().getUsername())) {
+				empAttendee = att;
+			}
+		}
+		
+		if (empAttendee != null) {
+			meeting.removeAttendee(empAttendee);
+		}
 		
 	}
 
 	@Override
 	public void addGroupToMeeting(Meeting meeting, String groupname) {
-		// TODO Auto-generated method stub
+		Group group = null;
+		// Leitar etter gruppe med namnet groupname
+		for (Group grp : groups) {
+			if (grp.getGroupName().equals(groupname)) {
+				group = grp;
+			}
+		}
 		
+		if (group != null) {
+			for (Employee empInGrp : group.getEmployees()) {
+				
+			}
+		}
 	}
 
 	@Override
 	public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus) {
-		// TODO Auto-generated method stub
-		
+		attendee.setAttendeeStatus(attendeeStatus);
+		attendee.setHasResponded(true);
 	}
 
 	@Override
@@ -98,8 +126,7 @@ public class ClientModelImpl implements CalendarModel{
 
 	@Override
 	public void removeMeeting(String meetingid) {
-		// TODO Auto-generated method stub
-		
+		// CODE
 	}
 
 	@Override
