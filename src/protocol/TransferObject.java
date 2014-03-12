@@ -13,15 +13,25 @@ public class TransferObject implements Serializable {
 	private final ResponseType respType;	// Sjå ResponseType.java, "NOT_A_RESPONSE" om msgType er REQUEST
 	private final List<Object> objects = new ArrayList<>();
 	
-	public TransferObject(MessageType msgType, RequestType reqType, ResponseType respType, Object... inObjects) {
+	public TransferObject(MessageType msgType, RequestType reqType, Object... inObjects) {
 		this.msgType = msgType;
 		this.reqType = reqType;
-		this.respType = respType;
+		this.respType = null;
 		
 		for (Object obj : inObjects) {
 			objects.add(obj);
 		}
 	}
+
+    public TransferObject(MessageType msgType,  ResponseType respType, Object... inObjects) {
+        this.msgType = msgType;
+        this.reqType = null;
+        this.respType = respType;
+
+        for (Object obj : inObjects) {
+            objects.add(obj);
+        }
+    }
 
 	public MessageType getMsgType() {
 		return msgType;
