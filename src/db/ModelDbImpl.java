@@ -19,47 +19,39 @@ public class ModelDbImpl implements CalendarModel {
     }
 
 
-
-
     @Override
     public void addMeeting(Meeting meeting) {
-
-        //To change body of implemented methods use File | Settings | File Templates.
+        System.out.println("add meeting to database: " + meeting.toString());
     }
 
     @Override
     public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void removeEmployeeFromMeeting(Meeting meeting, Employee emp) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void addGroupToMeeting(Meeting meeting, String groupname) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override
     public void editMeeting(Meeting meeting) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void removeMeeting(String meetingid) {
-        //To change body of implemented methods use File | Settings | File Templates.
+//        dbService.removeMeetingById(String meetingid);
     }
 
     @Override
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -79,6 +71,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void setAlarm(Attendee attendee) {
+
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

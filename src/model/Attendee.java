@@ -71,7 +71,4 @@ public class Attendee implements Serializable{
 		return alarmTime;
 	}
 
-    public void setHasResponded(boolean hasResponded) {
-        this.hasResponded = hasResponded;
-    }
 }
