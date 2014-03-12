@@ -62,11 +62,6 @@ public class ServerModelImpl implements CalendarModel {
 	}
 
 	@Override
-	public void addEmployeeToLoggedIn(Employee emp) {
-		
-	}
-
-	@Override
 	public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
 		// TODO Auto-generated method stub
 		
