@@ -182,7 +182,7 @@ public class ModelDbService {
             ps.setString(3, group.getGroupName());
             ps.setBoolean(4, attendee.getAttendeeStatus());
             ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
-            new java.sql.Date(1999, 1,1);
+//            new java.sql.Date(1999, 1,1);
             
             ps.executeUpdate();
         } catch (SQLException e) {
