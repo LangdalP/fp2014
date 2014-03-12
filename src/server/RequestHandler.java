@@ -1,5 +1,7 @@
 package server;
 
+import protocol.TransferObject;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Christoffer Buvik
@@ -8,4 +10,12 @@ package server;
  * To change this template use File | Settings | File Templates.
  */
 public class RequestHandler {
+	
+	public void handleRequest(TransferObject obj) {
+		switch (obj.getReqType()) {
+		case LOGIN:
+			// code
+		}
+	}
+	
 }

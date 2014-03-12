@@ -6,6 +6,9 @@ public class ClientMain {
 		
 		// Kode for å starte heile klienten
 		
+		// Testkode som lagar ClientModelImpl
+		
+		
 	}
 
 }
