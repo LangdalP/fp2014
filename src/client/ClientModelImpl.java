@@ -50,6 +50,7 @@ public class ClientModelImpl implements CalendarModel{
 
 	public void addMeeting(Meeting meeting){
 		futureMeetings.add(meeting);
+		sync.addMeeting(meeting);
 	}
 	
 	public void removeMeeting(Meeting meeting){
@@ -128,7 +129,7 @@ public class ClientModelImpl implements CalendarModel{
 	public void removeMeeting(String meetingid) {
 		// CODE
 	}
-
+	
 	@Override
 	public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
 		// TODO Auto-generated method stub
