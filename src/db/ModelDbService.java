@@ -11,6 +11,7 @@ import model.Attendee;
 import model.Employee;
 import model.Group;
 import model.Meeting;
+import model.MeetingRoom;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,7 +29,9 @@ public class ModelDbService {
 //        new ModelDbService().addGroup(new Group("test5"));
 //        new ModelDbService().getEmployee("test@epost.no");
 //        new ModelDbService().getEmployees();
-        new ModelDbService().getAttendees("test3");
+//        new ModelDbService().getAttendees("test3");
+        
+//        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
         
         System.out.println("test");
     }
@@ -172,7 +175,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    private List<Meeting> getAllMeeting() {
+    public List<Meeting> getAllMeeting() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
@@ -190,9 +193,8 @@ public class ModelDbService {
         return list;
     }
     
-    public void addAttendee(Attendee attendee, Meeting meeting, Employee employee, Group group {
+    public void addAttendee(Attendee attendee, Meeting meeting, Employee employee, Group group) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, gruppe_navn, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
-//        		"insert into ansatt(epost,navn,passord) values(?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, employee.getUsername());
@@ -200,12 +202,25 @@ public class ModelDbService {
             ps.setBoolean(4, attendee.getAttendeeStatus());
             ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
 //            new java.sql.Date(1999, 1,1);
-            
+            ps.setTimestamp(6, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setBoolean(7, attendee.getHasAlarm());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    
+    public void addMeetingRoom(MeetingRoom meetingRoom) {
+        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meetingRoom.getName());
+            ps.setInt(2, meetingRoom.getMaxPeople());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
 
 
 }
