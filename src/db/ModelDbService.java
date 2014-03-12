@@ -35,17 +35,20 @@ public class ModelDbService {
 
     public List<Group> getGroup() {
         String sql = "select * from gruppe";
-        List<Group> group = new ArrayList<>();
+        List<Group> groups = new ArrayList<>();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                group = new Group(rs.getString("navn"));
+                Group group = new Group(rs.getString("navn"));
+                groups.add(group);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(group.getGroupName());
-        return group;
+        for (Group group : groups){
+        	System.out.println(group.getGroupName());
+        }
+        return groups;
     }
 
     public void addGroup(Group group) {
