@@ -108,7 +108,7 @@ public class Meeting implements Serializable{
 		return meetingOwner;
 	}
 
-	public List<Attendee> getAttendee() {
+	public List<Attendee> getAttendees() {
 		return attendees;
 	}
 	
