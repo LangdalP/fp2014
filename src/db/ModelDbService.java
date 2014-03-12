@@ -4,8 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import model.Attendee;
 import model.Employee;
 import model.Group;
 import model.Meeting;
@@ -22,18 +24,19 @@ public class ModelDbService {
         System.out.println("main");
 //        new ModelDbService().getAllMeeting();
 
-//        new ModelDbService().getGroup();
+//        new ModelDbService().getGroups();
 //        new ModelDbService().addGroup(new Group("test5"));
 //        new ModelDbService().getEmployee("test@epost.no");
-          new ModelDbService().getEmployees();
+//        new ModelDbService().getEmployees();
+        new ModelDbService().getAttendees("test3");
         
-
+        System.out.println("test");
     }
 
     public ModelDbService() {
     }
 
-    public List<Group> getGroup() {
+    public List<Group> getGroups() {
         String sql = "select * from gruppe";
         List<Group> groups = new ArrayList<>();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -112,7 +115,7 @@ public class ModelDbService {
     }
  
 
-//  
+  
 //    private Attendee getAttendee(){
 //    	String sql = "select * from deltager_ansatt;";
 //    	Attendee attendee = null;
@@ -131,6 +134,44 @@ public class ModelDbService {
 //        return group;
 //    }
 
+    public List<Attendee> getAttendees(String avtale_id) {
+        String sql = "select * from deltager_ansatt where avtale_id = ?";
+        List<Attendee> attendees = new ArrayList<>(); 
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        	ps.setString(1, avtale_id);
+        	ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	Employee employee = getEmployee(rs.getString("epost"));
+            	int attendeeInt =  rs.getInt("deltagelse_status");
+            	boolean attendeeStatus = false;
+            	boolean hasResponded = false;
+            	System.out.println(attendeeStatus);
+            	if(attendeeInt == 0){ //0 betyr ikke svart
+            		hasResponded = false;
+            	}
+            	else if(attendeeInt == 1){ //1 betyr ikke deltar
+            		hasResponded = true;
+            	}
+            	else if(attendeeInt == 2){ //2 betyr deltar
+            		hasResponded = true;
+            		attendeeStatus = true;
+            	}
+            	Date lastNotification = rs.getDate("sist_varslet");
+            	Date alarmTime = rs.getDate("alarm_tid");
+            	boolean hasAlarm = rs.getBoolean("alarm_satt");
+            	Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
+                attendees.add(attendee);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        for (Attendee attendee : attendees) {
+        	System.out.println(attendee.getEmployee().getUsername() + ", " + attendee.getHasResponded() + ", " + attendee.getAttendeeStatus() + ", " 
+        + attendee.getLastNotification() + ", " + attendee.getHasAlarm() + ", " + attendee.getAlarmTime());
+        }
+        return attendees;
+    }
+    
     private List<Meeting> getAllMeeting() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
