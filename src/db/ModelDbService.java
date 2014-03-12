@@ -108,7 +108,7 @@ public class ModelDbService {
         }
     }
     
-// test
+
 //  
 //    private Attendee getAttendee(){
 //    	String sql = "select * from deltager_ansatt;";
