@@ -1,5 +1,8 @@
 package server;
 
+import protocol.MessageType;
+import protocol.RequestType;
+import protocol.ResponseType;
 import protocol.TransferObject;
 
 /**
