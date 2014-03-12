@@ -20,12 +20,6 @@ public class ClientModelSyncronizer implements CalendarModel {
 	}
 	
 	@Override
-	public void addEmployeeToLoggedIn(Employee emp) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void addMeeting(Meeting meeting) {
 		// Må sende objekt
 		TransferObject obj = RequestHandler.createTransferObjectRequest(RequestType.ADD_MEETING, meeting);
