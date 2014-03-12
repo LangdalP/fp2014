@@ -95,8 +95,13 @@ public class ClientModelImpl implements CalendarModel{
 		
 	}
 
-	@Override
-	public List<Meeting> getUpcomingMeetings() {
+    @Override
+    public List<Meeting> getMeetingsByEmployee(Employee employee) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    public List<Meeting> getUpcomingMeetings() {
 		// TODO Auto-generated method stub
 		return null;
 	}

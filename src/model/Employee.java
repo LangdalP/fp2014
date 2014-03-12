@@ -1,6 +1,10 @@
 package model;
 
-public class Employee {
+import java.io.Serializable;
+
+public class Employee implements Serializable{
+	
+	private static final long serialVersionUID = -3677933420657644865L;
 	
 	private String username;
 	private String name;
