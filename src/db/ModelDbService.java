@@ -33,9 +33,9 @@ public class ModelDbService {
     public ModelDbService() {
     }
 
-    public Group getGroup() {
+    public List<Group> getGroup() {
         String sql = "select * from gruppe";
-        Group group = null;
+        List<Group> group = new ArrayList<>();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -107,7 +107,7 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
-    //hei 
+ 
 
 //  
 //    private Attendee getAttendee(){
