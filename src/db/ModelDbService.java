@@ -12,6 +12,7 @@ import model.Employee;
 import model.Group;
 import model.Meeting;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Christoffer Buvik
@@ -170,6 +171,23 @@ public class ModelDbService {
         + attendee.getLastNotification() + ", " + attendee.getHasAlarm() + ", " + attendee.getAlarmTime());
         }
         return attendees;
+    }
+    
+    public void addAttendee(Attendee attendee, Meeting meeting, Employee employee, Group group {
+        String sql = "insert into deltager_ansatt(avtale_id, epost, gruppe_navn, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
+//        		"insert into ansatt(epost,navn,passord) values(?, ?, ?)";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meeting.getMeetingID());
+            ps.setString(2, employee.getUsername());
+            ps.setString(3, group.getGroupName());
+            ps.setBoolean(4, attendee.getAttendeeStatus());
+            ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
+            new java.sql.Date(1999, 1,1);
+            
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     private List<Meeting> getAllMeeting() {
