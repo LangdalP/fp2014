@@ -17,7 +17,6 @@ public class ModelDbImpl implements CalendarModel {
     public ModelDbImpl() {
         dbService = new ModelDbService();
     }
-    
 
 
     @Override
