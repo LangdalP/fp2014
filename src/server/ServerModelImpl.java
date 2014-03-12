@@ -1,19 +1,23 @@
-package model;
+package server;
 
 import java.util.Date;
 import java.util.List;
 
-import client.ClientModelSyncronizer;
+import model.Attendee;
+import model.CalendarModel;
+import model.Employee;
+import model.Group;
+import model.Meeting;
+import model.MeetingRoom;
 
-public class ClientModelImpl implements CalendarModel{
-	
+public class ServerModelImpl implements CalendarModel {
 	private List<Meeting> futureMeetings;
 	private List<Employee> employeesLoggedIn;
 	private List<MeetingRoom> meetingRooms;
 	private List<Group> groups;
-	private ClientModelSyncronizer sync;
+	private ServerModelSyncronizer sync = null;
 	
-	public ClientModelImpl(List<Meeting> futureMeetings,
+	public ServerModelImpl(List<Meeting> futureMeetings,
 			List<Employee> employeesLoggedIn, List<MeetingRoom> meetingRooms,
 			List<Group> groups) {
 		this.futureMeetings = futureMeetings;
@@ -22,7 +26,8 @@ public class ClientModelImpl implements CalendarModel{
 		this.groups = groups;
 	}
 	
-	private void setSyncronizer(ClientModelSyncronizer sync) {
+	// Syncronizer har som oppgave å gi beskjed til kliener om at server har gjort endring på sin modell
+	public void setSyncronizer(ServerModelSyncronizer sync) {
 		this.sync = sync;
 	}
 
@@ -56,7 +61,6 @@ public class ClientModelImpl implements CalendarModel{
 
 	@Override
 	public void addEmployeeToLoggedIn(Employee emp) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -130,5 +134,4 @@ public class ClientModelImpl implements CalendarModel{
 		// TODO Auto-generated method stub
 		
 	}
-
 }
