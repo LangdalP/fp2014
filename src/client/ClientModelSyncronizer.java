@@ -4,7 +4,7 @@ import java.util.List;
 
 import protocol.RequestType;
 import protocol.TransferObject;
-import server.RequestHandler;
+import protocol.RequestHandler;
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
