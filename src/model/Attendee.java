@@ -70,12 +70,4 @@ public class Attendee implements Serializable{
 	public Date getAlarmTime(){
 		return alarmTime;
 	}
-
-    public void setAttendeeStatus(boolean attendeeStatus) {
-        this.attendeeStatus = attendeeStatus;
-    }
-
-    public void setHasResponded(boolean hasResponded) {
-        this.hasResponded = hasResponded;
-    }
 }
