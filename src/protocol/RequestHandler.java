@@ -1,5 +1,7 @@
 package protocol;
 
+import model.CalendarModel;
+import model.Meeting;
 import protocol.MessageType;
 import protocol.RequestType;
 import protocol.ResponseType;
@@ -13,11 +15,32 @@ import protocol.TransferObject;
  * To change this template use File | Settings | File Templates.
  */
 public class RequestHandler {
-	
-	public void handleRequest(TransferObject obj) {
-		switch (obj.getReqType()) {
+    private static RequestHandler instance;
+    private static CalendarModel model;
+
+    public RequestHandler(CalendarModel model) {
+        this.model = model;
+        instance = this;
+    }
+
+    public static RequestHandler getInstance(){
+        if (model == null) throw new NullPointerException("model må opprettes. ");
+        return instance;
+    }
+
+    public void handleRequest(TransferObject obj) {
+		RequestType type = obj.getReqType();
+        if (type == null) return;
+
+        switch (type) {
 		case LOGIN:
-			// code
+
+        case ADD_MEETING:{
+            Meeting meeting = (Meeting) obj.getObject(0);
+            model.addMeeting(meeting);
+            //sync.addMeeting(meeting);
+        }
+
 		}
 	}
 	

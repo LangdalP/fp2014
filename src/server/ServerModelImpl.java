@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,14 +17,15 @@ public class ServerModelImpl implements CalendarModel {
 	private List<MeetingRoom> meetingRooms;
 	private List<Group> groups;
 	private ServerModelSyncronizer sync = null;
-	
-	public ServerModelImpl(List<Meeting> futureMeetings,
-			List<Employee> employeesLoggedIn, List<MeetingRoom> meetingRooms,
-			List<Group> groups) {
-		this.futureMeetings = futureMeetings;
-		this.employeesLoggedIn = employeesLoggedIn;
-		this.meetingRooms = meetingRooms;
-		this.groups = groups;
+
+    /**
+     * oppretter ny tom modell.
+     */
+	public ServerModelImpl() {
+		this.futureMeetings = new ArrayList<>();
+		this.employeesLoggedIn = new ArrayList<>();
+		this.meetingRooms = new ArrayList<>();
+		this.groups = new ArrayList<>();
 	}
 	
 	// Syncronizer har som oppgave å gi beskjed til kliener om at server har gjort endring på sin modell
