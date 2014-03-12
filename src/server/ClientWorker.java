@@ -5,10 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import protocol.MessageType;
-import protocol.RequestType;
-import protocol.ResponseType;
-import protocol.TransferObject;
+import protocol.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,13 +49,17 @@ public class ClientWorker implements Runnable {
 					stop();
 					throw new IOException("Incoming object is null, socket probably closed!");
 				}
-				
+
+                //@todo trenger callback for http respond.
+                RequestHandler.handleRequest(transObj);
+				TransferObject responseObj = transObj; //temporary hack
+
 				// Antek at det er login som kjem inn
-				String username = (String) transObj.getObject(0);
-				String password = (String) transObj.getObject(1);
+//				String username = (String) transObj.getObject(0);
+//				String password = (String) transObj.getObject(1);
 				
-				System.out.println("Got login from: " + username + " pw: " + password );
-				TransferObject responseObj = new TransferObject(MessageType.RESPONSE, RequestType.NOT_A_REQUEST, ResponseType.LOGIN_OK);
+//				System.out.println("Got login from: " + username + " pw: " + password );
+//				TransferObject responseObj = new TransferObject(MessageType.RESPONSE, RequestType.NOT_A_REQUEST, ResponseType.LOGIN_OK);
 				
 				// Skal til å sende svar tilbake
 				if (objOutput == null) {

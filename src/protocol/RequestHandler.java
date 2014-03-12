@@ -1,5 +1,6 @@
 package protocol;
 
+import db.ModelDbImpl;
 import model.CalendarModel;
 import model.Meeting;
 import protocol.MessageType;
@@ -28,20 +29,26 @@ public class RequestHandler {
         return instance;
     }
 
-    public void handleRequest(TransferObject obj) {
+    public static void handleRequest(TransferObject obj) {
 		RequestType type = obj.getReqType();
         if (type == null) return;
 
+        System.out.println("HandleRequest:");
+
         switch (type) {
-		case LOGIN:
+            case LOGIN: {
+                System.out.println("handle login");
+                break;
+            }
 
-        case ADD_MEETING:{
-            Meeting meeting = (Meeting) obj.getObject(0);
-            model.addMeeting(meeting);
-            //sync.addMeeting(meeting);
+            case ADD_MEETING:{
+                Meeting meeting = (Meeting) obj.getObject(0);
+                model.addMeeting(meeting);
+                new ModelDbImpl().addMeeting(meeting);
+                //sync.addMeeting(meeting);
+                break;
+            }
         }
-
-		}
 	}
 	
 	 
