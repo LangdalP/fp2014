@@ -13,6 +13,7 @@ import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: Christoffer Buvik
@@ -175,7 +176,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    public List<Meeting> getAllMeeting() {
+    private List<Meeting> getAllMeeting() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
@@ -220,7 +221,6 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
-    
 
 
 }
