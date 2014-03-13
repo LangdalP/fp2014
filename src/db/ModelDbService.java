@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import model.Attendee;
 import model.Employee;
@@ -34,6 +35,7 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
+//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
         
         System.out.println("test");
     }
@@ -195,12 +197,12 @@ public class ModelDbService {
         return list;
     }
     
-    public void addAttendee(Attendee attendee, Meeting meeting, Employee employee, Group group) {
+    public void addAttendee(Attendee attendee, Meeting meeting) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, gruppe_navn, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
-            ps.setString(2, employee.getUsername());
-            ps.setString(3, group.getGroupName());
+            ps.setString(2, attendee.getEmployee().getUsername());
+            ps.setString(3, null);
             ps.setBoolean(4, attendee.getAttendeeStatus());
             ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
 //            new java.sql.Date(1999, 1,1);
