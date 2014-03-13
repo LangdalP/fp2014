@@ -43,6 +43,10 @@ public class ModelDbService {
 
     public ModelDbService() {
     }
+    
+    public boolean validateLogin(String username, String password) {
+    	return true;
+    }
 
     public List<Group> getGroups() {
         String sql = "select * from gruppe";
@@ -181,7 +185,8 @@ public class ModelDbService {
         return attendees;
     }
     
-    private List<Meeting> getAllMeetings() {
+    // Lista med attendees blir ikkje fylt ut
+    public List<Meeting> getAllMeetings() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
