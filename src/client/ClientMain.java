@@ -7,6 +7,7 @@ import model.Employee;
 import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
+import model.impl.ModelImpl;
 
 public class ClientMain {
 	
@@ -15,23 +16,20 @@ public class ClientMain {
 	
 	public static void main(String[] args) {
 		
-		// Kode for å starte heile klienten
+		// Kode for ï¿½ starte heile klienten
 		
 		// Lagar tom modell
-		
-		List<Meeting> futureMeetings = new ArrayList<>();
-		List<Employee> employeesLoggedIn = new ArrayList<>();
-		List<MeetingRoom> meetingRooms = new ArrayList<>();
-		List<Group> groups = new ArrayList<>();
-		
-		ClientModelImpl model = new ClientModelImpl(futureMeetings, employeesLoggedIn, meetingRooms, groups);
-		
+		ModelImpl model = new ModelImpl();
+		//init model from server
+                
 		ClientConnection clientConn = new ClientConnection(serverIP, serverPort);
 		ConnectionListener listener = new ConnectionListener(clientConn.getConnectionSocket());
 		
 		// Startar ConnectionListener
 		Thread listenThread = new Thread(listener);
 		listenThread.start();
+                
+//                new Gui(model);
 		
 		
 	}

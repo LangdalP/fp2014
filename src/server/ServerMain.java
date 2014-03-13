@@ -1,5 +1,7 @@
 package server;
 
+import model.impl.ModelImpl;
+import db.ModelDbImpl;
 import model.CalendarModel;
 import protocol.RequestHandler;
 
@@ -16,14 +18,17 @@ import java.io.InputStreamReader;
  * To change this template use File | Settings | File Templates.
  */
 public class ServerMain {
-    private CalendarModel model;
+    private ModelImpl model;
     private RequestHandler requestHandler;
 	
 	public static final int SERVER_PORT = 54545;
 
     public ServerMain() {
-        model = new ServerModelImpl();
+        model = new ModelImpl();
         requestHandler = new RequestHandler(model);
+        ModelDbImpl modeldb = new ModelDbImpl();
+        model.setFutureMeetings(modeldb.getAllMeetings());
+
     }
 
 
@@ -32,11 +37,11 @@ public class ServerMain {
 	}
 
     public void startServer(){
-		// Lagar multitråda server og startar på eigen tråd
+		// Lagar multitrï¿½da server og startar pï¿½ eigen trï¿½d
 		MultiThreadedServer server = new MultiThreadedServer(SERVER_PORT);
 		new Thread(server).start();
 
-		// Tek input frå konsoll, slik at admin kan kalle /stop for å lukke connections
+		// Tek input frï¿½ konsoll, slik at admin kan kalle /stop for ï¿½ lukke connections
 		BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 		String inLine;
 		try {
