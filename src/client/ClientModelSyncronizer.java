@@ -4,7 +4,7 @@ import java.util.List;
 
 import protocol.RequestType;
 import protocol.TransferObject;
-import server.RequestHandler;
+import protocol.RequestHandler;
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
@@ -19,12 +19,6 @@ public class ClientModelSyncronizer implements CalendarModel {
 		this.conn = conn;
 	}
 	
-	@Override
-	public void addEmployeeToLoggedIn(Employee emp) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void addMeeting(Meeting meeting) {
 		// Må sende objekt

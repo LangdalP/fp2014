@@ -10,7 +10,8 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface CalendarModel {
-    public void addEmployeeToLoggedIn(Employee emp);                                         //krav 1
+    //public void addEmployeeToLoggedIn(Employee emp); //denne er state i serverMain og ikke en del av modellen.
+    //request/respond vil ta seg av dette for klientene.                 //krav 1
 
     public void addMeeting(Meeting meeting);                                                //krav 2
 
