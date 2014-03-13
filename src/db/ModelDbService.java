@@ -35,6 +35,7 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
+        new ModelDbService().getAllMeetings();
 //        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
         
         System.out.println("test");
@@ -86,8 +87,9 @@ public class ModelDbService {
         if(employee == null){
         	System.out.println("employee is null");
         	return null;
+        } else {
+        	System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
         }
-        System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
         return employee;
     }
     
@@ -179,7 +181,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    private List<Meeting> getAllMeeting() {
+    private List<Meeting> getAllMeetings() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
@@ -187,13 +189,21 @@ public class ModelDbService {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 meeting = new Meeting(rs.getString("id"));
-
+                meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setDuration(rs.getInt("varighet"));
+                meeting.setMeetingLocation(rs.getString("sted"));
+                Employee owner = getEmployee(rs.getString("eier_ansatt"));
+                meeting.setMeetingOwner(owner);
+                meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                
                 list.add(meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(meeting.getMeetingID());
+        for (Meeting meet : list) {
+        	System.out.println(meet.getMeetingID());
+        }
         return list;
     }
     

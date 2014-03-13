@@ -108,6 +108,10 @@ public class Meeting implements Serializable{
 	public Employee getMeetingOwner() {
 		return meetingOwner;
 	}
+	
+	public void setMeetingOwner(Employee emp) {
+		this.meetingOwner = meetingOwner;
+	}
 
 	public List<Attendee> getAttendees() {
 		return attendees;
