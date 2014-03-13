@@ -20,15 +20,16 @@ import java.io.InputStreamReader;
 public class ServerMain {
     private ModelImpl model;
     private RequestHandler requestHandler;
-	
-	public static final int SERVER_PORT = 54545;
+    public static final int SERVER_PORT = 54545;
 
     public ServerMain() {
         model = new ModelImpl();
-        requestHandler = new RequestHandler(model);
+        
         ModelDbImpl modeldb = new ModelDbImpl();
         model.setFutureMeetings(modeldb.getAllMeetings());
+        requestHandler = new RequestHandler(model);
 
+        System.out.println("future meetings: " + model.getFutureMeetings());
     }
 
 
