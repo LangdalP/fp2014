@@ -18,6 +18,7 @@ public class Meeting implements Serializable{
 	private int guestAmount = 0;
 	private MeetingRoom meetingRoom;
 	private boolean meetingRoomBooked = false;
+	private Date lastChanged = new Date();
 
     public Meeting(String meetingID) {
         this.meetingID = meetingID;
@@ -107,6 +108,10 @@ public class Meeting implements Serializable{
 	public Employee getMeetingOwner() {
 		return meetingOwner;
 	}
+	
+	public void setMeetingOwner(Employee emp) {
+		this.meetingOwner = meetingOwner;
+	}
 
 	public List<Attendee> getAttendees() {
 		return attendees;
@@ -118,6 +123,14 @@ public class Meeting implements Serializable{
 	
 	public void removeAttendee(Attendee attendee){
 		attendees.remove(attendee);
+	}
+
+	public Date getLastChanged() {
+		return lastChanged;
+	}
+
+	public void setLastChanged(Date lastChanged) {
+		this.lastChanged = lastChanged;
 	}
 	
 }

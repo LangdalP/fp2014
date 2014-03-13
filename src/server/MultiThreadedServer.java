@@ -8,10 +8,10 @@ import java.util.List;
 
 public class MultiThreadedServer implements Runnable {
 	
-	private int serverPort;
+    private int serverPort;
     private ServerSocket serverSocket = null;
     private boolean isStopped = false;
-    // Kanskje unødvendig
+    // Kanskje unï¿½dvendig
     private Thread runningThread = null;
     
     // Liste med workers
@@ -40,7 +40,7 @@ public class MultiThreadedServer implements Runnable {
             }
             System.out.println("Accepting client");
             
-            // Lagar ny ClientWorker og tråd
+            // Lagar ny ClientWorker og trï¿½d
             ClientWorker newWorker = new ClientWorker(acceptedSocket);
             workers.add(newWorker);
             

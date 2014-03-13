@@ -70,5 +70,4 @@ public class Attendee implements Serializable{
 	public Date getAlarmTime(){
 		return alarmTime;
 	}
-
 }

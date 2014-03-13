@@ -3,9 +3,11 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import model.Attendee;
 import model.Employee;
@@ -33,11 +35,17 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
+        new ModelDbService().getAllMeetings();
+//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
         
         System.out.println("test");
     }
 
     public ModelDbService() {
+    }
+    
+    public boolean validateLogin(String username, String password) {
+    	return true;
     }
 
     public List<Group> getGroups() {
@@ -83,8 +91,9 @@ public class ModelDbService {
         if(employee == null){
         	System.out.println("employee is null");
         	return null;
+        } else {
+        	System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
         }
-        System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
         return employee;
     }
     
@@ -176,7 +185,8 @@ public class ModelDbService {
         return attendees;
     }
     
-    private List<Meeting> getAllMeeting() {
+    // Lista med attendees blir ikkje fylt ut
+    public List<Meeting> getAllMeetings() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
@@ -184,22 +194,30 @@ public class ModelDbService {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 meeting = new Meeting(rs.getString("id"));
-
+                meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setDuration(rs.getInt("varighet"));
+                meeting.setMeetingLocation(rs.getString("sted"));
+                Employee owner = getEmployee(rs.getString("eier_ansatt"));
+                meeting.setMeetingOwner(owner);
+                meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                
                 list.add(meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println(meeting.getMeetingID());
+        for (Meeting meet : list) {
+        	System.out.println(meet.getMeetingID());
+        }
         return list;
     }
     
-    public void addAttendee(Attendee attendee, Meeting meeting, Employee employee, Group group) {
+    public void addAttendee(Attendee attendee, Meeting meeting) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, gruppe_navn, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
-            ps.setString(2, employee.getUsername());
-            ps.setString(3, group.getGroupName());
+            ps.setString(2, attendee.getEmployee().getUsername());
+            ps.setString(3, null);
             ps.setBoolean(4, attendee.getAttendeeStatus());
             ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
 //            new java.sql.Date(1999, 1,1);
@@ -216,6 +234,24 @@ public class ModelDbService {
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param meeting
+     */
+    public void addMeeting(Meeting meeting) {
+    	String sql = "insert into avtale(id, dato, varighet, sted, eier_ansatt, sist_endret) values(?, ?, ?, ?, ?, ?)";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meeting.getMeetingID());
+            ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
+            ps.setInt(3, meeting.getDuration());
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
+            ps.setString(5, meeting.getMeetingOwner().getUsername());
+            ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
