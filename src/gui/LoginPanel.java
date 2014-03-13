@@ -2,7 +2,10 @@ package gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
+import client.ClientMain;
 
 public class LoginPanel extends JPanel {
 	
@@ -43,6 +46,12 @@ public class LoginPanel extends JPanel {
 		add(passwordField, c);
 		
 		JButton loginButton = new JButton("Logg inn");
+		Action loginAction = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// Kode som kjører når knappen blir trykt på
+			}
+		};
 		c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 		add(loginButton, c);
 		
