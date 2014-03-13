@@ -1,9 +1,12 @@
 package client;
 
+import model.Meeting;
 import protocol.MessageType;
 import protocol.RequestType;
 import protocol.ResponseType;
 import protocol.TransferObject;
+
+import java.util.UUID;
 
 public class ClientConnectionTest {
 	
@@ -22,6 +25,8 @@ public class ClientConnectionTest {
 		// Sender en beskjed
 		TransferObject loginObject = new TransferObject(MessageType.REQUEST, RequestType.LOGIN, ResponseType.NOT_A_RESPONSE, "pedervl", "kake55");
 		clientConn.sendTransferObject(loginObject);
+
+        clientConn.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, new Meeting(UUID.randomUUID().toString())));
 		
 		// Stoppar klientTråden for å sjekke at listeneren printar uavhengig av vår tråd
 		try {
