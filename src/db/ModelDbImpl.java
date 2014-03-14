@@ -1,5 +1,6 @@
 package db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -103,4 +104,12 @@ public class ModelDbImpl implements CalendarModel {
     	}
     	return dbGroups;
 	}
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	List<MeetingRoom> meetingRooms = new ArrayList<>();
+    	
+    	
+    	
+    	return null;
+    }
 }
