@@ -12,7 +12,7 @@ import java.util.List;
 public interface CalendarModel {
     public void addMeeting(Meeting meeting);                                                //krav 2
 
-    public void addEmployteeToMeeting(Meeting meeting, Attendee attendee);                    //krav 3
+    public void addAttendeeToMeeting(Meeting meeting, Attendee attendee);                    //krav 3
 
     public void removeEmployeeFromMeeting(Meeting meeting, Employee emp);                    //krav 3
 

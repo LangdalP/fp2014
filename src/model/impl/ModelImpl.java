@@ -77,7 +77,7 @@ public class ModelImpl implements CalendarModel {
 	}
 
 	@Override
-	public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
+	public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
 		// TODO Auto-generated method stub
 		
 	}
