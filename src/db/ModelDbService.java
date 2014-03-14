@@ -4,10 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import model.Attendee;
 import model.Employee;
@@ -35,8 +32,13 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
+<<<<<<< HEAD
 //        new ModelDbService().getAllMeetings();
 //        Meeting meeting = new Meeting("id", new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+=======
+        new ModelDbService().getAllMeetings();
+//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormï¿½te", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+>>>>>>> 33b9776def9e527456fd5058a3542367458d0974
         
         Meeting meeting = new Meeting("id");
         meeting.setGuestAmount(6);
@@ -65,7 +67,8 @@ public class ModelDbService {
         }
         return groups;
     }
-
+    
+    // Skal ikkje vere nï¿½dvendig ï¿½ bruke
     public void addGroup(Group group) {
         String sql = "insert into gruppe (navn) values(?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -97,21 +100,18 @@ public class ModelDbService {
         return employee;
     }
     
-    public List<Employee> getEmployees() {
+    public Map<String, Employee> getEmployees() {
         String sql = "select * from ansatt";
-        List<Employee> employees = new ArrayList<>(); 
+        Map<String, Employee> employees = new HashMap();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
-                employees.add(employee);
+                employees.put(rs.getString("epost"), employee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (Employee employee : employees) {
-        	System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
-		}
         return employees;
     }
     
@@ -185,9 +185,9 @@ public class ModelDbService {
         return attendees;
     }
     
-    // Lista med attendees blir ikkje fylt ut
-    public List<Meeting> getAllMeetings() {
-        List<Meeting> list = new ArrayList<>();
+    // Hentar alle møte, men uten attendees og meetingroom
+    public Map<String,Meeting> getAllMeetings() {
+        Map<String, Meeting> list = new HashMap<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -200,14 +200,13 @@ public class ModelDbService {
                 Employee owner = getEmployee(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setMeetingRoomBooked(false);
+                meeting.setMeetingRoom(null);
                 
-                list.add(meeting);
+                list.put(meeting.getMeetingID(), meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        for (Meeting meet : list) {
-        	System.out.println(meet.getMeetingID());
         }
         return list;
     }
@@ -229,7 +228,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into mï¿½terom(mï¿½terom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -248,7 +247,7 @@ public class ModelDbService {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
-            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka mï¿½terom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
@@ -256,6 +255,7 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
+<<<<<<< HEAD
 
     public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
     	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
@@ -322,4 +322,44 @@ public class ModelDbService {
     }
     
     
+=======
+    
+    public List<Employee> getEmployeesInGroup(Group group) {
+    	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
+    	List<Employee> emps = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, group.getGroupName());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+            	emps.add(employee);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return emps;
+    }
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	String sql = "select * from møterom";
+    	List<MeetingRoom> rooms = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"));
+            	rooms.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return rooms;
+    }
+    
+    public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
+    	String sql = "";
+    	
+    	return null;
+    }
+
+>>>>>>> 33b9776def9e527456fd5058a3542367458d0974
 }
