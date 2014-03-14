@@ -66,11 +66,7 @@ public class ClientModelImpl implements CalendarModel{
 		employeesLoggedIn.add(emp);
 	}
 	
-	// Metoda tek inn eit attendee, så programmet må lage attendeen først
-	@Override
-	public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
-		meeting.addAttendee(attendee);
-	}
+
 	
 	// Metoda tek inn ein employee, og set andre attendee-innstillingar til default verdiar
 	public void addEmployteeToMeeting(Meeting meeting, Employee employee) {
@@ -161,6 +157,13 @@ public class ClientModelImpl implements CalendarModel{
 
 	@Override
 	public void setAlarm(Attendee attendee) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	// Metoda tek inn eit attendee, så programmet må lage attendeen først
+	@Override
+	public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
 		// TODO Auto-generated method stub
 		
 	}

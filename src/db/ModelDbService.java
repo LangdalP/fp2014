@@ -254,5 +254,24 @@ public class ModelDbService {
         }
     }
 
+    public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
+    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meeting.getMeetingID());
+            ps.setString(2, meetingRoom.getName());
+            ps.setInt(3, meeting.getGuestAmount());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+
+//    update
+//    avtale -meeting
+//    avtalemøterom - 
+//    deltageransatt -attendee
+    
 
 }
