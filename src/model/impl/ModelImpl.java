@@ -16,48 +16,48 @@ public class ModelImpl implements CalendarModel {
 	private List<Meeting> futureMeetings;
 	private List<Employee> employees;
 	private List<MeetingRoom> meetingRooms;
-        private List<Group> groups;
-        private ServerModelSyncronizer sync = null;
+	private List<Group> groups;
+	private ServerModelSyncronizer sync = null;
         
-        /**
-         * oppretter ny tom modell.
-         */
-        public ModelImpl() {
-            this.futureMeetings = new ArrayList<>();
-            this.meetingRooms = new ArrayList<>();
-            this.groups = new ArrayList<>();
-            employees = new ArrayList<>();
-        }
-        
-        
-        
-        // Syncronizer har som oppgave � gi beskjed til kliener om at server har gjort endring p� sin modell
-        public void setSyncronizer(ServerModelSyncronizer sync) {
-            this.sync = sync;
-        }
-        
-        public List<Meeting> getFutureMeetings() {
-            return futureMeetings;
-        }
-        
-        
-        public List<MeetingRoom> getMeetingRooms() {
-            return meetingRooms;
-        }
-        
-        public void setFutureMeetings(List<Meeting> futureMeetings) {
-            this.futureMeetings = futureMeetings;
-        }
-        
-        public void setMeetingRooms(List<MeetingRoom> meetingRooms) {
-            this.meetingRooms = meetingRooms;
-        }
-        
-        public void setGroups(List<Group> groups) {
-            this.groups = groups;
-        }
-        
-        
+    /**
+     * oppretter ny tom modell.
+     */
+    public ModelImpl() {
+        this.futureMeetings = new ArrayList<>();
+        this.meetingRooms = new ArrayList<>();
+        this.groups = new ArrayList<>();
+        this.employees = new ArrayList<>();
+    }
+    
+    
+    
+    // Syncronizer har som oppgave � gi beskjed til kliener om at server har gjort endring p� sin modell
+    public void setSyncronizer(ServerModelSyncronizer sync) {
+        this.sync = sync;
+    }
+    
+    public List<Meeting> getFutureMeetings() {
+        return futureMeetings;
+    }
+    
+    
+    public List<MeetingRoom> getMeetingRooms() {
+        return meetingRooms;
+    }
+    
+    public void setFutureMeetings(List<Meeting> futureMeetings) {
+        this.futureMeetings = futureMeetings;
+    }
+    
+    public void setMeetingRooms(List<MeetingRoom> meetingRooms) {
+        this.meetingRooms = meetingRooms;
+    }
+    
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+    
+    
 
 	public List<Group> getGroups() {
 		return groups;
@@ -145,5 +145,26 @@ public class ModelImpl implements CalendarModel {
 	public void setAlarm(Attendee attendee) {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+
+	public List<Employee> getEmployees() {
+		return employees;
+	}
+
+
+
+	public void setEmployees(List<Employee> employees) {
+		this.employees = employees;
+	}
+	
+	public Employee getEmployeeByEmail(String email) {
+		for (Employee emp : employees) {
+			if (emp.getUsername().equals(email)) {
+				return emp;
+			}
+		}
+		return null;
 	}
 }

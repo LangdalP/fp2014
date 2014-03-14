@@ -27,7 +27,7 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-        dbService = new ModelDbImpl();
+        dbService = new ModelDbImpl(model);
         instance = this;
     }
 
@@ -60,7 +60,7 @@ public class RequestHandler {
 //                model.addMeeting(meeting);
                 System.out.println("MEETING " + meeting);
                 try {
-                    new ModelDbImpl().addMeeting(meeting);
+                    dbService.addMeeting(meeting);
 
                 } catch(Exception e){
                     e.printStackTrace();
