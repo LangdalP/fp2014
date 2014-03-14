@@ -27,7 +27,14 @@ public class Employee implements Serializable{
 	public String getPassword() {
 		return password;
 	}
-	
-	
 
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

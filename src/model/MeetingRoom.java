@@ -37,6 +37,13 @@ public class MeetingRoom implements Serializable{
 	public void removeUpcomingMeetings(Meeting meeting){
 		upcomingMeetings.remove(meeting);
 	}
-	
-	
+
+    @Override
+    public String toString() {
+        return "MeetingRoom{" +
+                "name='" + name + '\'' +
+                ", maxPeople=" + maxPeople +
+                ", upcomingMeetings=" + upcomingMeetings +
+                '}';
+    }
 }

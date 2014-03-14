@@ -70,4 +70,19 @@ public class Attendee implements Serializable{
 	public Date getAlarmTime(){
 		return alarmTime;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Attendee)) return false;
+
+        Attendee attendee = (Attendee) o;
+        if (!employee.getName().equals(attendee.employee.getName())) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return employee.hashCode();
+    }
 }

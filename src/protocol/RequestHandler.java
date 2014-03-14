@@ -2,16 +2,12 @@ package protocol;
 
 import db.ModelDbImpl;
 import db.ModelDbService;
-import java.net.ServerSocket;
-import java.net.Socket;
+
+import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
 import model.Meeting;
 import model.impl.ModelImpl;
-import protocol.MessageType;
-import protocol.RequestType;
-import protocol.ResponseType;
-import protocol.TransferObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,16 +19,20 @@ import protocol.TransferObject;
 public class RequestHandler {
     private static RequestHandler instance;
     private static ModelImpl model;
-    private static CalendarModel dbService;
+    private static CalendarModel dbModelImpl;
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
+<<<<<<< HEAD
         dbService = new ModelDbImpl(model);
+=======
+        dbModelImpl = new ModelDbImpl();
+>>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
         instance = this;
     }
 
     public static RequestHandler getInstance(){
-        if (model == null) throw new IllegalStateException("model m� opprettes. ");
+        if (model == null) throw new IllegalStateException("model må opprettes. ");
         return instance;
     }
 
@@ -53,10 +53,9 @@ public class RequestHandler {
 
 
         switch (type) {
-
-
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
+<<<<<<< HEAD
 //                model.addMeeting(meeting);
                 System.out.println("MEETING " + meeting);
                 try {
@@ -66,8 +65,24 @@ public class RequestHandler {
                     e.printStackTrace();
                 }
 
+=======
+                model.addMeeting(meeting);
+                dbModelImpl.addMeeting(meeting);
+>>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
                 //sync.addMeeting(meeting);
                 break;
+            }
+            case ADD_ATTENDEE_TO_MEETING:{
+                Meeting meeting = (Meeting) obj.getObject(0);
+                Attendee attendee = (Attendee) obj.getObject(1);
+                model.addAttendeeToMeeting(meeting, attendee);
+                break;
+            }
+
+            case REMOVE_ATTENDEE_FROM_MEETING:{
+                Meeting meeting = (Meeting) obj.getObject(0);
+                Attendee attendee = (Attendee) obj.getObject(1);
+                model.removeAttendeeFromMeeting(meeting, attendee);
             }
         }
 	}

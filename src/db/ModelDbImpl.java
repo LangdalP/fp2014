@@ -36,11 +36,11 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
+    public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
     }
 
     @Override
-    public void removeEmployeeFromMeeting(Meeting meeting, Employee emp) {
+    public void removeAttendeeFromMeeting(Meeting meeting, Attendee emp) {
     }
 
     @Override

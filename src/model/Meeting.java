@@ -132,5 +132,22 @@ public class Meeting implements Serializable{
 	public void setLastChanged(Date lastChanged) {
 		this.lastChanged = lastChanged;
 	}
-	
+
+
+    @Override
+    public String toString() {
+        return "Meeting{" +
+                "meetingID='" + meetingID + '\'' +
+                ", meetingTime=" + meetingTime +
+                ", duration=" + duration +
+                ", description='" + description + '\'' +
+                ", meetingLocation='" + meetingLocation + '\'' +
+                ", meetingOwner=" + meetingOwner +
+                ", attendees=" + attendees +
+                ", guestAmount=" + guestAmount +
+                ", meetingRoom=" + meetingRoom +
+                ", meetingRoomBooked=" + meetingRoomBooked +
+                ", lastChanged=" + lastChanged +
+                '}';
+    }
 }
