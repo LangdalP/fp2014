@@ -43,10 +43,6 @@ public class ModelDbService {
 
     public ModelDbService() {
     }
-    
-    public boolean validateLogin(String username, String password) {
-    	return true;
-    }
 
     public List<Group> getGroups() {
         String sql = "select * from gruppe";
