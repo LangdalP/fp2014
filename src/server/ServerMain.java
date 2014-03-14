@@ -1,8 +1,9 @@
 package server;
 
+import db.ModelDbService;
+import model.*;
 import model.impl.ModelImpl;
 import db.ModelDbImpl;
-import model.CalendarModel;
 import protocol.RequestHandler;
 
 import java.io.BufferedReader;
@@ -26,14 +27,16 @@ public class ServerMain {
         model = new ModelImpl();
         
         ModelDbImpl modeldb = new ModelDbImpl(model);
-        // Lastar modell fr� db
-//        model.setEmployees(modeldb.getEmployees());
+        model.setMapEmployees(modeldb.getEmployees());
         model.setGroups(modeldb.getGroups());
-        
-//        model.setFutureMeetings(modeldb.getAllMeetings());
+        model.setFutureMeetings(modeldb.getAllMeetings());
+//        model.setMapMeetingRooms(new ModelDbService().ge);
         requestHandler = new RequestHandler(model);
 
-        System.out.println("future meetings: " + model.getFutureMeetings());
+        for (Meeting m : model.getFutureMeetings()) System.out.println(m);
+        for (Employee e : model.getMapEmployees().values()) System.out.println(e);
+        for (Group g : model.getGroups()) System.out.println(g);
+        for (MeetingRoom mr : model.getMapMeetingRooms()) System.out.println(mr);
     }
 
 

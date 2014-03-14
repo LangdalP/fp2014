@@ -3,9 +3,7 @@ package client;
 import java.util.List;
 import java.util.Map;
 
-import protocol.RequestType;
-import protocol.TransferObject;
-import protocol.RequestHandler;
+import protocol.*;
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
@@ -22,7 +20,7 @@ public class ClientModelSyncronizer implements CalendarModel {
 	
 	@Override
 	public void addMeeting(Meeting meeting) {
-		TransferObject obj = RequestHandler.createTransferObjectRequest(RequestType.ADD_MEETING, meeting);
+		TransferObject obj = new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting);
 		conn.sendTransferObject(obj);
 	}
 	

@@ -9,28 +9,18 @@ public class TransferObject implements Serializable {
 	private static final long serialVersionUID = 8543485611020498748L;
 	
 	private final MessageType msgType;		// RESPONSE ELLER REQUEST
-	private final RequestType reqType;		// Sjå RequestType.java, "NOT_A_REQUEST" om msgType er RESPONSE
-	private final ResponseType respType;	// Sjå ResponseType.java, "NOT_A_RESPONSE" om msgType er REQUEST
-	private final List<Object> objects = new ArrayList<>();
-	
-	public TransferObject(MessageType msgType, RequestType reqType, Object... inObjects) {
-		this.msgType = msgType;
-		this.reqType = reqType;
-		this.respType = null;
-		
+	private  RequestType reqType;		// Sjï¿½ RequestType.java, "NOT_A_REQUEST" om msgType er RESPONSE
+	private  TransferType respType;	// Sjï¿½ TransferType.java, "NOT_A_RESPONSE" om msgType er REQUEST
+	private  TransferType transferType;
+    private final List<Object> objects = new ArrayList<>();
+
+
+    public TransferObject(MessageType msgType, TransferType transferType, Object... inObjects) {
+        this.msgType = msgType;
+        this.transferType = transferType;
 		for (Object obj : inObjects) {
 			objects.add(obj);
 		}
-	}
-
-    public TransferObject(MessageType msgType,  ResponseType respType, Object... inObjects) {
-        this.msgType = msgType;
-        this.reqType = null;
-        this.respType = respType;
-
-        for (Object obj : inObjects) {
-            objects.add(obj);
-        }
     }
 
 	public MessageType getMsgType() {
@@ -41,11 +31,15 @@ public class TransferObject implements Serializable {
 		return reqType;
 	}
 
-	public ResponseType getRespType() {
+	public TransferType getRespType() {
 		return respType;
 	}
-	
-	public Object getObject(int i) {
+
+    public TransferType getTransferType() {
+        return transferType;
+    }
+
+    public Object getObject(int i) {
 		if (i >= 0 && i < objects.size()) {
 			return objects.get(i);
 		} else {

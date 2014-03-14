@@ -70,6 +70,21 @@ public class ModelImpl implements CalendarModel {
     public Map<String, Employee> getMapEmployees() {
         return mapEmployees;
     }
+    public List<Employee> getEmpoloyees(){
+        return new ArrayList<>(mapEmployees.values());
+    }
+
+    public void setMapFutureMeetings(Map<String, Meeting> mapFutureMeetings) {
+        this.mapFutureMeetings = mapFutureMeetings;
+    }
+
+    public void setMapEmployees(Map<String, Employee> mapEmployees) {
+        this.mapEmployees = mapEmployees;
+    }
+
+    public void setMapMeetingRooms(Map<String, MeetingRoom> mapMeetingRooms) {
+        this.mapMeetingRooms = mapMeetingRooms;
+    }
 
     @Override
     public void addMeeting(Meeting meeting){

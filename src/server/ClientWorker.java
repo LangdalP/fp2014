@@ -19,6 +19,7 @@ public class ClientWorker implements Runnable {
 	private Socket serverSocket = null;
 	private ObjectInputStream objInput;
 	private ObjectOutputStream objOutput;
+    private boolean loggedIn = false;
 	
 	private boolean isStopped = true;
 	private Thread runningThread = null;
@@ -49,29 +50,31 @@ public class ClientWorker implements Runnable {
                     stop();
                     throw new IOException("Incoming object is null, socket probably closed!");
                 }
-                
-                boolean login = RequestHandler.handleLogin(transObj);
-                ResponseType respType = (login)? ResponseType.LOGIN_OK : ResponseType.LOGIN_FAILED;
-                System.out.println("From server: Client logged in: " + login);
-                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, respType));
 
-                //@todo trenger callback for http respond.
-                RequestHandler.handleRequest(transObj);
-                TransferObject responseObj = transObj; //temporary hack
-                
-                // Antek at det er login som kjem inn
-                //				String username = (String) transObj.getObject(0);
-                //				String password = (String) transObj.getObject(1);
-                
-                //				System.out.println("Got login from: " + username + " pw: " + password );
-                //				TransferObject responseObj = new TransferObject(MessageType.RESPONSE, RequestType.NOT_A_REQUEST, ResponseType.LOGIN_OK);
-                
-                // Skal til � sende svar tilbake
+                if (transObj.getMsgType() == MessageType.REQUEST && transObj.getTransferType() == TransferType.LOGIN){
+                    loggedIn = RequestHandler.handleLogin(transObj);
+                    System.out.println("From server: Client logged in: " + loggedIn);
+                    objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.LOGIN, loggedIn));
+                }
+
+                boolean success = false;
+                try {
+                    if (loggedIn){
+                        RequestHandler.handleRequest(transObj, objOutput);
+                    }
+                    else System.out.println("Client not authorized yet!");
+                    success = true;
+                } catch(IOException ioexception){
+                    //SUCCESS FORBLIR FALSE.
+                    ioexception.printStackTrace();
+                }
+
                 if (objOutput == null) {
                     stop();
                     throw new IOException("ObjectOutputStream is null, Socket probably closed!");
                 } else {
-                    objOutput.writeObject(responseObj);
+                    //@todo send ok/failed response back based on success.
+
                 }
             } catch (IOException e) {
                 // Har lukka workeren

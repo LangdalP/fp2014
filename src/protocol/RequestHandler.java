@@ -9,6 +9,10 @@ import model.Employee;
 import model.Meeting;
 import model.impl.ModelImpl;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Christoffer Buvik
@@ -33,7 +37,7 @@ public class RequestHandler {
     }
 
     public static boolean handleLogin(TransferObject obj) {
-        RequestType type = obj.getReqType();        if (type == null || type == RequestType.LOGIN){
+        TransferType type = obj.getTransferType();        if (type == null || type == TransferType.LOGIN){
             String login = String.valueOf(obj.getObject(0));
             String passwd = String.valueOf(obj.getObject(1));
             Employee emp = new ModelDbService().getEmployee(login);
@@ -42,8 +46,10 @@ public class RequestHandler {
         return false;
     }
 
-    public static void handleRequest(TransferObject obj) {
-        RequestType type = obj.getReqType();
+    public static void handleRequest(TransferObject obj, ObjectOutputStream objOutput) throws IOException {
+        if (obj.getMsgType() != MessageType.REQUEST) return;
+
+        TransferType type = obj.getTransferType();
         if (type == null) return;
         System.out.println("HandleRequest:");
 
@@ -67,17 +73,31 @@ public class RequestHandler {
                 Meeting meeting = (Meeting) obj.getObject(0);
                 Attendee attendee = (Attendee) obj.getObject(1);
                 model.removeAttendeeFromMeeting(meeting, attendee);
+//                sync.removeAttendeeFromMeeting(meeting, attendee);
+                break;
             }
+            case GET_EMPLOYEES: {
+                List<Employee> list = model.getEmpoloyees();
+                System.out.println("employees: " + list.size());
+                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
+                break;
+            }
+            case GET_MEETINGS_BY_EMPLOYEE: {
+                Employee emp = (Employee)obj.getObject(0);
+                List<Meeting> list = model.getMeetingsByEmployee(emp);
+                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
+                break;
+            }
+            case GET_MEETINGS_BY_EMPLOYEES: {
+                List<Employee> emps = (List<Employee>) obj.getObject(0);
+//                List<Meeting> list = model.getMeetingsByEmployees(emps);
+//                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
+                break;
+            }
+
+
         }
 	}
 	
-	 
-	public static TransferObject createTransferObjectRequest(RequestType reqType, Object... inObjects){
-        	return new TransferObject(MessageType.REQUEST, reqType, inObjects);
-    	}
-
-    	public static TransferObject createTransferObjectResponse(ResponseType respType, Object... inObjects){
-        	return new TransferObject(MessageType.RESPONSE, respType, inObjects);
-    	}
 
 }
