@@ -12,7 +12,6 @@ import model.MeetingRoom;
 import server.ServerModelSyncronizer;
 
 public class ModelImpl implements CalendarModel {
-<<<<<<< HEAD
 	private List<Meeting> futureMeetings;
 	private List<Employee> employees;
 	private List<MeetingRoom> meetingRooms;
@@ -31,7 +30,6 @@ public class ModelImpl implements CalendarModel {
     
     
     
-=======
     private Map<String, Meeting> mapFutureMeetings;
     private Map<String, Employee> mapEmployees;
     private Map<String, MeetingRoom> mapMeetingRooms;
@@ -48,12 +46,10 @@ public class ModelImpl implements CalendarModel {
 
 
 
->>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
     // Syncronizer har som oppgave � gi beskjed til kliener om at server har gjort endring p� sin modell
     public void setSyncronizer(ServerModelSyncronizer sync) {
         this.sync = sync;
     }
-<<<<<<< HEAD
     
     public List<Meeting> getFutureMeetings() {
         return futureMeetings;
@@ -136,7 +132,6 @@ public class ModelImpl implements CalendarModel {
 		// TODO Auto-generated method stub
 		
 	}
-=======
 
     public List<Meeting> getFutureMeetings() {
         return new ArrayList<>(mapFutureMeetings.values());
@@ -216,7 +211,6 @@ public class ModelImpl implements CalendarModel {
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
         mapMeetingRooms.get(meetingRoom.getName()).addUpcomingMeetings(meeting);
     }
->>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
 
     @Override
     public List<Meeting> getMeetingsByEmployee(Employee employee) {
@@ -231,7 +225,6 @@ public class ModelImpl implements CalendarModel {
 
 
     public List<Meeting> getUpcomingMeetings() {
-<<<<<<< HEAD
 		// TODO Auto-generated method stub
 		return null;
 	}
