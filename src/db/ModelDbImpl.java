@@ -85,7 +85,7 @@ public class ModelDbImpl implements CalendarModel {
         		meet.addAttendee(correctedAttendee);
         	}
         }
-        
+        // Har attendees, men ikkje meetingroom
         return dbMeetings;
     }
 

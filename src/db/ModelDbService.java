@@ -263,5 +263,26 @@ public class ModelDbService {
         }
     	return emps;
     }
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	String sql = "select * from møterom";
+    	List<MeetingRoom> rooms = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"));
+            	rooms.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return rooms;
+    }
+    
+    public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
+    	String sql = "";
+    	
+    	return null;
+    }
 
 }
