@@ -10,8 +10,6 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface CalendarModel {
-    public void addEmployeeToLoggedIn(Employee emp);                                         //krav 1
-
     public void addMeeting(Meeting meeting);                                                //krav 2
 
     public void addEmployteeToMeeting(Meeting meeting, Attendee attendee);                    //krav 3

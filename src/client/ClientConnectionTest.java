@@ -1,37 +1,41 @@
 package client;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import model.Meeting;
 import protocol.MessageType;
 import protocol.RequestType;
 import protocol.ResponseType;
 import protocol.TransferObject;
 
+import java.util.UUID;
+import model.Attendee;
+import model.Employee;
+import model.MeetingRoom;
+
 public class ClientConnectionTest {
-	
-	public static final String serverIP = "localhost";
-	public static final int serverPort = 54545;
-	
+
+        //eksempel kode pÃ¥ hvordan MainClient kan brukes av GUI. 
+        //Main klasse i gui trenger en instans av ClientMain og 
+    
 	public static void main(String[] args) {
+		ClientMain client = new ClientMain();
+//		client.validateLogin("pedervl", "kake55");
 		
-		ClientConnection clientConn = new ClientConnection(serverIP, serverPort);
-		ConnectionListener listener = new ConnectionListener(clientConn.getConnectionSocket());
+                ClientMain.validateLogin("test@epost.no", "passord");
+
+                
+                Employee emp = new Employee("test@epost.no", "a", "b");
+                List<Attendee> attendees = new ArrayList<>();
+                MeetingRoom meetingRoom = new MeetingRoom("P15", 20, null);
+                Date date = new Date();                
+                Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom, true);
+//                client.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, meeting));
 		
-		// Startar ConnectionListener
-		Thread listenThread = new Thread(listener);
-		listenThread.start();
-		
-		// Sender en beskjed
-		TransferObject loginObject = new TransferObject(MessageType.REQUEST, RequestType.LOGIN, ResponseType.NOT_A_RESPONSE, "pedervl", "kake55");
-		clientConn.sendTransferObject(loginObject);
-		
-		// Stoppar klientTråden for å sjekke at listeneren printar uavhengig av vår tråd
-		try {
-			Thread.sleep(5*1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		clientConn.close();
-		
+                
+                //stopper client applikasjon. 
+                if (true) System.exit(0);
 	}
 
 }

@@ -27,6 +27,26 @@ public class Attendee implements Serializable{
 		this.alarmTime = alarmTime;
 	}
 
+	public void setHasResponded(boolean hasResponded) {
+		this.hasResponded = hasResponded;
+	}
+
+	public void setAttendeeStatus(boolean attendeeStatus) {
+		this.attendeeStatus = attendeeStatus;
+	}
+
+	public void setLastNotification(Date lastNotification) {
+		this.lastNotification = lastNotification;
+	}
+
+	public void setHasAlarm(boolean hasAlarm) {
+		this.hasAlarm = hasAlarm;
+	}
+
+	public void setAlarmTime(Date alarmTime) {
+		this.alarmTime = alarmTime;
+	}
+
 	public Employee getEmployee(){
 		return employee;
 	}
@@ -50,5 +70,4 @@ public class Attendee implements Serializable{
 	public Date getAlarmTime(){
 		return alarmTime;
 	}
-
 }

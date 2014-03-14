@@ -1,5 +1,6 @@
-package server;
+package model.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,44 +10,60 @@ import model.Employee;
 import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
+import server.ServerModelSyncronizer;
 
-public class ServerModelImpl implements CalendarModel {
+public class ModelImpl implements CalendarModel {
 	private List<Meeting> futureMeetings;
-	private List<Employee> employeesLoggedIn;
+	private List<Employee> employees;
 	private List<MeetingRoom> meetingRooms;
-	private List<Group> groups;
-	private ServerModelSyncronizer sync = null;
-	
-	public ServerModelImpl(List<Meeting> futureMeetings,
-			List<Employee> employeesLoggedIn, List<MeetingRoom> meetingRooms,
-			List<Group> groups) {
-		this.futureMeetings = futureMeetings;
-		this.employeesLoggedIn = employeesLoggedIn;
-		this.meetingRooms = meetingRooms;
-		this.groups = groups;
-	}
-	
-	// Syncronizer har som oppgave å gi beskjed til kliener om at server har gjort endring på sin modell
-	public void setSyncronizer(ServerModelSyncronizer sync) {
-		this.sync = sync;
-	}
-
-	public List<Meeting> getFutureMeetings() {
-		return futureMeetings;
-	}
-
-	public List<Employee> getEmployeesLoggedIn() {
-		return employeesLoggedIn;
-	}
-
-	public List<MeetingRoom> getMeetingRooms() {
-		return meetingRooms;
-	}
+        private List<Group> groups;
+        private ServerModelSyncronizer sync = null;
+        
+        /**
+         * oppretter ny tom modell.
+         */
+        public ModelImpl() {
+            this.futureMeetings = new ArrayList<>();
+            this.meetingRooms = new ArrayList<>();
+            this.groups = new ArrayList<>();
+            employees = new ArrayList<>();
+        }
+        
+        
+        
+        // Syncronizer har som oppgave ï¿½ gi beskjed til kliener om at server har gjort endring pï¿½ sin modell
+        public void setSyncronizer(ServerModelSyncronizer sync) {
+            this.sync = sync;
+        }
+        
+        public List<Meeting> getFutureMeetings() {
+            return futureMeetings;
+        }
+        
+        
+        public List<MeetingRoom> getMeetingRooms() {
+            return meetingRooms;
+        }
+        
+        public void setFutureMeetings(List<Meeting> futureMeetings) {
+            this.futureMeetings = futureMeetings;
+        }
+        
+        public void setMeetingRooms(List<MeetingRoom> meetingRooms) {
+            this.meetingRooms = meetingRooms;
+        }
+        
+        public void setGroups(List<Group> groups) {
+            this.groups = groups;
+        }
+        
+        
 
 	public List<Group> getGroups() {
 		return groups;
 	}
 
+        @Override
 	public void addMeeting(Meeting meeting){
 		futureMeetings.add(meeting);
 	}
@@ -57,11 +74,6 @@ public class ServerModelImpl implements CalendarModel {
 	
 	public boolean isMeetingRoomAvailable(Date date, String meetingRoomId){
 		return true;
-	}
-
-	@Override
-	public void addEmployeeToLoggedIn(Employee emp) {
-		
 	}
 
 	@Override
