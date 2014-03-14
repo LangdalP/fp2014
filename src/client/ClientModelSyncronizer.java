@@ -1,6 +1,7 @@
 package client;
 
 import java.util.List;
+import java.util.Map;
 
 import protocol.RequestType;
 import protocol.TransferObject;
@@ -74,7 +75,7 @@ public class ClientModelSyncronizer implements CalendarModel {
 	}
 
 	@Override
-	public List<Meeting> getAllMeetings() {
+	public Map<String, Meeting> getAllMeetings() {
 		// TODO Auto-generated method stub
 		return null;
 	}
