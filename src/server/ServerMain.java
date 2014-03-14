@@ -35,7 +35,7 @@ public class ServerMain {
 
         for (Meeting m : model.getFutureMeetings()) System.out.println(m);
         for (Employee e : model.getMapEmployees().values()) System.out.println(e);
-        for (Group g : model.getGroups()) System.out.println(g);
+//        for (Group g : model.getGroups()) System.out.println(g);
         for (MeetingRoom mr : model.getMapMeetingRooms()) System.out.println(mr);
     }
 
