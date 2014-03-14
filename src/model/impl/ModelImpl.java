@@ -15,14 +15,14 @@ public class ModelImpl implements CalendarModel {
 	private Map<String, Meeting> mapFutureMeetings;
     private Map<String, Employee> mapEmployees;
     private Map<String, MeetingRoom> mapMeetingRooms;
-    private List<Group> groups;
+    private Map<String, Group> groups;
     private ServerModelSyncronizer sync = null;
 
     /** oppretter ny tom modell. */
     public ModelImpl() {
         this.mapFutureMeetings = new HashMap<>();
         this.mapMeetingRooms = new HashMap<>();
-        this.groups = new ArrayList<>();
+        this.groups = new HashMap<>();
         mapEmployees = new HashMap<>();
     }
 
@@ -52,10 +52,12 @@ public class ModelImpl implements CalendarModel {
     }
 
     public void setGroups(List<Group> groups) {
-        this.groups = groups;
+        for (Group grp : groups) {
+        	this.groups.put(grp.getGroupName(), grp);
+        }
     }
 
-    public List<Group> getGroups() {
+    public Map<String, Group> getGroups() {
         return groups;
     }
 
