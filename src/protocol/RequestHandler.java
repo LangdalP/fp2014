@@ -5,6 +5,7 @@ import db.ModelDbService;
 import java.net.ServerSocket;
 import java.net.Socket;
 import model.CalendarModel;
+import model.Employee;
 import model.Meeting;
 import model.impl.ModelImpl;
 import protocol.MessageType;
@@ -26,7 +27,7 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-        dbService = new ModelDbImpl();
+        dbService = new ModelDbImpl(model);
         instance = this;
     }
 
@@ -39,12 +40,12 @@ public class RequestHandler {
         RequestType type = obj.getReqType();        if (type == null || type == RequestType.LOGIN){
             String login = String.valueOf(obj.getObject(0));
             String passwd = String.valueOf(obj.getObject(1));
-            System.out.println("handle login: " + passwd);
-            return new ModelDbService().validateLogin(login, passwd);
+            Employee emp = new ModelDbService().getEmployee(login);
+            if (emp.getPassword().equals(passwd)) return true;
         }
         return false;
     }
-    
+
     public static void handleRequest(TransferObject obj) {
         RequestType type = obj.getReqType();
         if (type == null) return;
@@ -52,19 +53,19 @@ public class RequestHandler {
 
 
         switch (type) {
-           
+
 
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
 //                model.addMeeting(meeting);
                 System.out.println("MEETING " + meeting);
                 try {
-                    new ModelDbImpl().addMeeting(meeting);
-                    
+                    dbService.addMeeting(meeting);
+
                 } catch(Exception e){
                     e.printStackTrace();
                 }
-                
+
                 //sync.addMeeting(meeting);
                 break;
             }

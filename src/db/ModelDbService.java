@@ -43,10 +43,6 @@ public class ModelDbService {
 
     public ModelDbService() {
     }
-    
-    public boolean validateLogin(String username, String password) {
-    	return true;
-    }
 
     public List<Group> getGroups() {
         String sql = "select * from gruppe";
@@ -65,7 +61,8 @@ public class ModelDbService {
         }
         return groups;
     }
-
+    
+    // Skal ikkje vere nødvendig å bruke
     public void addGroup(Group group) {
         String sql = "insert into gruppe (navn) values(?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -257,6 +254,21 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
-
+    
+    public List<Employee> getEmployeesInGroup(Group group) {
+    	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
+    	List<Employee> emps = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, group.getGroupName());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+            	emps.add(employee);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return emps;
+    }
 
 }

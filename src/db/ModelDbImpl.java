@@ -5,8 +5,10 @@ import java.util.List;
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
+import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
+import model.impl.ModelImpl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,8 +19,10 @@ import model.MeetingRoom;
  */
 public class ModelDbImpl implements CalendarModel {
     private ModelDbService dbService;
+    private ModelImpl model;
 
-    public ModelDbImpl() {
+    public ModelDbImpl(ModelImpl model) {
+    	this.model = model;
         dbService = new ModelDbService();
     }
 
@@ -81,4 +85,21 @@ public class ModelDbImpl implements CalendarModel {
 
         //To change body of implemented methods use File | Settings | File Templates.
     }
+    
+    public List<Employee> getEmployees() {
+    	return dbService.getEmployees();
+    }
+    
+    public List<Group> getGroups() {
+    	// Gruppene er tomme naar dei kjem fraa get
+    	List<Group> dbGroups = dbService.getGroups();
+    	for (Group grp : dbGroups) {
+    		// Finner dei ansatte i gruppa
+    		List<Employee> empsInGrp = dbService.getEmployeesInGroup(grp);
+    		for (Employee emp : empsInGrp) {
+    			grp.addEmployees(model.getEmployeeByEmail(emp.getUsername()));
+    		}
+    	}
+    	return dbGroups;
+	}
 }
