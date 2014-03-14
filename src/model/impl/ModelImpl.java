@@ -19,9 +19,9 @@ public class ModelImpl implements CalendarModel {
 
     /** oppretter ny tom modell. */
     public ModelImpl() {
-        this.mapFutureMeetings = new HashMap<>();
-        this.mapMeetingRooms = new HashMap<>();
-        this.groups = new HashMap<>();
+        mapFutureMeetings = new HashMap<>();
+        mapMeetingRooms = new HashMap<>();
+        groups = new HashMap<>();
         mapEmployees = new HashMap<>();
     }
 
@@ -62,6 +62,12 @@ public class ModelImpl implements CalendarModel {
 
     public Map<String, Employee> getMapEmployees() {
         return mapEmployees;
+    }
+    
+    public void setEmployees(List<Employee> emps) {
+    	for (Employee emp : emps) {
+    		mapEmployees.put(emp.getUsername(), emp);
+    	}
     }
 
     @Override
