@@ -68,7 +68,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public List<Meeting> getAllMeetings() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dbService.getAllMeetings();
     }
 
     @Override

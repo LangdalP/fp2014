@@ -36,7 +36,7 @@ public class ModelDbService {
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
         new ModelDbService().getAllMeetings();
-//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormï¿½te", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
         
         System.out.println("test");
     }
@@ -181,7 +181,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    private List<Meeting> getAllMeetings() {
+    public List<Meeting> getAllMeetings() {
         List<Meeting> list = new ArrayList<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
@@ -225,7 +225,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into mï¿½terom(mï¿½terom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -244,7 +244,7 @@ public class ModelDbService {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
-            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka mï¿½terom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
