@@ -1,21 +1,12 @@
 package client;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import model.Employee;
-import model.Group;
-import model.Meeting;
-import model.MeetingRoom;
 import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.RequestType;
-import protocol.ResponseType;
 import protocol.TransferObject;
+import protocol.TransferType;
 
 public class ClientMain {
     public static Boolean loggedin;
@@ -52,7 +43,7 @@ public class ClientMain {
     
     public static boolean validateLogin(String login, String passwd){
         // Sender en beskjed
-        TransferObject loginObject = new TransferObject(MessageType.REQUEST, RequestType.LOGIN, login, passwd);
+        TransferObject loginObject = new TransferObject(MessageType.REQUEST, TransferType.LOGIN, login, passwd);
         clientConn.sendTransferObject(loginObject);
         
         long start = new GregorianCalendar().getTimeInMillis();

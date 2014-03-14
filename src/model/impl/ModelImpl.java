@@ -9,7 +9,6 @@ import model.Employee;
 import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
-import server.ServerModelSyncronizer;
 
 public class ModelImpl implements CalendarModel {
 	private Map<String, Meeting> mapFutureMeetings;
@@ -63,11 +62,27 @@ public class ModelImpl implements CalendarModel {
     public Map<String, Employee> getMapEmployees() {
         return mapEmployees;
     }
-    
+
     public void setEmployees(List<Employee> emps) {
     	for (Employee emp : emps) {
     		mapEmployees.put(emp.getUsername(), emp);
     	}
+    }
+
+    public List<Employee> getEmpoloyees(){
+        return new ArrayList<>(mapEmployees.values());
+    }
+
+    public void setMapFutureMeetings(Map<String, Meeting> mapFutureMeetings) {
+        this.mapFutureMeetings = mapFutureMeetings;
+    }
+
+    public void setMapEmployees(Map<String, Employee> mapEmployees) {
+        this.mapEmployees = mapEmployees;
+    }
+
+    public void setMapMeetingRooms(Map<String, MeetingRoom> mapMeetingRooms) {
+        this.mapMeetingRooms = mapMeetingRooms;
     }
 
     @Override

@@ -6,7 +6,6 @@ import java.util.List;
 import model.Meeting;
 import protocol.MessageType;
 import protocol.RequestType;
-import protocol.ResponseType;
 import protocol.TransferObject;
 
 import java.util.UUID;
