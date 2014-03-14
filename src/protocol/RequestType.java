@@ -11,9 +11,11 @@ public enum RequestType {
     ADD_MEETING,
 
     /** Obj0 = Meeting, Obj1 = Attendee */
-    ADD_EMPLOYEE_TO_MEETING,
+    ADD_ATTENDEE_TO_MEETING,
 
     /** Obj0 = Meeting, Obj1 = Employee*/
-    REMOVE_EMPLOYEE_FROM_MEETING,
+    REMOVE_ATTENDEE_FROM_MEETING,
+
+
     ;
 }
