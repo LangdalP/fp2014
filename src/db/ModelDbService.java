@@ -255,7 +255,11 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
-    
+
+    /*
+       @todo FORSLAG: i modellen trenger vi alle ansatte fra alle grupper. Group by gruppe.navn
+        metoden skal kunne brukes i konstruktøren til ModelImpl. Map<String, List<String>>
+     */
     public List<Employee> getEmployeesInGroup(Group group) {
     	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
     	List<Employee> emps = new ArrayList<>();
@@ -271,8 +275,13 @@ public class ModelDbService {
         }
     	return emps;
     }
-    
-    public List<MeetingRoom> getMeetingRooms() {
+
+    /*
+        @todo FORSLAG: hent fra avtale_møterom. MeetingRoom skal inneholde liste med møter.
+        @todo liste med møterom som vi trenger i gui vil man få fra keyset til map.
+        @todo slå sammen getMeetingRooms og getUpcomingMeetingsInMeetingRoom
+     */
+    public List<MeetingRoom> getMeetingRooms2() {
     	String sql = "select * from m�terom";
     	List<MeetingRoom> rooms = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -286,11 +295,12 @@ public class ModelDbService {
         }
     	return rooms;
     }
-    
+
+
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_m�terom am " +
-    					"where am.m�terom_navn = ?";
+    					"natural join avtale_møterom am " +
+    					"where am.møterom_navn = ?";
     	List<Meeting> meetings = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, roomName);
@@ -373,4 +383,12 @@ public class ModelDbService {
         }
     }
 
+    public Map<String, MeetingRoom> getMeetingRooms(){
+        return new HashMap<>();
+    }
+
+    /*@todo implementer støtte for initiering av modell.  */
+    public Map<String,List<String>> getMapGroups() {
+        return new HashMap<>();
+    }
 }

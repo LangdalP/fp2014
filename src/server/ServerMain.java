@@ -9,6 +9,8 @@ import protocol.RequestHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -24,19 +26,17 @@ public class ServerMain {
     public static final int SERVER_PORT = 54545;
 
     public ServerMain() {
-        model = new ModelImpl();
-        
-        ModelDbImpl modeldb = new ModelDbImpl(model);
-//        model.setMapEmployees(modeldb.getEmployees());
-        model.setGroups(modeldb.getGroups());
-        model.setFutureMeetings(modeldb.getAllMeetings());
-//        model.setMapMeetingRooms(new ModelDbService().ge);
-        requestHandler = new RequestHandler(model);
 
-        for (Meeting m : model.getFutureMeetings()) System.out.println(m);
-        for (Employee e : model.getMapEmployees().values()) System.out.println(e);
-//        for (Group g : model.getGroups()) System.out.println(g);
-        for (MeetingRoom mr : model.getMapMeetingRooms()) System.out.println(mr);
+        ModelDbImpl modeldb = new ModelDbImpl(model);
+        Map<String, Employee> employees = modeldb.getEmployees();
+        Map<String, MeetingRoom> mapMeetingRooms = modeldb.getMeetingRooms();
+        Map<String, List<String>> groups = new ModelDbService().getMapGroups();
+        Map<String, Meeting> meetings = modeldb.getAllMeetings();
+        Map<String, MeetingRoom> meetingRooms = modeldb.getMeetingRooms();
+        requestHandler = new RequestHandler(model);
+        model = new ModelImpl(meetings, employees, meetingRooms, groups);
+        System.out.println(model.toString());
+
     }
 
 
@@ -45,11 +45,11 @@ public class ServerMain {
 	}
 
     public void startServer(){
-		// Lagar multitr�da server og startar p� eigen tr�d
+		// Lagar multitråda server og startar på eigen tråd
 		MultiThreadedServer server = new MultiThreadedServer(SERVER_PORT);
 		new Thread(server).start();
 
-		// Tek input fr� konsoll, slik at admin kan kalle /stop for � lukke connections
+		// Tek input frå konsoll, slik at admin kan kalle /stop for å lukke connections
 		BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 		String inLine;
 		try {

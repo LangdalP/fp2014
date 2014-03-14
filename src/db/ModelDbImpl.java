@@ -1,6 +1,7 @@
 package db;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,14 +73,15 @@ public class ModelDbImpl implements CalendarModel {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
     @Override
     public Map<String, Meeting> getAllMeetings() {
-        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har foreløpig ikkje attendees
+        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har forelï¿½pig ikkje attendees
         for (Meeting meet : dbMeetings.values()) {
         	List<Attendee> dbAttendees = dbService.getAttendees(meet.getMeetingID());
         	Attendee correctedAttendee;
         	for (Attendee dbatt : dbAttendees) {
-        		correctedAttendee = new Attendee(model.getMapEmployees().get(dbatt.getEmployee().getName()),
+        		correctedAttendee = new Attendee(model.getm.get(dbatt.getEmployee().getName()),
         				dbatt.getHasResponded(), dbatt.getAttendeeStatus(), dbatt.getLastNotification(),
         				dbatt.getHasAlarm(), dbatt.getAlarmTime());
         		meet.addAttendee(correctedAttendee);
@@ -103,10 +105,12 @@ public class ModelDbImpl implements CalendarModel {
     public Map<String, Employee> getEmployees() {
     	return dbService.getEmployees();
     }
-    
+
+
+    /*
     public List<Group> getGroups() {
     	// Gruppene er tomme naar dei kjem fraa get
-    	List<Group> dbGroups = dbService.getGroups();
+    	Map<String, Group> dbGroups = dbService.getGroups();
     	for (Group grp : dbGroups) {
     		// Finner dei ansatte i gruppa
     		List<Employee> empsInGrp = dbService.getEmployeesInGroup(grp);
@@ -116,22 +120,24 @@ public class ModelDbImpl implements CalendarModel {
     	}
     	return dbGroups;
 	}
-    
-    public List<MeetingRoom> getMeetingRooms() {
-    	List<MeetingRoom> dbMeetingRooms = dbService.getMeetingRooms(); // Møteromma har tom liste upcomingMeetings
+    */
+
+    public Map<String, MeetingRoom> getMeetingRooms() {
+    	List<MeetingRoom> dbMeetingRooms = dbService.getMeetingRooms(); // MÃ¸teromma har tom liste upcomingMeetings
     	for (MeetingRoom dbRoom : dbMeetingRooms) {
     		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
     		for (Meeting emptyMeet : dbMeetings) {
-    			// Fyller møterom med avtalar frå modellen
+    			// Fyller mï¿½terom med avtalar frï¿½ modellen
     			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
     			dbRoom.addUpcomingMeetings(modelMeet);
     			
-    			// Setter referansen i Meeting modelMeet til dette møterommet
+    			// Setter referansen i Meeting modelMeet til dette mï¿½terommet
     			modelMeet.setMeetingRoomBooked(true);
     			modelMeet.setMeetingRoom(dbRoom);
     			
     		}
     	}
-    	return dbMeetingRooms;
+//    	return dbMeetingRooms;
+        return new HashMap<>();
     }
 }

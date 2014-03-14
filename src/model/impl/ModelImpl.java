@@ -6,66 +6,29 @@ import db.ModelDbService;
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
-import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
-import server.ServerModelSyncronizer;
 
+/**
+ *  Modell for server og klient. Modellen skal være oppdatert til enhvert tid.
+ *
+ *  KOMMENTAR: feltene skal være final fordi tilstand til modellen skal opprettes kun èn gang.
+ *  CalendarModel har som hensikt å tilby alle metoder for å endre tilstand i modellen.
+ *  Bruk toString for å se på tilstand.
+ */
 public class ModelImpl implements CalendarModel {
-	private Map<String, Meeting> mapFutureMeetings;
-    private Map<String, Employee> mapEmployees;
-    private Map<String, MeetingRoom> mapMeetingRooms;
-    private Map<String, Group> groups;
+	private final Map<String, Meeting> mapFutureMeetings;
+    private final Map<String, Employee> mapEmployees;
+    private final Map<String, MeetingRoom> mapMeetingRooms;
+    /** Key gruppe.navn, Value list med epost for ansatt.  */
+    private final Map<String, List<String>> mapGroups; //
 
-    /** oppretter ny tom modell. */
-    public ModelImpl() {
-        mapFutureMeetings = new HashMap<>();
-        mapMeetingRooms = new HashMap<>();
-        groups = new HashMap<>();
-        mapEmployees = new HashMap<>();
-    }
 
-    public List<Meeting> getFutureMeetings() {
-        return new ArrayList<>(mapFutureMeetings.values());
-    }
-
-    public List<MeetingRoom> getMapMeetingRooms() {
-        return new ArrayList<>(mapMeetingRooms.values());
-    }
-
-    public void setFutureMeetings(Map<String, Meeting> futureMeetings) {
-        this.mapFutureMeetings = futureMeetings;
-    }
-
-    public void setMapMeetingRooms(List<MeetingRoom> meetingRooms) {
-        for (MeetingRoom mr : meetingRooms)
-            mapMeetingRooms.put(mr.getName(), mr);
-    }
-
-    public void setGroups(List<Group> groups) {
-        for (Group grp : groups) {
-        	this.groups.put(grp.getGroupName(), grp);
-        }
-    }
-
-    public Map<String, Group> getGroups() {
-        return groups;
-    }
-
-    public boolean isMeetingRoomAvailable(Date date, String meetingRoomId){
-        return true;
-    }
-
-    public Map<String, Meeting> getMapFutureMeetings() {
-        return mapFutureMeetings;
-    }
-
-    public Map<String, Employee> getMapEmployees() {
-        return mapEmployees;
-    }
-    
-    public void setEmployees(Map<String, Employee> emps) {
-    	mapEmployees = emps;
+    public ModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, List<String>> mapGroups) {
+        this.mapFutureMeetings = mapFutureMeetings;
+        this.mapEmployees = mapEmployees;
+        this.mapMeetingRooms = mapMeetingRooms;
+        this.mapGroups = mapGroups;
     }
 
     @Override
@@ -86,7 +49,6 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public void addGroupToMeeting(Meeting meeting, String groupname) {
-//		mapFutureMeetings.get(meeting.getMeetingID()).
 
     }
 
@@ -143,8 +105,14 @@ public class ModelImpl implements CalendarModel {
 //        attendee.
     }
 
-	public void setAllMeetings(Map<String, Meeting> allMeetings) {
-		mapFutureMeetings = allMeetings;
-	}
 
+    @Override
+    public String toString() {
+        return "ModelImpl{" +
+                "mapFutureMeetings=" + mapFutureMeetings +
+                ", mapEmployees=" + mapEmployees +
+                ", mapMeetingRooms=" + mapMeetingRooms +
+                ", mapGroups=" + mapGroups +
+                '}';
+    }
 }
