@@ -32,8 +32,10 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
-        new ModelDbService().getAllMeetings();
+//        new ModelDbService().getAllMeetings();
 //        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormï¿½te", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+        
+        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
         
         System.out.println("test");
     }
@@ -280,9 +282,25 @@ public class ModelDbService {
     }
     
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
-    	String sql = "";
+    	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
+    					"natural join avtale_møterom am " +
+    					"where am.møterom_navn = ?";
+    	List<Meeting> meetings = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    		ps.setString(1, roomName);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	Meeting meeting = new Meeting(rs.getString("id"));
+            	meetings.add(meeting);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	for (Meeting meet : meetings) {
+    		System.out.println(meet.getMeetingID());
+    	}
     	
-    	return null;
+    	return meetings;
     }
 
 }
