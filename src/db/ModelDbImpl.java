@@ -97,7 +97,7 @@ public class ModelDbImpl implements CalendarModel {
     		// Finner dei ansatte i gruppa
     		List<Employee> empsInGrp = dbService.getEmployeesInGroup(grp);
     		for (Employee emp : empsInGrp) {
-    			grp.addEmployees(model.getEmployeeByEmail(emp.getUsername()));
+    			grp.addEmployees(model.getMapEmployees().get(emp.getUsername()));
     		}
     	}
     	return dbGroups;

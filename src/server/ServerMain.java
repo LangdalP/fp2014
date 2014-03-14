@@ -26,11 +26,11 @@ public class ServerMain {
         model = new ModelImpl();
         
         ModelDbImpl modeldb = new ModelDbImpl(model);
-        // Lastar modell frå db
-        model.setEmployees(modeldb.getEmployees());
+        // Lastar modell frï¿½ db
+//        model.setEmployees(modeldb.getEmployees());
         model.setGroups(modeldb.getGroups());
         
-        model.setFutureMeetings(modeldb.getAllMeetings());
+//        model.setFutureMeetings(modeldb.getAllMeetings());
         requestHandler = new RequestHandler(model);
 
         System.out.println("future meetings: " + model.getFutureMeetings());
