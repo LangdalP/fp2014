@@ -14,7 +14,7 @@ public interface CalendarModel {
 
     public void addAttendeeToMeeting(Meeting meeting, Attendee attendee);                    //krav 3
 
-    public void removeEmployeeFromMeeting(Meeting meeting, Employee emp);                    //krav 3
+    public void removeAttendeeFromMeeting(Meeting meeting, Attendee attendee);                    //krav 3
 
     public void addGroupToMeeting(Meeting meeting, String groupname);                        //krav 3
 

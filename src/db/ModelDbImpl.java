@@ -36,7 +36,7 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void removeEmployeeFromMeeting(Meeting meeting, Employee emp) {
+    public void removeAttendeeFromMeeting(Meeting meeting, Attendee emp) {
     }
 
     @Override
