@@ -1,6 +1,7 @@
 package db;
 
 import java.util.List;
+import java.util.Map;
 
 import model.Attendee;
 import model.CalendarModel;
@@ -71,7 +72,7 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public List<Meeting> getAllMeetings() {
+    public Map<String, Meeting> getAllMeetings() {
         return dbService.getAllMeetings();
     }
 
@@ -86,7 +87,7 @@ public class ModelDbImpl implements CalendarModel {
         //To change body of implemented methods use File | Settings | File Templates.
     }
     
-    public List<Employee> getEmployees() {
+    public Map<String, Employee> getEmployees() {
     	return dbService.getEmployees();
     }
     

@@ -129,7 +129,7 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
-    public List<Meeting> getAllMeetings() {
+    public Map<String, Meeting> getAllMeetings() {
         return new ModelDbService().getAllMeetings();
     }
 

@@ -177,8 +177,8 @@ public class ModelDbService {
     }
     
     // Lista med attendees blir ikkje fylt ut
-    public List<Meeting> getAllMeetings() {
-        List<Meeting> list = new ArrayList<>();
+    public Map<String,Meeting> getAllMeetings() {
+        Map<String, Meeting> list = new HashMap<>();
         String sql = "select * from avtale";
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -192,13 +192,10 @@ public class ModelDbService {
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
                 
-                list.add(meeting);
+                list.put(meeting.getMeetingID(), meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        for (Meeting meet : list) {
-        	System.out.println(meet.getMeetingID());
         }
         return list;
     }
