@@ -72,14 +72,17 @@ public class Attendee implements Serializable{
 	}
 
     @Override
-    public String toString() {
-        return "Attendee{" +
-                "employee=" + employee +
-                ", hasResponded=" + hasResponded +
-                ", attendeeStatus=" + attendeeStatus +
-                ", lastNotification=" + lastNotification +
-                ", hasAlarm=" + hasAlarm +
-                ", alarmTime=" + alarmTime +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Attendee)) return false;
+
+        Attendee attendee = (Attendee) o;
+        if (!employee.getName().equals(attendee.employee.getName())) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return employee.hashCode();
     }
 }
