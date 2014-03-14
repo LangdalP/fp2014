@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Meeting implements Serializable{
 
     public Meeting(String meetingID) {
         this.meetingID = meetingID;
+        attendees = new ArrayList<>();
     }
 
     public Meeting(String meetingID, Date meetingTime, int duration,
@@ -144,10 +146,7 @@ public class Meeting implements Serializable{
                 ", duration=" + duration +
                 ", description='" + description + '\'' +
                 ", meetingLocation='" + meetingLocation + '\'' +
-                ", meetingOwner=" + meetingOwner +
-                ", attendees=" + attendees +
                 ", guestAmount=" + guestAmount +
-                ", meetingRoom=" + meetingRoom +
                 ", meetingRoomName =" + meetingRoomName +
                 ", meetingRoomBooked=" + meetingRoomBooked +
                 ", lastChanged=" + lastChanged +
