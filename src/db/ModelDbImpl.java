@@ -1,5 +1,6 @@
 package db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,19 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public Map<String, Meeting> getAllMeetings() {
-        return dbService.getAllMeetings();
+        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har foreløpig ikkje attendees
+        for (Meeting meet : dbMeetings.values()) {
+        	List<Attendee> dbAttendees = dbService.getAttendees(meet.getMeetingID());
+        	Attendee correctedAttendee;
+        	for (Attendee dbatt : dbAttendees) {
+        		correctedAttendee = new Attendee(model.getMapEmployees().get(dbatt.getEmployee().getName()),
+        				dbatt.getHasResponded(), dbatt.getAttendeeStatus(), dbatt.getLastNotification(),
+        				dbatt.getHasAlarm(), dbatt.getAlarmTime());
+        		meet.addAttendee(correctedAttendee);
+        	}
+        }
+        // Har attendees, men ikkje meetingroom
+        return dbMeetings;
     }
 
     @Override
@@ -103,4 +116,22 @@ public class ModelDbImpl implements CalendarModel {
     	}
     	return dbGroups;
 	}
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	List<MeetingRoom> dbMeetingRooms = dbService.getMeetingRooms(); // Møteromma har tom liste upcomingMeetings
+    	for (MeetingRoom dbRoom : dbMeetingRooms) {
+    		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
+    		for (Meeting emptyMeet : dbMeetings) {
+    			// Fyller møterom med avtalar frå modellen
+    			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
+    			dbRoom.addUpcomingMeetings(modelMeet);
+    			
+    			// Setter referansen i Meeting modelMeet til dette møterommet
+    			modelMeet.setMeetingRoomBooked(true);
+    			modelMeet.setMeetingRoom(dbRoom);
+    			
+    		}
+    	}
+    	return dbMeetingRooms;
+    }
 }

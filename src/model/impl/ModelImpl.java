@@ -16,23 +16,14 @@ public class ModelImpl implements CalendarModel {
     private Map<String, Employee> mapEmployees;
     private Map<String, MeetingRoom> mapMeetingRooms;
     private Map<String, Group> groups;
-    private ServerModelSyncronizer sync = null;
 
     /** oppretter ny tom modell. */
     public ModelImpl() {
-        this.mapFutureMeetings = new HashMap<>();
-        this.mapMeetingRooms = new HashMap<>();
-        this.groups = new HashMap<>();
+        mapFutureMeetings = new HashMap<>();
+        mapMeetingRooms = new HashMap<>();
+        groups = new HashMap<>();
         mapEmployees = new HashMap<>();
     }
-
-
-
-    // Syncronizer har som oppgave � gi beskjed til kliener om at server har gjort endring p� sin modell
-    public void setSyncronizer(ServerModelSyncronizer sync) {
-        this.sync = sync;
-    }
-
 
     public List<Meeting> getFutureMeetings() {
         return new ArrayList<>(mapFutureMeetings.values());
@@ -71,6 +62,12 @@ public class ModelImpl implements CalendarModel {
 
     public Map<String, Employee> getMapEmployees() {
         return mapEmployees;
+    }
+    
+    public void setEmployees(List<Employee> emps) {
+    	for (Employee emp : emps) {
+    		mapEmployees.put(emp.getUsername(), emp);
+    	}
     }
 
     @Override

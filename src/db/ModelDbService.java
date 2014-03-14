@@ -32,8 +32,14 @@ public class ModelDbService {
 //        new ModelDbService().getAttendees("test3");
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
-        new ModelDbService().getAllMeetings();
+//        new ModelDbService().getAllMeetings();
 //        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormï¿½te", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+        
+//        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
+        
+        Meeting meeting = new Meeting("id");
+        meeting.setGuestAmount(7);
+        new ModelDbService().updateExternalAttendee(meeting);
         
         System.out.println("test");
     }
@@ -176,7 +182,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    // Lista med attendees blir ikkje fylt ut
+    // Hentar alle møte, men uten attendees og meetingroom
     public Map<String,Meeting> getAllMeetings() {
         Map<String, Meeting> list = new HashMap<>();
         String sql = "select * from avtale";
@@ -191,6 +197,8 @@ public class ModelDbService {
                 Employee owner = getEmployee(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setMeetingRoomBooked(false);
+                meeting.setMeetingRoom(null);
                 
                 list.put(meeting.getMeetingID(), meeting);
             }
@@ -260,6 +268,107 @@ public class ModelDbService {
             e.printStackTrace();
         }
     	return emps;
+    }
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	String sql = "select * from møterom";
+    	List<MeetingRoom> rooms = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
+            	rooms.add(room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return rooms;
+    }
+    
+    public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
+    	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
+    					"natural join avtale_møterom am " +
+    					"where am.møterom_navn = ?";
+    	List<Meeting> meetings = new ArrayList<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    		ps.setString(1, roomName);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	Meeting meeting = new Meeting(rs.getString("id"));
+            	meetings.add(meeting);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	for (Meeting meet : meetings) {
+    		System.out.println(meet.getMeetingID());
+    	}
+    	
+    	return meetings;
+    }
+    
+    public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
+    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meeting.getMeetingID());
+            ps.setString(2, meetingRoom.getName());
+            ps.setInt(3, meeting.getGuestAmount());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateExternalAttendee(Meeting meeting) {
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setInt(1, meeting.getGuestAmount());
+            ps.setString(2, meeting.getMeetingID());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meetingRoom.getName());
+            ps.setString(2, meeting.getMeetingID());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+   
+    public void updateMeeting(Meeting meeting, MeetingRoom meetingRoom) {
+    	String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setTimestamp(1, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
+            ps.setInt(2, meeting.getDuration());
+            ps.setString(3, meeting.getMeetngLocation()); // Skal være "Kontoret" om det er booka møterom
+            ps.setString(4, meeting.getMeetingOwner().getUsername());
+            ps.setTimestamp(5, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
+            ps.setString(6, meeting.getMeetingID());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void updateAttendee(Attendee attendee, Meeting meeting) {
+    	String sql = "update deltager_ansatt set epost=?, deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=?";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    		ps.setString(1, attendee.getEmployee().getUsername());
+            ps.setBoolean(2, attendee.getAttendeeStatus());
+            ps.setTimestamp(3, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
+            ps.setTimestamp(4, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setBoolean(5, attendee.getHasAlarm());
+            ps.setString(6, meeting.getMeetingID());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
