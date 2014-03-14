@@ -80,9 +80,8 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
-        meeting.addAttendee(attendee);
-        mapFutureMeetings.put(meeting.getMeetingID(), meeting);
-
+        mapFutureMeetings.get(meeting.getMeetingID()).addAttendee(attendee);
+        
     }
 
     @Override
