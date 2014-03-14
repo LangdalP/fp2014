@@ -32,8 +32,12 @@ public class Group implements Serializable{
 	public void addEmployees(Employee employee){
 		employees.add(employee);
 	}
-	
-	
-	
 
+    @Override
+    public String toString() {
+        return "Group{" +
+                "groupName='" + groupName + '\'' +
+                ", employees=" + employees +
+                '}';
+    }
 }

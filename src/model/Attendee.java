@@ -70,4 +70,16 @@ public class Attendee implements Serializable{
 	public Date getAlarmTime(){
 		return alarmTime;
 	}
+
+    @Override
+    public String toString() {
+        return "Attendee{" +
+                "employee=" + employee +
+                ", hasResponded=" + hasResponded +
+                ", attendeeStatus=" + attendeeStatus +
+                ", lastNotification=" + lastNotification +
+                ", hasAlarm=" + hasAlarm +
+                ", alarmTime=" + alarmTime +
+                '}';
+    }
 }
