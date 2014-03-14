@@ -27,7 +27,7 @@ public class ServerMain {
         model = new ModelImpl();
         
         ModelDbImpl modeldb = new ModelDbImpl(model);
-        model.setMapEmployees(modeldb.getEmployees());
+//        model.setMapEmployees(modeldb.getEmployees());
         model.setGroups(modeldb.getGroups());
         model.setFutureMeetings(modeldb.getAllMeetings());
 //        model.setMapMeetingRooms(new ModelDbService().ge);
