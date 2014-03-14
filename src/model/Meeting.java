@@ -148,6 +148,7 @@ public class Meeting implements Serializable{
                 ", attendees=" + attendees +
                 ", guestAmount=" + guestAmount +
                 ", meetingRoom=" + meetingRoom +
+                ", meetingRoomName =" + meetingRoomName +
                 ", meetingRoomBooked=" + meetingRoomBooked +
                 ", lastChanged=" + lastChanged +
                 '}';
