@@ -11,6 +11,7 @@ import model.impl.ModelImpl;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,7 +78,7 @@ public class RequestHandler {
                 break;
             }
             case GET_EMPLOYEES: {
-                List<Employee> list = model.getEmpoloyees();
+                List<Employee> list = model.getEmployees();
                 System.out.println("employees: " + list.size());
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
                 break;
@@ -90,8 +91,11 @@ public class RequestHandler {
             }
             case GET_MEETINGS_BY_EMPLOYEES: {
                 List<Employee> emps = (List<Employee>) obj.getObject(0);
-//                List<Meeting> list = model.getMeetingsByEmployees(emps);
-//                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
+                List<Meeting> meetings = new ArrayList<>();
+                for (Employee emp : emps){
+                    meetings.addAll(model.getMeetingsByEmployee(emp));
+                }
+                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_MEETINGS_BY_EMPLOYEES, meetings));
                 break;
             }
 

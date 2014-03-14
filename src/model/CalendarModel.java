@@ -35,4 +35,5 @@ public interface CalendarModel {
 
     public void setAlarm(Attendee attendee);                                                //krav 14
 
+    public List<Employee> getEmployees();
 }
