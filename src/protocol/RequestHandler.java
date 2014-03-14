@@ -23,7 +23,11 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
+<<<<<<< HEAD
+        dbService = new ModelDbImpl(model);
+=======
         dbModelImpl = new ModelDbImpl();
+>>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
         instance = this;
     }
 
@@ -51,8 +55,20 @@ public class RequestHandler {
         switch (type) {
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
+<<<<<<< HEAD
+//                model.addMeeting(meeting);
+                System.out.println("MEETING " + meeting);
+                try {
+                    dbService.addMeeting(meeting);
+
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+
+=======
                 model.addMeeting(meeting);
                 dbModelImpl.addMeeting(meeting);
+>>>>>>> 709e0f011cba75a34fbaff4f36961df9ec6f872e
                 //sync.addMeeting(meeting);
                 break;
             }
