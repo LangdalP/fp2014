@@ -4,10 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import model.Attendee;
 import model.Employee;
@@ -36,7 +33,7 @@ public class ModelDbService {
         
 //        new ModelDbService().addAttendee(new Attendee(attendee.getEmployee("test@epost.no"), true, 2, "2014-03-11 12:00", true, "2014-03-20 12:00")); 
         new ModelDbService().getAllMeetings();
-//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormøte", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
+//        Meeting meeting = new Meeting(UUID.randomUUID().toString(), new Date(), 30, "Kontormï¿½te", "Kontoret", , attendees, guestAmount, meetingRoom, meetingRoomBooked)
         
         System.out.println("test");
     }
@@ -62,7 +59,7 @@ public class ModelDbService {
         return groups;
     }
     
-    // Skal ikkje vere nødvendig å bruke
+    // Skal ikkje vere nï¿½dvendig ï¿½ bruke
     public void addGroup(Group group) {
         String sql = "insert into gruppe (navn) values(?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -94,21 +91,18 @@ public class ModelDbService {
         return employee;
     }
     
-    public List<Employee> getEmployees() {
+    public Map<String, Employee> getEmployees() {
         String sql = "select * from ansatt";
-        List<Employee> employees = new ArrayList<>(); 
+        Map<String, Employee> employees = new HashMap();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
-                employees.add(employee);
+                employees.put(rs.getString("epost"), employee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (Employee employee : employees) {
-        	System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
-		}
         return employees;
     }
     
@@ -227,7 +221,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into mï¿½terom(mï¿½terom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -246,7 +240,7 @@ public class ModelDbService {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
-            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka mï¿½terom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
