@@ -37,11 +37,13 @@ public class ModelDbService {
         
 //        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
         
-        Meeting meeting = new Meeting("id");
-        meeting.setGuestAmount(7);
-        new ModelDbService().updateExternalAttendee(meeting);
+//        Meeting meeting = new Meeting("id");
+//        meeting.setGuestAmount(7);
+//        new ModelDbService().updateExternalAttendee(meeting);
+//        
+//        System.out.println("test");
         
-        System.out.println("test");
+        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
     }
 
     public ModelDbService() {
@@ -182,7 +184,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    // Hentar alle møte, men uten attendees og meetingroom
+    // Hentar alle mï¿½te, men uten attendees og meetingroom
     public Map<String,Meeting> getAllMeetings() {
         Map<String, Meeting> list = new HashMap<>();
         String sql = "select * from avtale";
@@ -271,12 +273,12 @@ public class ModelDbService {
     }
     
     public List<MeetingRoom> getMeetingRooms() {
-    	String sql = "select * from møterom";
+    	String sql = "select * from mï¿½terom";
     	List<MeetingRoom> rooms = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
+            	MeetingRoom room = new MeetingRoom(rs.getString("mÃ¸terom_navn"), rs.getInt("maks_antall"), null);
             	rooms.add(room);
             }
         } catch (SQLException e) {
@@ -287,8 +289,8 @@ public class ModelDbService {
     
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_møterom am " +
-    					"where am.møterom_navn = ?";
+    					"natural join avtale_mï¿½terom am " +
+    					"where am.mï¿½terom_navn = ?";
     	List<Meeting> meetings = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, roomName);
@@ -308,7 +310,7 @@ public class ModelDbService {
     }
     
     public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
+    	String sql = "insert into avtale_mï¿½terom(id, mï¿½terom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -320,7 +322,7 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
@@ -331,7 +333,7 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
@@ -346,7 +348,7 @@ public class ModelDbService {
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setTimestamp(1, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(2, meeting.getDuration());
-            ps.setString(3, meeting.getMeetngLocation()); // Skal være "Kontoret" om det er booka møterom
+            ps.setString(3, meeting.getMeetngLocation()); // Skal vï¿½re "Kontoret" om det er booka mï¿½terom
             ps.setString(4, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(5, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.setString(6, meeting.getMeetingID());
