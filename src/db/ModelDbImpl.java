@@ -1,5 +1,6 @@
 package db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,19 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public Map<String, Meeting> getAllMeetings() {
-        return dbService.getAllMeetings();
+        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har foreløpig ikkje attendees
+        for (Meeting meet : dbMeetings.values()) {
+        	List<Attendee> dbAttendees = dbService.getAttendees(meet.getMeetingID());
+        	Attendee correctedAttendee;
+        	for (Attendee dbatt : dbAttendees) {
+        		correctedAttendee = new Attendee(model.getMapEmployees().get(dbatt.getEmployee().getName()),
+        				dbatt.getHasResponded(), dbatt.getAttendeeStatus(), dbatt.getLastNotification(),
+        				dbatt.getHasAlarm(), dbatt.getAlarmTime());
+        		meet.addAttendee(correctedAttendee);
+        	}
+        }
+        
+        return dbMeetings;
     }
 
     @Override
@@ -103,4 +116,12 @@ public class ModelDbImpl implements CalendarModel {
     	}
     	return dbGroups;
 	}
+    
+    public List<MeetingRoom> getMeetingRooms() {
+    	List<MeetingRoom> meetingRooms = new ArrayList<>();
+    	
+    	// Uferdig
+    	
+    	return null;
+    }
 }

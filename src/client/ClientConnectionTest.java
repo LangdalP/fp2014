@@ -30,7 +30,7 @@ public class ClientConnectionTest {
                 List<Attendee> attendees = new ArrayList<>();
                 MeetingRoom meetingRoom = new MeetingRoom("P15", 20, null);
                 Date date = new Date();                
-                Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom, true);
+                Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom);
 //                client.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, meeting));
 		
                 

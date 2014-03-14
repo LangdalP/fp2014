@@ -16,7 +16,6 @@ public class ModelImpl implements CalendarModel {
     private Map<String, Employee> mapEmployees;
     private Map<String, MeetingRoom> mapMeetingRooms;
     private Map<String, Group> groups;
-    private ServerModelSyncronizer sync = null;
 
     /** oppretter ny tom modell. */
     public ModelImpl() {
@@ -25,14 +24,6 @@ public class ModelImpl implements CalendarModel {
         this.groups = new HashMap<>();
         mapEmployees = new HashMap<>();
     }
-
-
-
-    // Syncronizer har som oppgave � gi beskjed til kliener om at server har gjort endring p� sin modell
-    public void setSyncronizer(ServerModelSyncronizer sync) {
-        this.sync = sync;
-    }
-
 
     public List<Meeting> getFutureMeetings() {
         return new ArrayList<>(mapFutureMeetings.values());

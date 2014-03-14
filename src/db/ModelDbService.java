@@ -176,7 +176,7 @@ public class ModelDbService {
         return attendees;
     }
     
-    // Lista med attendees blir ikkje fylt ut
+    // Hentar alle møte, men uten attendees og meetingroom
     public Map<String,Meeting> getAllMeetings() {
         Map<String, Meeting> list = new HashMap<>();
         String sql = "select * from avtale";
@@ -191,6 +191,8 @@ public class ModelDbService {
                 Employee owner = getEmployee(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setMeetingRoomBooked(false);
+                meeting.setMeetingRoom(null);
                 
                 list.put(meeting.getMeetingID(), meeting);
             }

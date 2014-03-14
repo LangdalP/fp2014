@@ -17,6 +17,7 @@ public class Meeting implements Serializable{
 	private List<Attendee> attendees;
 	private int guestAmount = 0;
 	private MeetingRoom meetingRoom;
+	private String meetingRoomName;
 	private boolean meetingRoomBooked = false;
 	private Date lastChanged = new Date();
 
@@ -26,7 +27,7 @@ public class Meeting implements Serializable{
 
     public Meeting(String meetingID, Date meetingTime, int duration,
 			String description, String meetingLocation, Employee meetingOwner,
-			List<Attendee> attendees, int guestAmount, MeetingRoom meetingRoom, boolean meetingRoomBooked) {
+			List<Attendee> attendees, int guestAmount, MeetingRoom meetingRoom) {
 		this.meetingID = meetingID;
 		this.meetingTime = meetingTime;
 		this.duration = duration;
@@ -36,6 +37,7 @@ public class Meeting implements Serializable{
 		this.attendees = attendees;
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
+		this.meetingRoomName = meetingRoom.getName();
 		if(meetingRoom != null){
 			meetingRoomBooked = true;
 		}
@@ -146,6 +148,7 @@ public class Meeting implements Serializable{
                 ", attendees=" + attendees +
                 ", guestAmount=" + guestAmount +
                 ", meetingRoom=" + meetingRoom +
+                ", meetingRoomName =" + meetingRoomName +
                 ", meetingRoomBooked=" + meetingRoomBooked +
                 ", lastChanged=" + lastChanged +
                 '}';
