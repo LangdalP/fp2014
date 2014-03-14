@@ -18,6 +18,11 @@ public class MeetingRoom implements Serializable{
 		this.upcomingMeetings = upcomingMeetings;
 	}
 
+	public MeetingRoom(String name, int maxPeople) {
+		this.name = name;
+		this.maxPeople = maxPeople;
+	}
+	
 	public String getName() {
 		return name;
 	}
