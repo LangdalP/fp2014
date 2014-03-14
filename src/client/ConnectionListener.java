@@ -13,9 +13,11 @@ public class ConnectionListener implements Runnable {
 	private Socket clientSocket;
 	private ObjectInputStream objInput;
 	private boolean isStopped = true;
+        private final ClientMain clientMain;
 	
-	public ConnectionListener(Socket clientSocket) {
+	public ConnectionListener(Socket clientSocket, ClientMain clientMain) {
 		this.clientSocket = clientSocket;
+                this.clientMain = clientMain;
 		
 		try {
 			objInput = new ObjectInputStream(this.clientSocket.getInputStream());
@@ -33,11 +35,20 @@ public class ConnectionListener implements Runnable {
 				System.out.println("Trying to read incoming object from server!");
 				incomingObj = (TransferObject) objInput.readObject();
 				
-				// Antek at det er login response frå server
-				if (incomingObj.getMsgType() == MessageType.RESPONSE && incomingObj.getRespType() == ResponseType.LOGIN_OK) {
-					System.out.println("Login successful!");
-				}
+                                /*
+                                 *  RESPONSE HANDLER
+                                 */
+                                //handleRespons.handle(incomingObj);
 				
+                                // Antek at det er login response frï¿½ server
+				if (incomingObj.getMsgType() == MessageType.RESPONSE && incomingObj.getRespType() == ResponseType.LOGIN_OK) {
+                                    clientMain.setLoggedin(true); 
+                                    System.out.println("Login successful!");
+				}
+                                if (incomingObj.getMsgType() == MessageType.RESPONSE && incomingObj.getRespType() == ResponseType.LOGIN_FAILED) {
+                                    clientMain.setLoggedin(false); 
+                                    System.out.println("Login unsuccessful");
+                                }
 				
 			} catch (IOException e) {
 				if(isStopped()) {
@@ -48,10 +59,11 @@ public class ConnectionListener implements Runnable {
                 	return;
                 }
 			} catch (ClassNotFoundException e) {
-				// Skal forhåpentligvis ikkje skje
+				// Skal forhï¿½pentligvis ikkje skje
 				e.printStackTrace();
 			}
 		}
+                //end while
 	}
 	
 	private synchronized boolean isStopped() {
@@ -59,7 +71,7 @@ public class ConnectionListener implements Runnable {
     }
 	
 	public synchronized void stop(){
-        this.isStopped = true;
+        isStopped = true;
     }
 	
 }
