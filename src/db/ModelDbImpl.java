@@ -1,8 +1,12 @@
 package db;
 
-import model.*;
-
 import java.util.List;
+
+import model.Attendee;
+import model.CalendarModel;
+import model.Employee;
+import model.Meeting;
+import model.MeetingRoom;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,10 +26,13 @@ public class ModelDbImpl implements CalendarModel {
     @Override
     public void addMeeting(Meeting meeting) {
         System.out.println("add meeting to database: " + meeting.toString());
+        dbService.addMeeting(meeting);
+        //dbService.updateMeetingIdToAttendees(meeting.getMeetingID(), meeting.getAttendees());
+        //oppdater tabell deltaker_ansatt //oppdater andre avhengigheter i database.
     }
 
     @Override
-    public void addEmployteeToMeeting(Meeting meeting, Attendee attendee) {
+    public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
     }
 
     @Override
@@ -61,7 +68,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public List<Meeting> getAllMeetings() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dbService.getAllMeetings();
     }
 
     @Override

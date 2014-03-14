@@ -1,7 +1,13 @@
 package protocol;
 
+import db.ModelDbImpl;
+import db.ModelDbService;
+import java.net.ServerSocket;
+import java.net.Socket;
 import model.CalendarModel;
+import model.Employee;
 import model.Meeting;
+import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.RequestType;
 import protocol.ResponseType;
@@ -16,32 +22,54 @@ import protocol.TransferObject;
  */
 public class RequestHandler {
     private static RequestHandler instance;
-    private static CalendarModel model;
+    private static ModelImpl model;
+    private static CalendarModel dbService;
 
-    public RequestHandler(CalendarModel model) {
+    public RequestHandler(ModelImpl model) {
         this.model = model;
+        dbService = new ModelDbImpl();
         instance = this;
     }
 
     public static RequestHandler getInstance(){
-        if (model == null) throw new NullPointerException("model må opprettes. ");
+        if (model == null) throw new IllegalStateException("model mï¿½ opprettes. ");
         return instance;
     }
 
-    public void handleRequest(TransferObject obj) {
-		RequestType type = obj.getReqType();
+    public static boolean handleLogin(TransferObject obj) {
+        RequestType type = obj.getReqType();        if (type == null || type == RequestType.LOGIN){
+            String login = String.valueOf(obj.getObject(0));
+            String passwd = String.valueOf(obj.getObject(1));
+            Employee emp = new ModelDbService().getEmployee(login);
+            if (emp.getPassword().equals(passwd)) return true;
+        }
+        return false;
+    }
+
+    public static void handleRequest(TransferObject obj) {
+        RequestType type = obj.getReqType();
         if (type == null) return;
+        System.out.println("HandleRequest:");
+
 
         switch (type) {
-		case LOGIN:
 
-        case ADD_MEETING:{
-            Meeting meeting = (Meeting) obj.getObject(0);
-            model.addMeeting(meeting);
-            //sync.addMeeting(meeting);
+
+            case ADD_MEETING:{
+                Meeting meeting = (Meeting) obj.getObject(0);
+//                model.addMeeting(meeting);
+                System.out.println("MEETING " + meeting);
+                try {
+                    new ModelDbImpl().addMeeting(meeting);
+
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+
+                //sync.addMeeting(meeting);
+                break;
+            }
         }
-
-		}
 	}
 	
 	 
