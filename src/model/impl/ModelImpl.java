@@ -38,6 +38,11 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
+    public Map<String, MeetingRoom> getMapMeetingRoom() {
+        return getMapMeetingRoom();
+    }
+
+    @Override
     public Map<String, Employee> getMapEmployees() {
         return mapEmployees;
     }

@@ -106,8 +106,10 @@ public class ModelDbImpl implements CalendarModel {
         return map;
 	}
 
-
-
+    @Override
+    public Map<String, MeetingRoom> getMapMeetingRoom() {
+        return dbService.getMeetingRooms();
+    }
 
 
 }
