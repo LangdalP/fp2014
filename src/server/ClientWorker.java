@@ -20,6 +20,7 @@ public class ClientWorker implements Runnable {
 	private ObjectInputStream objInput;
 	private ObjectOutputStream objOutput;
     private boolean loggedIn = false;
+    private static String username = "";
 	
 	private boolean isStopped = true;
 	private Thread runningThread = null;
@@ -50,8 +51,10 @@ public class ClientWorker implements Runnable {
                     stop();
                     throw new IOException("Incoming object is null, socket probably closed!");
                 }
+                TransferType transferType = transObj.getTransferType();
+                MessageType messageType = transObj.getMsgType();
 
-                if (transObj.getMsgType() == MessageType.REQUEST && transObj.getTransferType() == TransferType.LOGIN){
+                if (messageType == MessageType.REQUEST && transferType == TransferType.LOGIN){
                     loggedIn = RequestHandler.handleLogin(transObj);
                     System.out.println("From server: Client logged in: " + loggedIn);
                     objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.LOGIN, loggedIn));
@@ -60,7 +63,10 @@ public class ClientWorker implements Runnable {
                 boolean success = false;
                 try {
                     if (loggedIn){
-                        RequestHandler.handleRequest(transObj, objOutput);
+                        if (messageType == messageType.REQUEST && transferType == TransferType.INIT_MODEL){
+                            RequestHandler.handleInit(transObj, username);
+                        }
+                        else RequestHandler.handleRequest(transObj, objOutput);
                     }
                     else System.out.println("Client not authorized yet!");
                     success = true;

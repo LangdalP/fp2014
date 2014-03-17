@@ -38,15 +38,25 @@ public class RequestHandler {
     }
 
     public static boolean handleLogin(TransferObject obj) {
-        TransferType type = obj.getTransferType();        if (type == null || type == TransferType.LOGIN){
+        TransferType type = obj.getTransferType();
+        if (type == null || type == TransferType.LOGIN){
             String login = String.valueOf(obj.getObject(0));
             String passwd = String.valueOf(obj.getObject(1));
             Employee emp = new ModelDbService().getEmployeeWithPassword(login);
-            if (emp.getPassword().equals(passwd)) return true;
+            if (emp != null && emp.getPassword().equals(passwd)) return true;
         }
         return false;
     }
 
+    public static void handleInit(TransferObject obj, String username){
+        TransferObject transferObject = new TransferObject(MessageType.RESPONSE, TransferType.INIT_MODEL,
+                model.getMapEmployees(),
+                model.getMapGroups(),
+                model.getMeetingsByEmployee(model.getMapEmployees().get(username)),
+                model.getMapFutureMeetings()
+        );
+
+    }
     public static void handleRequest(TransferObject obj, ObjectOutputStream objOutput) throws IOException {
         if (obj.getMsgType() != MessageType.REQUEST) return;
 
