@@ -48,6 +48,7 @@ public class ClientMain {
     }
     
     public static boolean validateLogin(String login, String passwd){
+    	/*
         // Sender en beskjed
         TransferObject loginObject = new TransferObject(MessageType.REQUEST, TransferType.LOGIN, login, passwd);
         clientConn.sendTransferObject(loginObject);
@@ -57,6 +58,8 @@ public class ClientMain {
         }
         if (loggedin == null) loggedin = false;
         return loggedin;
+        */
+    	return true;
     }
 
     public static synchronized Boolean getLoggedin() {
@@ -76,9 +79,9 @@ public class ClientMain {
 		GuiMain gui = new GuiMain();
 		gui.showLogin();
 		
-		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		gui.setLocationByPlatform(true);
-		gui.setVisible(true);
+		// Laste inn modell
+		System.out.println("Login ferdig");
+		
 		/*
         ClientMain.validateLogin("test@epost.no", "passord");
 
@@ -94,5 +97,6 @@ public class ClientMain {
         //stopper client applikasjon. 
         if (true) System.exit(0);
         */
+		System.exit(0);
 	}
 }
