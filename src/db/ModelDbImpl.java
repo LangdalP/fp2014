@@ -60,64 +60,10 @@ public class ModelDbImpl implements CalendarModel {
         throw new Exception("trengs ikke. Får ut fra mapFutureMeetings");
     }
 
-    /*
-    @Override
-    public Map<String, Meeting> getAllMeetings() {
-        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har forel�pig ikkje attendees
-        for (Meeting meet : dbMeetings.values()) {
-        	List<Attendee> dbAttendees = dbService.getAttendees(meet.getMeetingID());
-        	Attendee correctedAttendee;
-        	for (Attendee dbatt : dbAttendees) {
-        		correctedAttendee = new Attendee(model.getm.get(dbatt.getEmployee().getName()),
-        				dbatt.getHasResponded(), dbatt.getAttendeeStatus(), dbatt.getLastNotification(),
-        				dbatt.getHasAlarm(), dbatt.getAlarmTime());
-        		meet.addAttendee(correctedAttendee);
-        	}
-        }
-        // Har attendees, men ikkje meetingroom
-        return dbMeetings;
-    }
-    */
-
     @Override
     public List<Meeting> getMeetings(List<Employee> emps) throws Exception {
         throw new Exception("not supported");
     }
-
-
-    /*
-    public List<Group> getGroups() {
-    	// Gruppene er tomme naar dei kjem fraa get
-    	Map<String, Group> dbGroups = dbService.getGroups();
-    	for (Group grp : dbGroups) {
-    		// Finner dei ansatte i gruppa
-    		List<Employee> empsInGrp = dbService.getEmployeesInGroup(grp);
-    		for (Employee emp : empsInGrp) {
-    			grp.addEmployees(model.getMapEmployees().get(emp.getUsername()));
-    		}
-    	}
-    	return dbGroups;
-	}
-    */
-
-    public Map<String, MeetingRoom> getMeetingRooms() {
-    	Map<String, MeetingRoom> dbRoomsMap = dbService.getMeetingRooms();	// M�terommet har ingen upcomingMeetings
-    	for (MeetingRoom dbRoom : dbRoomsMap.values()) {
-    		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
-    		for (Meeting emptyMeet : dbMeetings) {
-    			// Fyller m�terom med m�ter
-    			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
-    			dbRoom.addUpcomingMeetings(modelMeet);
-    			
-    			// Setter referansen i Meeting modelMeet til dette m�terommet
-    			modelMeet.setMeetingRoomBooked(true);
-    			modelMeet.setMeetingRoom(dbRoom);
-    			
-    		}
-    	}
-    	return dbRoomsMap;
-    }
-
 
 	@Override
 	public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
