@@ -123,21 +123,20 @@ public class ModelDbImpl implements CalendarModel {
     */
 
     public Map<String, MeetingRoom> getMeetingRooms() {
-    	List<MeetingRoom> dbMeetingRooms = dbService.getMeetingRooms(); // MÃ¸teromma har tom liste upcomingMeetings
-    	for (MeetingRoom dbRoom : dbMeetingRooms) {
+    	Map<String, MeetingRoom> dbRoomsMap = dbService.getMeetingRooms();	// Møterommet har ingen upcomingMeetings
+    	for (MeetingRoom dbRoom : dbRoomsMap.values()) {
     		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
     		for (Meeting emptyMeet : dbMeetings) {
-    			// Fyller mï¿½terom med avtalar frï¿½ modellen
+    			// Fyller møterom med møter
     			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
     			dbRoom.addUpcomingMeetings(modelMeet);
     			
-    			// Setter referansen i Meeting modelMeet til dette mï¿½terommet
+    			// Setter referansen i Meeting modelMeet til dette møterommet
     			modelMeet.setMeetingRoomBooked(true);
     			modelMeet.setMeetingRoom(dbRoom);
     			
     		}
     	}
-//    	return dbMeetingRooms;
-        return new HashMap<>();
+    	return dbRoomsMap;
     }
 }
