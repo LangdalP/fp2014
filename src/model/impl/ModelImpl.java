@@ -17,11 +17,11 @@ public class ModelImpl implements CalendarModel {
     private final Map<String, Employee> mapEmployees;
     private final Map<String, MeetingRoom> mapMeetingRooms;
     /** Key gruppe.navn, Value list med epost for ansatt.  */
-    private final Map<String, List<String>> mapGroups; //
+    private final Map<String, Group> mapGroups; //
 
 
 
-    public ModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, List<String>> mapGroups) {
+    public ModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, Group> mapGroups) {
         this.mapFutureMeetings = mapFutureMeetings;
         this.mapEmployees = mapEmployees;
         this.mapMeetingRooms = mapMeetingRooms;
@@ -39,7 +39,7 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
-    public Map<String, List<String>> getMapGroups() {
+    public Map<String, Group> getMapGroups() {
         return mapGroups;
     }
 
@@ -104,11 +104,11 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
-    public void addGroupToMeeting(Meeting meeting, String groupname) {
-         List<String> groupMembers = mapGroups.get(groupname);
-        for (String username : groupMembers){
+    public void addGroupToMeeting(Meeting meeting, Group group) {
+         List<Employee> groupMembers = mapGroups.get(group.getGroupName()).getEmployees();
+        for (Employee emp : groupMembers){
             Date lastNotification = new Date();
-            Attendee att = new Attendee(mapEmployees.get(username), false, false, lastNotification, false, null);
+            Attendee att = new Attendee(mapEmployees.get(emp.getUsername()), false, false, lastNotification, false, null);
             mapFutureMeetings.get(meeting.getMeetingID()).addAttendee(att);
         }
 
