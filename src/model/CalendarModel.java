@@ -46,4 +46,5 @@ public interface CalendarModel {
 
     public Map<String, Meeting> getMapFutureMeetings();
 
+    public Map<String, MeetingRoom> getMapMeetingRoom();
 }

@@ -115,7 +115,8 @@ public class Meeting implements Serializable{
 		this.meetingOwner = meetingOwner;
 	}
 
-	public List<Attendee> getAttendees() {
+
+    public List<Attendee> getAttendees() {
 		return new ArrayList<>(mapAttendees.values());
 	}
 

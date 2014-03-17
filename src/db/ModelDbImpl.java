@@ -52,7 +52,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
-        //@todo fix this
+        dbService.addMeetingRoomBooking(meeting, meetingRoom);
     }
 
     @Override
@@ -83,7 +83,8 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getOldMeetings() {
-		return dbService.getMapMeetings(true);
+        Map<String, Meeting> map = dbService.getMapMeetings(true);
+        return map;
 	}
 
 
@@ -101,8 +102,11 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getMapFutureMeetings() {
-        return dbService.getMapMeetings(false);
+        Map<String, Meeting> map = dbService.getMapMeetings(false);
+        return map;
 	}
+
+
 
 
 

@@ -155,97 +155,84 @@ public class ModelDbService {
         String sql = "select * from deltager_ansatt where avtale_id = ?";
         List<Attendee> attendees = new ArrayList<>(); 
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-        	ps.setString(1, meeting.getMeetingID());
-        	ResultSet rs = ps.executeQuery();
+            ps.setString(1, meeting.getMeetingID());
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	Employee employee = getEmployee(rs.getString("epost"));
-            	int attendeeInt =  rs.getInt("deltagelse_status");
-            	boolean attendeeStatus = false;
-            	boolean hasResponded = false;
-            	System.out.println(attendeeStatus);
-            	if(attendeeInt == 0){ //0 betyr ikke svart
-            		hasResponded = false;
-            	}
-            	else if(attendeeInt == 1){ //1 betyr ikke deltar
-            		hasResponded = true;
-            	}
-            	else if(attendeeInt == 2){ //2 betyr deltar
-            		hasResponded = true;
-            		attendeeStatus = true;
-            	}
-            	Date lastNotification = rs.getDate("sist_varslet");
-            	Date alarmTime = rs.getDate("alarm_tid");
-            	boolean hasAlarm = rs.getBoolean("alarm_satt");
-            	Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
+                Employee employee = getEmployee(rs.getString("epost"));
+                int attendeeInt =  rs.getInt("deltagelse_status");
+                boolean attendeeStatus = false;
+                boolean hasResponded = false;
+                System.out.println(attendeeStatus);
+                if(attendeeInt == 0){ //0 betyr ikke svart
+                    hasResponded = false;
+                }
+                else if(attendeeInt == 1){ //1 betyr ikke deltar
+                    hasResponded = true;
+                }
+                else if(attendeeInt == 2){ //2 betyr deltar
+                    hasResponded = true;
+                    attendeeStatus = true;
+                }
+                Date lastNotification = rs.getDate("sist_varslet");
+                Date alarmTime = rs.getDate("alarm_tid");
+                boolean hasAlarm = rs.getBoolean("alarm_satt");
+                Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
                 meeting.getAttendees().add(attendee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         for (Attendee attendee : attendees) {
-        	System.out.println(attendee.getEmployee().getUsername() + ", " + attendee.getHasResponded() + ", " + attendee.getAttendeeStatus() + ", " 
-        + attendee.getLastNotification() + ", " + attendee.getHasAlarm() + ", " + attendee.getAlarmTime());
+            System.out.println(attendee.getEmployee().getUsername() + ", " + attendee.getHasResponded() + ", " + attendee.getAttendeeStatus() + ", "
+                    + attendee.getLastNotification() + ", " + attendee.getHasAlarm() + ", " + attendee.getAlarmTime());
         }
         return attendees;
     }
     
- // Hentar alle møter om before = null, hentar alle gamle møte om before == true, og hentar alle nye møter om before == false
+    // Hentar alle mÃ¸ter om before = null, hentar alle gamle mÃ¸te om before == true, og hentar alle nye mÃ¸ter om before == false
     public Map<String,Meeting> getMapMeetings(Boolean before) {
-        Map<String, Meeting> list = new HashMap<>();
-        String sql = null;
-        if (before != null && before == true) {
-        	sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
-        			"from avtale a " +
-        			"left join avtale_møterom am on a.id = am.id " +
-        			"left join møterom m on am.møterom_navn = m.møterom_navn " +
-        			"where dato < ?";
-        } else if (before != null && before == false) {
-        	sql =	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
-        			"from avtale a " +
-        			"left join avtale_møterom am on a.id = am.id " +
-        			"left join møterom m on am.møterom_navn = m.møterom_navn " +
-        			"where dato > ?";
-        } else {
-        	sql = "select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
-        			"from avtale a " +
-        			"left join avtale_møterom am on a.id = am.id " +
-        			"left join møterom m on am.møterom_navn = m.møterom_navn ";
-        }
+        //mer effektivt Ã¥ hente ut alle employees Ã¨n gang.
+        Map<String, Employee> employeeMap = getEmployees();
+
+        Map<String, Meeting> mapMeetings = new HashMap<>();
+        String sql = "select * from deltager_ansatt da\n" +
+                "join avtale av on av.id = da.avtale_id\n" +
+                "join ansatt an on an.epost = da.epost\n" +
+                "right join avtale_mÃ¸terom am on am.id = av.id";
+
+        if (before != null && before == true)  sql += "where dato < ?";
+        else if (before != null && before == false) sql += "where dato > ?";
+
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-        	if (before != null) {
-        		Date nowDate = new Date();
-        		ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
-        	}
+            if (before != null) {
+                Date nowDate = new Date();
+                ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
+            }
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 meeting = new Meeting(rs.getString("id"));
                 meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
                 meeting.setDuration(rs.getInt("varighet"));
                 meeting.setMeetingLocation(rs.getString("sted"));
-                Employee owner = getEmployee(rs.getString("eier_ansatt"));
+
+                Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
                 meeting.setMeetingRoomBooked(false);
                 meeting.setMeetingRoom(null);
-                if (rs.getString("møterom_navn") != null) {
-                	meeting.setMeetingRoomBooked(true);
-                	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), new ArrayList<Meeting>());
-                	meeting.setMeetingRoom(room);
-                	
-                	// Fylle med møter i møterom
-                	addMeetingsToMeetingRoom(room);
+                if (rs.getString("mÃ¸terom_navn") != null) {
+                    meeting.setMeetingRoomBooked(true);
+                    meeting.setMeetingRoom(new MeetingRoom(rs.getString("mÃ¸terom_navn"), rs.getInt("eksternt_antall")));
                 }
-                
                 // Fylle med ansatte
                 addAttendeesToMeeting(meeting);
-             
-                list.put(meeting.getMeetingID(), meeting);
+                mapMeetings.put(meeting.getMeetingID(), meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return mapMeetings;
     }
     
     public void addAttendee(Meeting meeting, Attendee attendee) {
@@ -264,9 +251,9 @@ public class ModelDbService {
     }
     
     public void removeAttendee(Meeting meet, Attendee att) {
-    	String sql = "DELETE FROM deltager_ansatt where epost = ?";
+        String sql = "DELETE FROM deltager_ansatt where epost = ?";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-        	ps.setString(1, att.getEmployee().getUsername());
+            ps.setString(1, att.getEmployee().getUsername());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -288,8 +275,8 @@ public class ModelDbService {
      * @param meeting
      */
     public void addMeeting(Meeting meeting) {
-    	String sql = "insert into avtale(id, dato, varighet, sted, eier_ansatt, sist_endret) values(?, ?, ?, ?, ?, ?)";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "insert into avtale(id, dato, varighet, sted, eier_ansatt, sist_endret) values(?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
@@ -303,62 +290,62 @@ public class ModelDbService {
     }
     
     public void removeMeetingById(String meetingID) {
-    	//
+
     }
 
     public List<Employee> getEmployeesInGroup(Group group) {
-    	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
-    	List<Employee> emps = new ArrayList<>();
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
+        List<Employee> emps = new ArrayList<>();
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, group.getGroupName());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
-            	emps.add(employee);
+                Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+                emps.add(employee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    	return emps;
+        return emps;
     }
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
-    	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_mÃ¸terom am " +
-    					"where am.mÃ¸terom_navn = ?";
-    	List<Meeting> meetings = new ArrayList<>();
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-    		ps.setString(1, roomName);
+        String sql = "select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
+                "natural join avtale_mÃ¸terom am " +
+                "where am.mÃ¸terom_navn = ?";
+        List<Meeting> meetings = new ArrayList<>();
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, roomName);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	Meeting meeting = new Meeting(rs.getString("id"));
-            	meetings.add(meeting);
+                Meeting meeting = new Meeting(rs.getString("id"));
+                meetings.add(meeting);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    	for (Meeting meet : meetings) {
-    		System.out.println(meet.getMeetingID());
-    	}
+        for (Meeting meet : meetings) {
+            System.out.println(meet.getMeetingID());
+        }
     	
-    	return meetings;
+        return meetings;
     }
     
-    private void addMeetingsToMeetingRoom(MeetingRoom room) {
-    	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-						"natural join avtale_møterom am " +
-						"where am.møterom_navn = ?";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-    		ps.setString(1, room.getName());
-    		ResultSet rs = ps.executeQuery();
-    		while (rs.next()) {
-    			Meeting meeting = new Meeting(rs.getString("id"));
-    			room.addUpcomingMeeting(meeting);
-    		}
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    	}
-    }
+   /* private void addMeetingsToMeetingRoom(MeetingRoom room) {
+        String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
+                "natural join avtale_mï¿½terom am " +
+                "where am.mï¿½terom_navn = ?";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, room.getName());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Meeting meeting = new Meeting(rs.getString("id"));
+                room.addUpcomingMeeting(meeting);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
      * vi som regel berre sette eksternt_antall. SÃ¸g at vi hadde eigen metode for
@@ -366,8 +353,8 @@ public class ModelDbService {
      * den kan virke som generell booking-metode for meetingroom
      */
     public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "insert into avtale_mÃ¸terom(id, mÃ¸terom_navn, eksternt_antall)) values(?, ?, ?)";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "insert into avtale_mÃ¸terom(id, mÃ¸terom_navn, eksternt_antall)) values(?, ?, ?)";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
             ps.setInt(3, meeting.getGuestAmount());
@@ -378,8 +365,8 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-    	String sql = "update avtale_mÃ¸terom set eksternt_antall=? where id=?";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "update avtale_mÃ¸terom set eksternt_antall=? where id=?";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
             ps.executeUpdate();
@@ -389,8 +376,8 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "update avtale_mÃ¸terom set eksternt_antall=? where id=?";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "update avtale_mÃ¸terom set eksternt_antall=? where id=?";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
             ps.executeUpdate();
@@ -403,8 +390,8 @@ public class ModelDbService {
      * Fjerna MeetingRoom frÃ¥ parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
-    	String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setTimestamp(1, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(2, meeting.getDuration());
             ps.setString(3, meeting.getMeetngLocation()); // Skal vï¿½re "Kontoret" om det er booka mï¿½terom
@@ -438,7 +425,7 @@ public class ModelDbService {
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("mÃ¸terom_navn"), rs.getInt("maks_antall"), null);
+            	MeetingRoom room = new MeetingRoom(rs.getString("mÃ¸terom_navn"), rs.getInt("maks_antall"));
             	roomsMap.put(room.getName(), room);
             }
         } catch (SQLException e) {
