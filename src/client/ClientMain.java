@@ -17,7 +17,6 @@ public class ClientMain {
     private static ConnectionListener listener;
 
     public ClientMain() {
-    	/*
         clientConn = new ClientConnection(serverIP, serverPort);
         listener = new ConnectionListener(clientConn.getConnectionSocket(), this);
         
@@ -25,16 +24,6 @@ public class ClientMain {
         Thread listenThread = new Thread(listener);
         listenThread.start();
         
-        */
-//        boolean login = validateLogin("pedervl", "kake55");
-//        System.out.println("LOGIN: " + login);
-        
-//        clientConn.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, new Meeting(UUID.randomUUID().toString())));
-//        new Gui(model);
-//        listener.stop();
-//        clientConn.close();
-//        System.out.println("exit");
-//        if (true) System.exit(0);
     }
     
     public static boolean validateLogin(String login, String passwd){
