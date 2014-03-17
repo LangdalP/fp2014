@@ -56,8 +56,8 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public List<Meeting> getMeetingsByEmployee(Employee employee) throws CompileNotSupportedException{
-        throw new CompileNotSupportedException("trengs ikke. Får ut fra mapFutureMeetings");
+    public List<Meeting> getMeetingsByEmployee(Employee employee) throws Exception{
+        throw new Exception("trengs ikke. Får ut fra mapFutureMeetings");
     }
 
     /*
@@ -80,12 +80,8 @@ public class ModelDbImpl implements CalendarModel {
     */
 
     @Override
-    public List<Meeting> getMeetings(List<Employee> emps) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-    
-    public Map<String, Employee> getEmployees() {
-    	return dbService.getEmployees();
+    public List<Meeting> getMeetings(List<Employee> emps) throws Exception {
+        throw new Exception("not supported");
     }
 
 
@@ -124,11 +120,19 @@ public class ModelDbImpl implements CalendarModel {
 
 
 	@Override
-	public void setAttendeeStatus(Meeting meeting, Attendee attendee,
-			boolean attendeeStatus) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        attendee.setAttendeeStatus(attendeeStatus);
+        attendee.setHasResponded(true);
+        dbService.updateAttendee(attendee, meeting);
+
+    }
+
+    @Override
+    public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
+        attendee.setAlarmTime(alarmTime);
+        attendee.setHasAlarm(true);
+        dbService.updateAttendee(attendee, meeting);
+    }
 
 
 	@Override
@@ -139,28 +143,21 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Employee> getMapEmployees() {
-		// TODO Auto-generated method stub
-		return null;
+		return dbService.getEmployees();
 	}
 
 
 	@Override
 	public Map<String, Group> getMapGroups() {
-		// TODO Auto-generated method stub
-		return null;
+        return dbService.getMapGroups();
 	}
 
 
 	@Override
 	public Map<String, Meeting> getMapFutureMeetings() {
-		// TODO Auto-generated method stub
-		return null;
+        return dbService.getMapMeetings(false);
 	}
 
 
-	@Override
-	public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
-		// TODO Auto-generated method stub
-		
-	}
+
 }
