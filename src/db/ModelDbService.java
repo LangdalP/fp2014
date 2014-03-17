@@ -189,16 +189,27 @@ public class ModelDbService {
         return attendees;
     }
     
-    // Hentar alle mï¿½te, men uten attendees og meetingroom
+ // Hentar alle møter om before = null, hentar alle gamle møte om before == true, og hentar alle nye møter om before == false
     public Map<String,Meeting> getMapMeetings(Boolean before) {
         Map<String, Meeting> list = new HashMap<>();
         String sql = null;
         if (before != null && before == true) {
-        	sql = "select * from avtale where dato < ?";
+        	sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
+        			"from avtale a " +
+        			"left join avtale_møterom am on a.id = am.id " +
+        			"left join møterom m on am.møterom_navn = m.møterom_navn " +
+        			"where dato < ?";
         } else if (before != null && before == false) {
-        	sql = "select * from avtale where dato > ?";
+        	sql =	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
+        			"from avtale a " +
+        			"left join avtale_møterom am on a.id = am.id " +
+        			"left join møterom m on am.møterom_navn = m.møterom_navn " +
+        			"where dato > ?";
         } else {
-        	sql = "select * from avtale";
+        	sql = "select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret, am.møterom_navn, am.eksternt_antall, m.maks_antall " +
+        			"from avtale a " +
+        			"left join avtale_møterom am on a.id = am.id " +
+        			"left join møterom m on am.møterom_navn = m.møterom_navn ";
         }
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -215,10 +226,17 @@ public class ModelDbService {
                 Employee owner = getEmployee(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
-                boolean roomBooked = false;
+                meeting.setMeetingRoomBooked(false);
                 meeting.setMeetingRoom(null);
+                if (rs.getString("møterom_navn") != null) {
+                	meeting.setMeetingRoomBooked(true);
+                	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), new ArrayList<Meeting>());
+                	meeting.setMeetingRoom(room);
+                }
+                
                 // Fylle med ansatte
                 addAttendeesToMeeting(meeting);
+                // Fylle med møter
                 
                 list.put(meeting.getMeetingID(), meeting);
             }
@@ -227,8 +245,6 @@ public class ModelDbService {
         }
         return list;
     }
-    
-
     
     public void addAttendee(Meeting meeting, Attendee attendee) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
