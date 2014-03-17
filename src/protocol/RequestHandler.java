@@ -48,13 +48,15 @@ public class RequestHandler {
         return false;
     }
 
-    public static void handleInit(TransferObject obj, String username){
+    public static void handleInit(TransferObject obj, String username, ObjectOutputStream objOutput) throws IOException {
         TransferObject transferObject = new TransferObject(MessageType.RESPONSE, TransferType.INIT_MODEL,
                 model.getMapEmployees(),
                 model.getMapGroups(),
                 model.getMeetingsByEmployee(model.getMapEmployees().get(username)),
                 model.getMapFutureMeetings()
         );
+        
+        objOutput.writeObject(transferObject);
 
     }
     public static void handleRequest(TransferObject obj, ObjectOutputStream objOutput) throws IOException {

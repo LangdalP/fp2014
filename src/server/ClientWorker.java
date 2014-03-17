@@ -64,7 +64,7 @@ public class ClientWorker implements Runnable {
                 try {
                     if (loggedIn){
                         if (messageType == messageType.REQUEST && transferType == TransferType.INIT_MODEL){
-                            RequestHandler.handleInit(transObj, username);
+                            RequestHandler.handleInit(transObj, username, objOutput);
                         }
                         else RequestHandler.handleRequest(transObj, objOutput);
                     }

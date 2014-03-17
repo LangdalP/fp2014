@@ -42,13 +42,20 @@ public class ConnectionListener implements Runnable {
 				MessageType msgType = incomingObj.getMsgType();
                 TransferType transferType = incomingObj.getTransferType();
                 if (msgType == MessageType.REQUEST) continue;
-
-                if (transferType == TransferType.INIT_MODEL){
+                
+                System.out.println("Is response");
+                
+                if (transferType == TransferType.LOGIN) {
+                	Boolean success = (Boolean) incomingObj.getObject(0);
+                	ClientMain.setLoggedin(success);
+                	if (success) {
+                		System.out.println("Logged in!");
+                	}
+                } else if (transferType == TransferType.INIT_MODEL){
+                	System.out.println("Inside init model");
                     ModelImpl model = responseHandler.handleInit(incomingObj);
                     clientMain.setModel(model);
-                }
-                else responseHandler.handleResponse(incomingObj);
-
+                } else responseHandler.handleResponse(incomingObj);
 
 			} catch (IOException e) {
                 e.printStackTrace();
