@@ -345,7 +345,19 @@ public class ModelDbService {
     }
     
     private void addMeetingsToMeetingRoom(MeetingRoom room) {
-    	
+    	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
+						"natural join avtale_møterom am " +
+						"where am.møterom_navn = ?";
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    		ps.setString(1, room.getName());
+    		ResultSet rs = ps.executeQuery();
+    		while (rs.next()) {
+    			Meeting meeting = new Meeting(rs.getString("id"));
+    			room.addUpcomingMeeting(meeting);
+    		}
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    	}
     }
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
