@@ -228,7 +228,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into mï¿½terom(mï¿½terom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -282,12 +282,12 @@ public class ModelDbService {
         @todo slÃ¥ sammen getMeetingRooms og getUpcomingMeetingsInMeetingRoom
      */
     public List<MeetingRoom> getMeetingRooms2() {
-    	String sql = "select * from mï¿½terom";
+    	String sql = "select * from møterom";
     	List<MeetingRoom> rooms = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("mÃ¸terom_navn"), rs.getInt("maks_antall"), null);
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
             	rooms.add(room);
             }
         } catch (SQLException e) {
@@ -299,8 +299,8 @@ public class ModelDbService {
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_mÃ¸terom am " +
-    					"where am.mÃ¸terom_navn = ?";
+    					"natural join avtale_møterom am " +
+    					"where am.møterom_navn = ?";
     	List<Meeting> meetings = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, roomName);
@@ -320,7 +320,7 @@ public class ModelDbService {
     }
     
     public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "insert into avtale_mï¿½terom(id, mï¿½terom_navn, eksternt_antall)) values(?, ?, ?)";
+    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -332,7 +332,7 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
@@ -343,7 +343,7 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
@@ -384,11 +384,33 @@ public class ModelDbService {
     }
 
     public Map<String, MeetingRoom> getMeetingRooms(){
-        return new HashMap<>();
+    	String sql = "select * from møterom";
+    	Map<String, MeetingRoom> roomsMap = new HashMap<>();
+    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
+            	roomsMap.put(room.getName(), room);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	return roomsMap;
     }
 
     /*@todo implementer stÃ¸tte for initiering av modell.  */
-    public Map<String,List<String>> getMapGroups() {
-        return new HashMap<>();
+    public Map<String, Group> getMapGroups() {
+    	String sql = "select * from gruppe";
+        Map<String, Group> groupsMap = new HashMap<>();
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Group group = new Group(rs.getString("navn"));
+                groupsMap.put(group.getGroupName(), group);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return groupsMap;
     }
 }
