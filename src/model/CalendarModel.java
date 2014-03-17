@@ -19,7 +19,7 @@ public interface CalendarModel {
 
     public void addGroupToMeeting(Meeting meeting, String groupname);                        //krav 3
 
-    public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus);                //krav 3
+    public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus);                //krav 3
 
     public void editMeeting(Meeting meeting);                                                //krav 4
 
@@ -29,15 +29,17 @@ public interface CalendarModel {
 
     public List<Meeting> getMeetingsByEmployee(Employee employee);                             //krav 7 og 8
 
-    public Map<String, Meeting> getAllMeetings();                //(henter fra modell OG database)	//krav 11 og 12
+    /**
+     * Gamle møter kan ikke endres på, slettes eller legges til.
+     * @return liste over gamle møter.
+     */
+    public Map<String, Meeting> getOldMeetings();                //(henter fra database)	//krav 11 og 12
 
     public List<Meeting> getMeetings(List<Employee> emps);                                    //krav 13
 
     public void setAlarm(Attendee attendee);                                                //krav 14
 
     public Map<String, Employee> getMapEmployees();
-
-    public Map<String, MeetingRoom> getMapMeetingRooms();
 
     public Map<String, List<String>> getMapGroups();
 
