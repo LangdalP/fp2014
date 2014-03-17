@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import model.impl.ModelImpl;
 import client.ClientMain;
 
 public class GuiMain extends JFrame {
@@ -15,6 +16,8 @@ public class GuiMain extends JFrame {
 	private JPanel upperPanel;
 	private JPanel calendarPanel;
 	private GridBagLayout layout = new GridBagLayout();
+	
+	private ModelImpl model;
 	
 	public GuiMain() {
 		setContentPane(contentPanel);
@@ -37,7 +40,8 @@ public class GuiMain extends JFrame {
 		setVisible(false);
 	}
 	
-	private void showMainPanel() {
+	public void showMainPanel(ModelImpl model) {
+		this.model = model;
 		// Må sette upperPanel til "Hjem" og calendarPanel til kalender
 		setContentPane(contentPanel);
 		upperPanel = new JPanel();
