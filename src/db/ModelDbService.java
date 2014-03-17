@@ -388,7 +388,7 @@ public class ModelDbService {
     }
    
     /*
-     * Fjerna MeetingRoom fr� parameter (input), sidan det ikkje bli brukt til noko
+     * Fjerna MeetingRoom frå parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
     	String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
@@ -435,15 +435,21 @@ public class ModelDbService {
     	return roomsMap;
     }
 
-    /*@todo implementer støtte for initiering av modell.  */
     public Map<String, Group> getMapGroups() {
-    	String sql = "select * from gruppe";
+    	String sql = "select *, gp.navn as gruppenavn, a.navn as ansattnavn from gruppe_person gp\n" +
+                "join ansatt a on a.epost = gp.epost ";
         Map<String, Group> groupsMap = new HashMap<>();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Group group = new Group(rs.getString("navn"));
-                groupsMap.put(group.getGroupName(), group);
+                String gruppenavn = rs.getString("gruppenavn");
+                if (groupsMap.get(gruppenavn) == null){
+                    Group group = new Group(gruppenavn);
+                    groupsMap.put(gruppenavn, group);
+                }
+
+                Employee emp = new Employee(rs.getString("epost"), rs.getString("ansattnavn"), null);
+                groupsMap.get(gruppenavn).addEmployees(emp);
             }
         } catch (SQLException e) {
             e.printStackTrace();
