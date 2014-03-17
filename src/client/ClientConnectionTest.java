@@ -26,7 +26,7 @@ public class ClientConnectionTest {
                 
                 Employee emp = new Employee("test@epost.no", "a", "b");
                 Map<String, Attendee> attendees = new HashMap<>();
-                MeetingRoom meetingRoom = new MeetingRoom("P15", 20, null);
+                MeetingRoom meetingRoom = new MeetingRoom("P15", 20);
                 Date date = new Date();                
                 Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom);
                 client.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
