@@ -1,5 +1,7 @@
 package model;
 
+import db.CompileNotSupportedException;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,7 @@ public interface CalendarModel {
 
     public void removeAttendeeFromMeeting(Meeting meeting, Attendee attendee);                    //krav 3
 
-    public void addGroupToMeeting(Meeting meeting, String groupname);                        //krav 3
+    public void addGroupToMeeting(Meeting meeting, Group group);                        //krav 3
 
     public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus);                //krav 3
 
@@ -28,7 +30,7 @@ public interface CalendarModel {
 
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting);                //krav 6 og 10
 
-    public List<Meeting> getMeetingsByEmployee(Employee employee);                             //krav 7 og 8
+    public List<Meeting> getMeetingsByEmployee(Employee employee) throws CompileNotSupportedException;                             //krav 7 og 8
 
     /**
      * Gamle møter kan ikke endres på, slettes eller legges til.
@@ -42,7 +44,7 @@ public interface CalendarModel {
 
     public Map<String, Employee> getMapEmployees();
 
-    public Map<String, List<String>> getMapGroups();
+    public Map<String, Group> getMapGroups();
 
     public Map<String, Meeting> getMapFutureMeetings();
 
