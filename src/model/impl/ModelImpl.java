@@ -140,11 +140,11 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public String toString() {
-        return "ModelImpl{" +
-                "mapFutureMeetings=" + mapFutureMeetings +
-                ", mapEmployees=" + mapEmployees +
-                ", mapMeetingRooms=" + mapMeetingRooms +
-                ", mapGroups=" + mapGroups +
+        return "ModelImpl{" + "\n"+
+                "mapFutureMeetings=" + mapFutureMeetings + "\n"+
+                ", mapEmployees=" + mapEmployees + "\n"+
+                ", mapMeetingRooms=" + mapMeetingRooms + "\n"+
+                ", mapGroups=" + mapGroups + "\n"+
                 '}';
     }
 }

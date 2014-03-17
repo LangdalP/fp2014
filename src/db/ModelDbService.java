@@ -3,6 +3,7 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,9 +68,6 @@ public class ModelDbService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (Group group : groups){
-        	System.out.println(group.getGroupName());
-        }
         return groups;
     }
     
@@ -83,35 +81,32 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
-    
-    public Employee getEmployee(String username) {
+
+    public Employee getEmployeeWithPassword(String username) {return getEmployee(username, true);}
+    public Employee getEmployee(String username) { return getEmployee(username, false);}
+    private Employee getEmployee(String username, boolean withPassword) {
         String sql = "select * from ansatt where epost = ?";
         Employee employee = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
         	ps.setString(1, username);
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+                employee = new Employee(rs.getString("epost"), rs.getString("navn"));
+                if (withPassword) employee.setPassword(rs.getString("passord"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(employee == null){
-        	System.out.println("employee is null");
-        	return null;
-        } else {
-        	System.out.println(employee.getUsername() + ", " + employee.getName() + ", " + employee.getPassword());
-        }
         return employee;
     }
-    
+
     public Map<String, Employee> getEmployees() {
         String sql = "select * from ansatt";
         Map<String, Employee> employees = new HashMap();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+                Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"));
                 employees.put(rs.getString("epost"), employee);
             }
         } catch (SQLException e) {
@@ -152,7 +147,7 @@ public class ModelDbService {
 //        return group;
 //    }
 
-    public List<Attendee> addAttendeesToMeeting(Meeting meeting) {
+    public List<Attendee> getAttendeesToMeeting(Meeting meeting) {
         String sql = "select * from deltager_ansatt where avtale_id = ?";
         List<Attendee> attendees = new ArrayList<>(); 
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -160,10 +155,10 @@ public class ModelDbService {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Employee employee = getEmployee(rs.getString("epost"));
+                System.out.println("EMPLOYEE: " + employee);
                 int attendeeInt =  rs.getInt("deltagelse_status");
                 boolean attendeeStatus = false;
                 boolean hasResponded = false;
-                System.out.println(attendeeStatus);
                 if(attendeeInt == 0){ //0 betyr ikke svart
                     hasResponded = false;
                 }
@@ -199,17 +194,17 @@ public class ModelDbService {
         String sql = "select * from deltager_ansatt da\n" +
                 "join avtale av on av.id = da.avtale_id\n" +
                 "join ansatt an on an.epost = da.epost\n" +
-                "right join avtale_moterom am on am.id = av.id";
+                "left join avtale_moterom am on am.id = av.id";   //left join tillater at avtale_moterom ikke finnes.
 
         if (before != null && before == true)  sql += " where dato < ?";
         else if (before != null && before == false) sql += " where dato > ?";
 
-        Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             if (before != null) {
                 Date nowDate = new Date();
                 ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
             }
+            Meeting meeting = null;
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 meeting = new Meeting(rs.getString("id"));
@@ -220,14 +215,12 @@ public class ModelDbService {
                 Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
-                meeting.setMeetingRoomBooked(false);
-                meeting.setMeetingRoom(null);
-                if (rs.getString("moterom_navn") != null) {
-                    meeting.setMeetingRoomBooked(true);
-                    meeting.setMeetingRoom(new MeetingRoom(rs.getString("moterom_navn"), rs.getInt("eksternt_antall")));
+                String moterom = rs.getString("moterom_navn");
+                if (moterom != null) {
+                    meeting.setMeetingRoom(new MeetingRoom(moterom, rs.getInt("eksternt_antall")));
                 }
                 // Fylle med ansatte
-                addAttendeesToMeeting(meeting);
+                getAttendeesToMeeting(meeting);
                 mapMeetings.put(meeting.getMeetingID(), meeting);
             }
         } catch (SQLException e) {
@@ -237,13 +230,14 @@ public class ModelDbService {
     }
     
     public void addAttendee(Meeting meeting, Attendee attendee) {
-        String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, attendee.getEmployee().getUsername());
             ps.setBoolean(3, attendee.getAttendeeStatus());
-            ps.setTimestamp(4, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
-            ps.setTimestamp(5, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setTimestamp(4, new java.sql.Timestamp(attendee.getLastNotification().getTime()));
+            if (attendee.getHasAlarm()) ps.setTimestamp(5, new java.sql.Timestamp(attendee.getAlarmTime().getTime()));
+            else ps.setNull(5, Types.TIMESTAMP);
             ps.setBoolean(6, attendee.getHasAlarm());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -288,6 +282,8 @@ public class ModelDbService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        for (Attendee att : meeting.getAttendees())  addAttendee(meeting, att);
+        if (meeting.getMeetingRoomBooked()) addMeetingRoomBooking(meeting, meeting.getMeetingRoom());
     }
     
     public void removeMeetingById(String meetingID) {
@@ -301,7 +297,7 @@ public class ModelDbService {
             ps.setString(1, group.getGroupName());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"), rs.getString("passord"));
+                Employee employee = new Employee(rs.getString("epost"), rs.getString("navn"));
                 emps.add(employee);
             }
         } catch (SQLException e) {
@@ -325,10 +321,6 @@ public class ModelDbService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (Meeting meet : meetings) {
-            System.out.println(meet.getMeetingID());
-        }
-    	
         return meetings;
     }
     
@@ -354,7 +346,7 @@ public class ModelDbService {
      * den kan virke som generell booking-metode for meetingroom
      */
     public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
-        String sql = "insert into avtale_moterom(id, moterom_navn, eksternt_antall)) values(?, ?, ?)";
+        String sql = "insert into avtale_moterom values(?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -426,7 +418,7 @@ public class ModelDbService {
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"));
+            	MeetingRoom room = new MeetingRoom(rs.getString("moterom_navn"), rs.getInt("maks_antall"));
             	roomsMap.put(room.getName(), room);
             }
         } catch (SQLException e) {
@@ -448,7 +440,7 @@ public class ModelDbService {
                     groupsMap.put(gruppenavn, group);
                 }
 
-                Employee emp = new Employee(rs.getString("epost"), rs.getString("ansattnavn"), null);
+                Employee emp = new Employee(rs.getString("epost"), rs.getString("ansattnavn"));
                 groupsMap.get(gruppenavn).addEmployees(emp);
             }
         } catch (SQLException e) {

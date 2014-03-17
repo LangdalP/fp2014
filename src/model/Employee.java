@@ -10,10 +10,9 @@ public class Employee implements Serializable{
 	private String name;
 	private String password;
 	
-	public Employee(String username, String name, String password){
+	public Employee(String username, String name){
 		this.username = username;
 		this.name = name;
-		this.password = password;
 	}
 
 	public String getUsername() {
@@ -28,6 +27,9 @@ public class Employee implements Serializable{
 		return password;
 	}
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
     public String toString() {
