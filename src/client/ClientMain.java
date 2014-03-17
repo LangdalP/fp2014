@@ -1,22 +1,8 @@
 package client;
 
+import model.impl.ModelImpl;
 import gui.GuiMain;
-
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.swing.JFrame;
-
-import model.Attendee;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
-import protocol.MessageType;
 import protocol.TransferObject;
-import protocol.TransferType;
 
 public class ClientMain {
     public static Boolean loggedin;
@@ -78,10 +64,12 @@ public class ClientMain {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
 		gui.showLogin();
-		
-		// Laste inn modell
 		System.out.println("Login ferdig");
 		
+		// Laste inn modell her
+		
+		// Starte hovedvindu her, og gi referanse til modell
+		gui.showMainPanel(null);
 		/*
         ClientMain.validateLogin("test@epost.no", "passord");
 
