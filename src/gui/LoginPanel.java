@@ -44,6 +44,7 @@ public class LoginPanel extends JPanel {
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 		add(usernameLabel, c);
 		usernameField = new JTextField(20);
+		usernameField.setText("peder.langdal@gmail.com");
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		add(usernameField, c);
 		
