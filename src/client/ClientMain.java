@@ -1,8 +1,12 @@
 package client;
 
-import model.impl.ModelImpl;
 import gui.GuiMain;
+
+import java.util.GregorianCalendar;
+
+import protocol.MessageType;
 import protocol.TransferObject;
+import protocol.TransferType;
 
 public class ClientMain {
     public static Boolean loggedin;
@@ -34,7 +38,6 @@ public class ClientMain {
     }
     
     public static boolean validateLogin(String login, String passwd){
-    	/*
         // Sender en beskjed
         TransferObject loginObject = new TransferObject(MessageType.REQUEST, TransferType.LOGIN, login, passwd);
         clientConn.sendTransferObject(loginObject);
@@ -44,8 +47,6 @@ public class ClientMain {
         }
         if (loggedin == null) loggedin = false;
         return loggedin;
-        */
-    	return true;
     }
 
     public static synchronized Boolean getLoggedin() {
