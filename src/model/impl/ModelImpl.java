@@ -107,7 +107,6 @@ public class ModelImpl implements CalendarModel {
     public void addGroupToMeeting(Meeting meeting, String groupname) {
          List<String> groupMembers = mapGroups.get(groupname);
         for (String username : groupMembers){
-            //@todo fix notification
             Date lastNotification = new Date();
             Attendee att = new Attendee(mapEmployees.get(username), false, false, lastNotification, false, null);
             mapFutureMeetings.get(meeting.getMeetingID()).addAttendee(att);
