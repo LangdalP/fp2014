@@ -41,7 +41,7 @@ public class RequestHandler {
         TransferType type = obj.getTransferType();        if (type == null || type == TransferType.LOGIN){
             String login = String.valueOf(obj.getObject(0));
             String passwd = String.valueOf(obj.getObject(1));
-            Employee emp = new ModelDbService().getEmployee(login);
+            Employee emp = new ModelDbService().getEmployeeWithPassword(login);
             if (emp.getPassword().equals(passwd)) return true;
         }
         return false;
