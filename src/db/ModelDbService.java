@@ -278,7 +278,7 @@ public class ModelDbService {
         }
     }
     
-    public void addMeetingById(String meetingID) {
+    public void removeMeetingById(String meetingID) {
     	//
     }
 
