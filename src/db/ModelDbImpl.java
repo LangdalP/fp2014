@@ -49,11 +49,6 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus) {
-
-    }
-
-    @Override
     public void editMeeting(Meeting meeting) {
     }
 
@@ -71,7 +66,7 @@ public class ModelDbImpl implements CalendarModel {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
+    /*
     @Override
     public Map<String, Meeting> getAllMeetings() {
         Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har forel�pig ikkje attendees
@@ -88,6 +83,7 @@ public class ModelDbImpl implements CalendarModel {
         // Har attendees, men ikkje meetingroom
         return dbMeetings;
     }
+    */
 
     @Override
     public List<Meeting> getMeetings(List<Employee> emps) {
@@ -149,7 +145,7 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getOldMeetings() {
-		Date nowDate = new Date();
+		return dbService.getOldMeetings();
 	}
 
 
