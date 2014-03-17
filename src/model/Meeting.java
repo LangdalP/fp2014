@@ -38,9 +38,7 @@ public class Meeting implements Serializable{
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
 		this.meetingRoomName = meetingRoom.getName();
-		if(meetingRoom != null){
-			meetingRoomBooked = true;
-		}
+
 	}
 
 	public Date getMeetingTime() {
@@ -91,14 +89,7 @@ public class Meeting implements Serializable{
 		this.meetingRoom = meetingRoom;
 		meetingRoomBooked = true;
 	}
-	
-	public void setMeetingRoomBooked(boolean booked){
-		if(booked == false){
-			meetingRoomBooked = false;
-			meetingRoom = null;
-		}
-	}
-	
+
 	public boolean getMeetingRoomBooked(){
 		return meetingRoomBooked;
 	}
@@ -141,6 +132,7 @@ public class Meeting implements Serializable{
 	}
 
 
+
     @Override
     public String toString() {
         return "Meeting{" +
@@ -151,8 +143,10 @@ public class Meeting implements Serializable{
                 ", meetingLocation='" + meetingLocation + '\'' +
                 ", guestAmount=" + guestAmount +
                 ", meetingRoomName =" + meetingRoomName +
+                ", meetingRoom=" + meetingRoom +
                 ", meetingRoomBooked=" + meetingRoomBooked +
-                ", lastChanged=" + lastChanged +
+                ", lastChanged=" + lastChanged + "\n" +
+                ", attendees=" + getMapAttendees() +
                 '}';
     }
 }

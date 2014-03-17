@@ -16,7 +16,10 @@ import model.impl.ModelImpl;
  */
 public class ModelDbImpl implements CalendarModel {
     private ModelDbService dbService;
-    private ModelImpl model;
+
+    public ModelDbImpl() {
+        this.dbService = new ModelDbService();
+    }
 
     @Override
     public void addMeeting(Meeting meeting) {
