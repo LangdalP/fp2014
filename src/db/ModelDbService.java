@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 import model.Attendee;
 import model.Employee;
 import model.Group;
@@ -213,8 +215,10 @@ public class ModelDbService {
                 Employee owner = getEmployee(rs.getString("eier_ansatt"));
                 meeting.setMeetingOwner(owner);
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
-                meeting.setMeetingRoomBooked(false);
+                boolean roomBooked = false;
                 meeting.setMeetingRoom(null);
+                // Fylle med ansatte
+                addAttendeesToMeeting(meeting);
                 
                 list.put(meeting.getMeetingID(), meeting);
             }
@@ -222,6 +226,10 @@ public class ModelDbService {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    private void addAttendeesToMeeting(Meeting meeting) {
+    	/*@todo fyll ut*/
     }
     
     public void addAttendee(Meeting meeting, Attendee attendee) {
