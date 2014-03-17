@@ -14,7 +14,7 @@ public class ConnectionListener implements Runnable {
 	private Socket clientSocket;
 	private ObjectInputStream objInput;
 	private boolean isStopped = true;
-        private final ClientMain clientMain;
+    private final ClientMain clientMain;
 	
 	public ConnectionListener(Socket clientSocket, ClientMain clientMain) {
 		this.clientSocket = clientSocket;
@@ -46,10 +46,13 @@ public class ConnectionListener implements Runnable {
                 switch(transferType){
                      case LOGIN: {
                          Boolean success = (Boolean) incomingObj.getObject(0);
-                         clientMain.setLoggedin(success);
+                         ClientMain.setLoggedin(success);
                          if (success) System.out.println("Login successful!");
                          else System.out.println("Login unsuccessful");
                          break;
+                     }
+                     case INIT_MODEL: {
+                    	 System.out.println("Init model response");
                      }
 //                     case GET_EMPLOYEES:{
 //                         List<Employee>

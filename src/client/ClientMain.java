@@ -4,12 +4,16 @@ import gui.GuiMain;
 
 import java.util.GregorianCalendar;
 
+import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.TransferObject;
 import protocol.TransferType;
 
 public class ClientMain {
     public static Boolean loggedin;
+    
+    public static boolean modelLoaded = false;
+    public static ModelImpl model = null;
     
     public static final String serverIP = "localhost";
     public static final int serverPort = 54545;
@@ -42,8 +46,17 @@ public class ClientMain {
         return loggedin;
     }
 
-    public synchronized void setLoggedin(Boolean loggedin) {
+    public static synchronized void setLoggedin(Boolean loggedin) {
         ClientMain.loggedin = loggedin;
+    }
+    
+    public static synchronized void setModel(ModelImpl model) {
+    	modelLoaded = true;
+    	ClientMain.model = model;
+    }
+    
+    public static synchronized ModelImpl getModel() {
+    	return ClientMain.model;
     }
 
     public static void sendTransferObject(TransferObject obj) {
@@ -72,6 +85,7 @@ public class ClientMain {
 		
 		// Laste inn modell her
 		TransferObject pls_get_model = new TransferObject(MessageType.REQUEST, TransferType.INIT_MODEL);
+		// Spør om modell
 		ClientMain.sendTransferObject(pls_get_model);
 		
 		// Starte hovedvindu her, og gi referanse til modell
