@@ -10,7 +10,12 @@ public enum TransferType {
      *  RESPONSE: Obj0 = boolean //true hvis login ok, false hvis logik failed.
     */
     LOGIN,
-
+    
+    /** REQUEST: Ingen objects
+     * RESPONSE: ?
+     */
+    LOGOUT,
+    
     /** Obj0 = Meeting meeting */
     ADD_MEETING,
 
