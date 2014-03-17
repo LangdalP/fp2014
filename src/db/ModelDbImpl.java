@@ -1,14 +1,12 @@
 package db;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import model.Attendee;
 import model.CalendarModel;
 import model.Employee;
-import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
 import model.impl.ModelImpl;
@@ -139,4 +137,39 @@ public class ModelDbImpl implements CalendarModel {
     	}
     	return dbRoomsMap;
     }
+
+
+	@Override
+	public void setAttendeeStatus(Meeting meeting, Attendee attendee,
+			boolean attendeeStatus) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public Map<String, Meeting> getOldMeetings() {
+		Date nowDate = new Date();
+	}
+
+
+	@Override
+	public Map<String, Employee> getMapEmployees() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Map<String, List<String>> getMapGroups() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Map<String, Meeting> getMapFutureMeetings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -3,8 +3,11 @@ package db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import model.Attendee;
 import model.Employee;
@@ -208,6 +211,33 @@ public class ModelDbService {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public Map<String,Meeting> getOldMeetings() {
+    	Date nowDate = new Date();
+        Map<String, Meeting> oldMeetMap = new HashMap<>();
+        String sql = "select * from avtale where dato < ?";
+        Meeting meeting = null;
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        	ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                meeting = new Meeting(rs.getString("id"));
+                meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setDuration(rs.getInt("varighet"));
+                meeting.setMeetingLocation(rs.getString("sted"));
+                Employee owner = getEmployee(rs.getString("eier_ansatt"));
+                meeting.setMeetingOwner(owner);
+                meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                meeting.setMeetingRoomBooked(false);
+                meeting.setMeetingRoom(null);
+                
+                oldMeetMap.put(meeting.getMeetingID(), meeting);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return oldMeetMap;
     }
     
     public void addAttendee(Attendee attendee, Meeting meeting) {
