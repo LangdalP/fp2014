@@ -84,7 +84,7 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public Map<String, Meeting> getOldMeetings() {
-        return new ModelDbService().getAllMeetings();
+        return new ModelDbService().getMapMeetings(true);
     }
 
     @Override
