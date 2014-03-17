@@ -151,11 +151,11 @@ public class ModelDbService {
 //        return group;
 //    }
 
-    public List<Attendee> getAttendees(String avtale_id) {
+    public List<Attendee> addAttendeesToMeeting(Meeting meeting) {
         String sql = "select * from deltager_ansatt where avtale_id = ?";
         List<Attendee> attendees = new ArrayList<>(); 
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-        	ps.setString(1, avtale_id);
+        	ps.setString(1, meeting.getMeetingID());
         	ResultSet rs = ps.executeQuery();
             while (rs.next()) {
             	Employee employee = getEmployee(rs.getString("epost"));
@@ -177,7 +177,7 @@ public class ModelDbService {
             	Date alarmTime = rs.getDate("alarm_tid");
             	boolean hasAlarm = rs.getBoolean("alarm_satt");
             	Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
-                attendees.add(attendee);
+                meeting.getAttendees().add(attendee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -228,9 +228,7 @@ public class ModelDbService {
         return list;
     }
     
-    private void addAttendeesToMeeting(Meeting meeting) {
-    	/*@todo fyll ut*/
-    }
+
     
     public void addAttendee(Meeting meeting, Attendee attendee) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
@@ -258,7 +256,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into mï¿½terom(mï¿½terom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -277,7 +275,7 @@ public class ModelDbService {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
-            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka mï¿½terom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
@@ -308,8 +306,8 @@ public class ModelDbService {
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_møterom am " +
-    					"where am.møterom_navn = ?";
+    					"natural join avtale_mï¿½terom am " +
+    					"where am.mï¿½terom_navn = ?";
     	List<Meeting> meetings = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, roomName);
@@ -329,12 +327,12 @@ public class ModelDbService {
     }
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
-     * vi som regel berre sette eksternt_antall. Såg at vi hadde eigen metode for
-     * dette (dvs. updateExternalAttendee), så gav nytt navn til metoden slik at
+     * vi som regel berre sette eksternt_antall. Sï¿½g at vi hadde eigen metode for
+     * dette (dvs. updateExternalAttendee), sï¿½ gav nytt navn til metoden slik at
      * den kan virke som generell booking-metode for meetingroom
      */
     public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
+    	String sql = "insert into avtale_mï¿½terom(id, mï¿½terom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -346,7 +344,7 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
@@ -357,7 +355,7 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_mï¿½terom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
@@ -368,7 +366,7 @@ public class ModelDbService {
     }
    
     /*
-     * Fjerna MeetingRoom frå parameter (input), sidan det ikkje bli brukt til noko
+     * Fjerna MeetingRoom frï¿½ parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
     	String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
@@ -401,12 +399,12 @@ public class ModelDbService {
     }
 
     public Map<String, MeetingRoom> getMeetingRooms(){
-    	String sql = "select * from møterom";
+    	String sql = "select * from mï¿½terom";
     	Map<String, MeetingRoom> roomsMap = new HashMap<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
+            	MeetingRoom room = new MeetingRoom(rs.getString("mï¿½terom_navn"), rs.getInt("maks_antall"), null);
             	roomsMap.put(room.getName(), room);
             }
         } catch (SQLException e) {
@@ -415,7 +413,7 @@ public class ModelDbService {
     	return roomsMap;
     }
 
-    /*@todo implementer støtte for initiering av modell.  */
+    /*@todo implementer stï¿½tte for initiering av modell.  */
     public Map<String, Group> getMapGroups() {
     	String sql = "select * from gruppe";
         Map<String, Group> groupsMap = new HashMap<>();
