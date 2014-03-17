@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 
 import model.Employee;
+import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.TransferType;
 import protocol.TransferObject;
@@ -14,8 +15,9 @@ public class ConnectionListener implements Runnable {
 	private Socket clientSocket;
 	private ObjectInputStream objInput;
 	private boolean isStopped = true;
-    private final ClientMain clientMain;
-	
+    private ClientMain clientMain;
+    private ResponseHandler responseHandler;
+
 	public ConnectionListener(Socket clientSocket, ClientMain clientMain) {
 		this.clientSocket = clientSocket;
                 this.clientMain = clientMain;
@@ -25,6 +27,7 @@ public class ConnectionListener implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        responseHandler = new ResponseHandler();
 	}
 
 	@Override
@@ -36,29 +39,16 @@ public class ConnectionListener implements Runnable {
 				System.out.println("Trying to read incoming object from server!");
 				incomingObj = (TransferObject) objInput.readObject();
 
-                /*  RESPONSE HANDLER  */
-                //handleRespons.handle(incomingObj);
 				MessageType msgType = incomingObj.getMsgType();
                 TransferType transferType = incomingObj.getTransferType();
-                System.out.println("CL " + msgType + "\t" + transferType + incomingObj.getObject(0));
                 if (msgType == MessageType.REQUEST) continue;
 
-                switch(transferType){
-                     case LOGIN: {
-                         Boolean success = (Boolean) incomingObj.getObject(0);
-                         ClientMain.setLoggedin(success);
-                         if (success) System.out.println("Login successful!");
-                         else System.out.println("Login unsuccessful");
-                         break;
-                     }
-                     case INIT_MODEL: {
-                    	 System.out.println("Init model response");
-                     }
-//                     case GET_EMPLOYEES:{
-//                         List<Employee>
-//                     }
-
+                if (transferType == TransferType.INIT_MODEL){
+                    ModelImpl model = responseHandler.handleInit(incomingObj);
+                    clientMain.setModel(model);
                 }
+                else responseHandler.handleResponse(incomingObj);
+
 
 			} catch (IOException e) {
                 e.printStackTrace();
