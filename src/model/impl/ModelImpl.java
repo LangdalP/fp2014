@@ -3,11 +3,7 @@ package model.impl;
 import java.util.*;
 
 import db.ModelDbService;
-import model.Attendee;
-import model.CalendarModel;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
+import model.*;
 
 /**
  *  Modell for server og klient. Modellen skal være oppdatert til enhvert tid.
@@ -101,24 +97,32 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
-    public void setAlarm(Attendee attendee) {
-//        attendee.
+    public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
+        String username = attendee.getEmployee().getUsername();
+        mapFutureMeetings.get(meeting.getMeetingID()).getMapAttendees().get(username).setAlarmTime(alarmTime);
+        mapFutureMeetings.get(meeting.getMeetingID()).getMapAttendees().get(username).setHasAlarm(true);
     }
 
     @Override
     public void addGroupToMeeting(Meeting meeting, String groupname) {
+         List<String> groupMembers = mapGroups.get(groupname);
+        for (String username : groupMembers){
+            //@todo fix notification
+            Date lastNotification = new Date();
+            Attendee att = new Attendee(mapEmployees.get(username), false, false, lastNotification, false, null);
+            mapFutureMeetings.get(meeting.getMeetingID()).addAttendee(att);
+        }
 
     }
 
     @Override
     public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        mapFutureMeetings.get(meeting.getMeetingID()).getMapAttendees().get(attendee.getEmployee().getUsername()).setAttendeeStatus(attendeeStatus);
     }
 
     @Override
-    public void editMeeting(Meeting meeting) {
-
-        // TODO Auto-generated method stub
-
+    public void editMeeting(Meeting meetingEdited) {
+        mapFutureMeetings.put(meetingEdited.getMeetingID(), meetingEdited);
     }
 
 
