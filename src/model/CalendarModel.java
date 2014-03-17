@@ -35,5 +35,12 @@ public interface CalendarModel {
 
     public void setAlarm(Attendee attendee);                                                //krav 14
 
-    public List<Employee> getEmployees();
+    public Map<String, Employee> getMapEmployees();
+
+    public Map<String, MeetingRoom> getMapMeetingRooms();
+
+    public Map<String, List<String>> getMapGroups();
+
+    public Map<String, Meeting> getMapFutureMeetings();
+
 }
