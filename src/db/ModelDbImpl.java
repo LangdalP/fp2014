@@ -4,11 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import model.Attendee;
-import model.CalendarModel;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
+import model.*;
 import model.impl.ModelImpl;
 
 /**
@@ -22,18 +18,9 @@ public class ModelDbImpl implements CalendarModel {
     private ModelDbService dbService;
     private ModelImpl model;
 
-    public ModelDbImpl(ModelImpl model) {
-    	this.model = model;
-        dbService = new ModelDbService();
-    }
-
-
     @Override
     public void addMeeting(Meeting meeting) {
-        System.out.println("add meeting to database: " + meeting.toString());
         dbService.addMeeting(meeting);
-        //dbService.updateMeetingIdToAttendees(meeting.getMeetingID(), meeting.getAttendees());
-        //oppdater tabell deltaker_ansatt //oppdater andre avhengigheter i database.
     }
 
     @Override
@@ -47,128 +34,80 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void addGroupToMeeting(Meeting meeting, String groupname) {
+    public void addGroupToMeeting(Meeting meeting, Group group) {
+        for (Employee emp: group.getEmployees()){
+            dbService.addAttendee(meeting, new Attendee(emp, false, false, new Date(), false, null));
+        }
     }
 
     @Override
     public void editMeeting(Meeting meeting) {
+        dbService.updateMeeting(meeting);
     }
 
     @Override
     public void removeMeeting(String meetingid) {
-//        dbService.removeMeetingById(String meetingid);
+        dbService.removeMeetingById(meetingid);
     }
 
     @Override
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
+        dbService.addMeetingRoomBooking(meeting, meetingRoom);
     }
 
     @Override
-    public List<Meeting> getMeetingsByEmployee(Employee employee) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public List<Meeting> getMeetingsByEmployee(Employee employee) throws Exception{
+        throw new Exception("trengs ikke. FÃ¥r ut fra mapFutureMeetings");
     }
-
-    /*
-    @Override
-    public Map<String, Meeting> getAllMeetings() {
-        Map<String, Meeting> dbMeetings = dbService.getAllMeetings(); // Har forelï¿½pig ikkje attendees
-        for (Meeting meet : dbMeetings.values()) {
-        	List<Attendee> dbAttendees = dbService.getAttendees(meet.getMeetingID());
-        	Attendee correctedAttendee;
-        	for (Attendee dbatt : dbAttendees) {
-        		correctedAttendee = new Attendee(model.getm.get(dbatt.getEmployee().getName()),
-        				dbatt.getHasResponded(), dbatt.getAttendeeStatus(), dbatt.getLastNotification(),
-        				dbatt.getHasAlarm(), dbatt.getAlarmTime());
-        		meet.addAttendee(correctedAttendee);
-        	}
-        }
-        // Har attendees, men ikkje meetingroom
-        return dbMeetings;
-    }
-    */
 
     @Override
-    public List<Meeting> getMeetings(List<Employee> emps) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public List<Meeting> getMeetings(List<Employee> emps) throws Exception {
+        throw new Exception("not supported");
     }
-    
-    public Map<String, Employee> getEmployees() {
-    	return dbService.getEmployees();
-    }
-
-
-    /*
-    public List<Group> getGroups() {
-    	// Gruppene er tomme naar dei kjem fraa get
-    	Map<String, Group> dbGroups = dbService.getGroups();
-    	for (Group grp : dbGroups) {
-    		// Finner dei ansatte i gruppa
-    		List<Employee> empsInGrp = dbService.getEmployeesInGroup(grp);
-    		for (Employee emp : empsInGrp) {
-    			grp.addEmployees(model.getMapEmployees().get(emp.getUsername()));
-    		}
-    	}
-    	return dbGroups;
-	}
-    */
-
-    public Map<String, MeetingRoom> getMeetingRooms() {
-    	Map<String, MeetingRoom> dbRoomsMap = dbService.getMeetingRooms();	// Møterommet har ingen upcomingMeetings
-    	for (MeetingRoom dbRoom : dbRoomsMap.values()) {
-    		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
-    		for (Meeting emptyMeet : dbMeetings) {
-    			// Fyller møterom med møter
-    			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
-    			dbRoom.addUpcomingMeetings(modelMeet);
-    			
-    			// Setter referansen i Meeting modelMeet til dette møterommet
-    			modelMeet.setMeetingRoomBooked(true);
-    			modelMeet.setMeetingRoom(dbRoom);
-    			
-    		}
-    	}
-    	return dbRoomsMap;
-    }
-
 
 	@Override
-	public void setAttendeeStatus(Meeting meeting, Attendee attendee,
-			boolean attendeeStatus) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        attendee.setAttendeeStatus(attendeeStatus);
+        attendee.setHasResponded(true);
+        dbService.updateAttendee(attendee, meeting);
+
+    }
+
+    @Override
+    public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
+        attendee.setAlarmTime(alarmTime);
+        attendee.setHasAlarm(true);
+        dbService.updateAttendee(attendee, meeting);
+    }
 
 
 	@Override
 	public Map<String, Meeting> getOldMeetings() {
-		return dbService.getMapMeetings(true);
+        Map<String, Meeting> map = dbService.getMapMeetings(true);
+        return map;
 	}
 
 
 	@Override
 	public Map<String, Employee> getMapEmployees() {
-		// TODO Auto-generated method stub
-		return null;
+		return dbService.getEmployees();
 	}
 
 
 	@Override
-	public Map<String, List<String>> getMapGroups() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Group> getMapGroups() {
+        return dbService.getMapGroups();
 	}
 
 
 	@Override
 	public Map<String, Meeting> getMapFutureMeetings() {
-		// TODO Auto-generated method stub
-		return null;
+        Map<String, Meeting> map = dbService.getMapMeetings(false);
+        return map;
 	}
 
 
-	@Override
-	public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
-		// TODO Auto-generated method stub
-		
-	}
+
+
+
 }

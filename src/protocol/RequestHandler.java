@@ -28,7 +28,7 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-        dbModelImpl = new ModelDbImpl(model);
+        dbModelImpl = new ModelDbImpl();
         instance = this;
     }
 
@@ -78,7 +78,7 @@ public class RequestHandler {
                 break;
             }
             case GET_EMPLOYEES: {
-                List<Employee> list = model.getEmployees();
+                List<Employee> list = new ArrayList<>(model.getMapEmployees().values());
                 System.out.println("employees: " + list.size());
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_EMPLOYEES, list));
                 break;

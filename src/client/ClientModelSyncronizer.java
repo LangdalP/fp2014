@@ -1,14 +1,11 @@
 package client;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import model.*;
 import protocol.*;
-import model.Attendee;
-import model.CalendarModel;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
 
 public class ClientModelSyncronizer implements CalendarModel {
 	
@@ -36,19 +33,18 @@ public class ClientModelSyncronizer implements CalendarModel {
 		
 	}
 
-	@Override
-	public void addGroupToMeeting(Meeting meeting, String groupname) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void addGroupToMeeting(Meeting meeting, Group group) {
 
-	@Override
-	public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
+    @Override
+    public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+
+    }
+
+
+    @Override
 	public void editMeeting(Meeting meeting) {
 		// TODO Auto-generated method stub
 		
@@ -72,24 +68,37 @@ public class ClientModelSyncronizer implements CalendarModel {
 		return null;
 	}
 
-	@Override
-	public Map<String, Meeting> getAllMeetings() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Map<String, Meeting> getOldMeetings() {
+        return null;
+    }
 
-	@Override
+
+    @Override
 	public List<Meeting> getMeetings(List<Employee> emps) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void setAlarm(Attendee attendee) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	
+    @Override
+    public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
+
+    }
+
+    @Override
+    public Map<String, Employee> getMapEmployees() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Group> getMapGroups() {
+        return null;
+    }
+
+    @Override
+    public Map<String, Meeting> getMapFutureMeetings() {
+        return null;
+    }
+
+
 }

@@ -26,12 +26,11 @@ public class ServerMain {
     public static final int SERVER_PORT = 54545;
 
     public ServerMain() {
-
-        ModelDbImpl modeldb = new ModelDbImpl(model);
-        Map<String, Employee> employees = modeldb.getEmployees();
+        ModelDbImpl modeldb = new ModelDbImpl();
+        Map<String, Employee> employees = modeldb.getMapEmployees();
         Map<String, Group> groups = new ModelDbService().getMapGroups();
+        Map<String, MeetingRoom> meetingRooms = modeldb.getMapMeetingRoom();
         Map<String, Meeting> meetings = modeldb.getOldMeetings();
-        Map<String, MeetingRoom> meetingRooms = modeldb.getMeetingRooms();
         requestHandler = new RequestHandler(model);
         model = new ModelImpl(meetings, employees, meetingRooms, groups);
         System.out.println(model.toString());

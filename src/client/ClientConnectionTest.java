@@ -1,17 +1,16 @@
 package client;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import model.Meeting;
 import protocol.MessageType;
 import protocol.RequestType;
 import protocol.TransferObject;
 
-import java.util.UUID;
 import model.Attendee;
 import model.Employee;
 import model.MeetingRoom;
+import protocol.TransferType;
 
 public class ClientConnectionTest {
 
@@ -26,11 +25,11 @@ public class ClientConnectionTest {
 
                 
                 Employee emp = new Employee("test@epost.no", "a", "b");
-                List<Attendee> attendees = new ArrayList<>();
+                Map<String, Attendee> attendees = new HashMap<>();
                 MeetingRoom meetingRoom = new MeetingRoom("P15", 20, null);
                 Date date = new Date();                
                 Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom);
-//                client.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, meeting));
+                client.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 		
                 
                 //stopper client applikasjon. 
