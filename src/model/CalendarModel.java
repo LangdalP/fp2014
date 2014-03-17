@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public interface CalendarModel {
 
     public List<Meeting> getMeetings(List<Employee> emps);                                    //krav 13
 
-    public void setAlarm(Attendee attendee);                                                //krav 14
+    public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime);                                                //krav 14
 
     public Map<String, Employee> getMapEmployees();
 

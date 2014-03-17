@@ -1,9 +1,7 @@
 package model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Meeting implements Serializable{
 	
@@ -15,7 +13,7 @@ public class Meeting implements Serializable{
 	private String description;
 	private String meetingLocation;
 	private Employee meetingOwner;
-	private List<Attendee> attendees;
+	private Map<String, Attendee> mapAttendees;
 	private int guestAmount = 0;
 	private MeetingRoom meetingRoom;
 	private String meetingRoomName;
@@ -24,19 +22,19 @@ public class Meeting implements Serializable{
 
     public Meeting(String meetingID) {
         this.meetingID = meetingID;
-        attendees = new ArrayList<>();
+        mapAttendees = new HashMap<>();
     }
 
     public Meeting(String meetingID, Date meetingTime, int duration,
 			String description, String meetingLocation, Employee meetingOwner,
-			List<Attendee> attendees, int guestAmount, MeetingRoom meetingRoom) {
+			Map<String, Attendee> attendees, int guestAmount, MeetingRoom meetingRoom) {
 		this.meetingID = meetingID;
 		this.meetingTime = meetingTime;
 		this.duration = duration;
 		this.description = description;
 		this.meetingLocation = meetingLocation;
 		this.meetingOwner = meetingOwner;
-		this.attendees = attendees;
+		this.mapAttendees = attendees;
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
 		this.meetingRoomName = meetingRoom.getName();
@@ -118,15 +116,19 @@ public class Meeting implements Serializable{
 	}
 
 	public List<Attendee> getAttendees() {
-		return attendees;
+		return new ArrayList<>(mapAttendees.values());
 	}
+
+    public Map<String, Attendee> getMapAttendees(){
+        return mapAttendees;
+    }
 	
 	public void addAttendee(Attendee attendee){
-		attendees.add(attendee);
+		mapAttendees.put(attendee.getEmployee().getUsername(), attendee);
 	}
 	
 	public void removeAttendee(Attendee attendee){
-		attendees.remove(attendee);
+		mapAttendees.remove(attendee.getEmployee().getUsername());
 	}
 
 	public Date getLastChanged() {
