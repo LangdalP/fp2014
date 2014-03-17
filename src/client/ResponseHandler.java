@@ -9,6 +9,7 @@ import protocol.MessageType;
 import protocol.TransferObject;
 import protocol.TransferType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
