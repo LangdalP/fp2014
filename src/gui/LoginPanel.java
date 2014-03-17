@@ -34,10 +34,6 @@ public class LoginPanel extends JPanel {
 		this.parent = parent;
 		setLayout(layout);
 		
-		if (this.parent == null) {
-			System.out.println("Hmm");
-		}
-		
 		init();
 	}
 	
