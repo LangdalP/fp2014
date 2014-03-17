@@ -31,7 +31,7 @@ public class ServerMain {
         Map<String, Employee> employees = modeldb.getEmployees();
         Map<String, MeetingRoom> mapMeetingRooms = modeldb.getMeetingRooms();
         Map<String, List<String>> groups = new ModelDbService().getMapGroups();
-        Map<String, Meeting> meetings = modeldb.getAllMeetings();
+        Map<String, Meeting> meetings = modeldb.getOldMeetings();
         Map<String, MeetingRoom> meetingRooms = modeldb.getMeetingRooms();
         requestHandler = new RequestHandler(model);
         model = new ModelImpl(meetings, employees, meetingRooms, groups);
