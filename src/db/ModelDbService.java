@@ -30,6 +30,7 @@ public class ModelDbService {
         System.out.println("main");
 //        new ModelDbService().getAllMeeting();
 
+
 //        new ModelDbService().getGroups();
 //        new ModelDbService().addGroup(new Group("test5"));
 //        new ModelDbService().getEmployee("test@epost.no");
@@ -198,10 +199,10 @@ public class ModelDbService {
         String sql = "select * from deltager_ansatt da\n" +
                 "join avtale av on av.id = da.avtale_id\n" +
                 "join ansatt an on an.epost = da.epost\n" +
-                "right join avtale_møterom am on am.id = av.id";
+                "right join avtale_moterom am on am.id = av.id";
 
-        if (before != null && before == true)  sql += "where dato < ?";
-        else if (before != null && before == false) sql += "where dato > ?";
+        if (before != null && before == true)  sql += " where dato < ?";
+        else if (before != null && before == false) sql += " where dato > ?";
 
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -221,9 +222,9 @@ public class ModelDbService {
                 meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
                 meeting.setMeetingRoomBooked(false);
                 meeting.setMeetingRoom(null);
-                if (rs.getString("møterom_navn") != null) {
+                if (rs.getString("moterom_navn") != null) {
                     meeting.setMeetingRoomBooked(true);
-                    meeting.setMeetingRoom(new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("eksternt_antall")));
+                    meeting.setMeetingRoom(new MeetingRoom(rs.getString("moterom_navn"), rs.getInt("eksternt_antall")));
                 }
                 // Fylle med ansatte
                 addAttendeesToMeeting(meeting);
@@ -261,7 +262,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into moterom(moterom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -311,8 +312,8 @@ public class ModelDbService {
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
         String sql = "select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-                "natural join avtale_møterom am " +
-                "where am.møterom_navn = ?";
+                "natural join avtale_moterom am " +
+                "where am.moterom_navn = ?";
         List<Meeting> meetings = new ArrayList<>();
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, roomName);
@@ -353,7 +354,7 @@ public class ModelDbService {
      * den kan virke som generell booking-metode for meetingroom
      */
     public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
-        String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
+        String sql = "insert into avtale_moterom(id, moterom_navn, eksternt_antall)) values(?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -365,7 +366,7 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-        String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+        String sql = "update avtale_moterom set eksternt_antall=? where id=?";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
@@ -376,7 +377,7 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-        String sql = "update avtale_møterom set eksternt_antall=? where id=?";
+        String sql = "update avtale_moterom set eksternt_antall=? where id=?";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
@@ -420,7 +421,7 @@ public class ModelDbService {
     }
 
     public Map<String, MeetingRoom> getMeetingRooms(){
-    	String sql = "select * from møterom";
+    	String sql = "select * from moterom";
     	Map<String, MeetingRoom> roomsMap = new HashMap<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
