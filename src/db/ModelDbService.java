@@ -277,6 +277,10 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
+    
+    public void addMeetingById(String meetingID) {
+    	//
+    }
 
     public List<Employee> getEmployeesInGroup(Group group) {
     	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
@@ -316,6 +320,9 @@ public class ModelDbService {
     	return meetings;
     }
     
+    /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
+     * vi som regel berre sette 
+     */
     public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
     	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
