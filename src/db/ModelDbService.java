@@ -232,12 +232,14 @@ public class ModelDbService {
                 	meeting.setMeetingRoomBooked(true);
                 	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), new ArrayList<Meeting>());
                 	meeting.setMeetingRoom(room);
+                	
+                	// Fylle med møter i møterom
+                	addMeetingsToMeetingRoom(room);
                 }
                 
                 // Fylle med ansatte
                 addAttendeesToMeeting(meeting);
-                // Fylle med møter
-                
+             
                 list.put(meeting.getMeetingID(), meeting);
             }
         } catch (SQLException e) {
@@ -340,6 +342,10 @@ public class ModelDbService {
     	}
     	
     	return meetings;
+    }
+    
+    private void addMeetingsToMeetingRoom(MeetingRoom room) {
+    	
     }
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
