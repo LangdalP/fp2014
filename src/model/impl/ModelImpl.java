@@ -39,7 +39,7 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public Map<String, MeetingRoom> getMapMeetingRoom() {
-        return getMapMeetingRoom();
+        return mapMeetingRooms;
     }
 
     @Override

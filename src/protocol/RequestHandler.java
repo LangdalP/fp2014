@@ -52,7 +52,7 @@ public class RequestHandler {
         TransferObject transferObject = new TransferObject(MessageType.RESPONSE, TransferType.INIT_MODEL,
                 model.getMapEmployees(),
                 model.getMapGroups(),
-                model.getMeetingsByEmployee(model.getMapEmployees().get(username)),
+                model.getMapMeetingRoom(),
                 model.getMapFutureMeetings()
         );
         
