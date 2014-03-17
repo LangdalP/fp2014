@@ -17,7 +17,7 @@ import java.util.Map;
 public class ResponseHandler {
     private ModelImpl model;
 
-    public ResponseHandler(ModelImpl model) {
+    public ResponseHandler() {
     }
 
     public ModelImpl handleInit(TransferObject obj){
