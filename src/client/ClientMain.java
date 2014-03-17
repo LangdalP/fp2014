@@ -1,10 +1,20 @@
 package client;
 
-import java.util.GregorianCalendar;
+import gui.GuiMain;
 
-import model.impl.ModelImpl;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.swing.JFrame;
+
+import model.Attendee;
+import model.Employee;
+import model.Meeting;
+import model.MeetingRoom;
 import protocol.MessageType;
-import protocol.RequestType;
 import protocol.TransferObject;
 import protocol.TransferType;
 
@@ -17,19 +27,15 @@ public class ClientMain {
     private static ConnectionListener listener;
 
     public ClientMain() {
+    	/*
         clientConn = new ClientConnection(serverIP, serverPort);
         listener = new ConnectionListener(clientConn.getConnectionSocket(), this);
-    
-        // Kode for � starte heile klienten
-        
-        // Lagar tom modell
-        ModelImpl model = new ModelImpl();
-        //init model from server
         
         // Startar ConnectionListener
         Thread listenThread = new Thread(listener);
         listenThread.start();
         
+        */
 //        boolean login = validateLogin("pedervl", "kake55");
 //        System.out.println("LOGIN: " + login);
         
@@ -65,8 +71,27 @@ public class ClientMain {
         clientConn.sendTransferObject(obj);
     }
     
-    
-    
-    
-    
+    public static void main(String[] args) {
+		ClientMain client = new ClientMain();
+		GuiMain gui = new GuiMain();
+		
+		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		gui.setLocationByPlatform(true);
+		gui.setVisible(true);
+		/*
+        ClientMain.validateLogin("test@epost.no", "passord");
+
+        
+        Employee emp = new Employee("test@epost.no", "a", "b");
+        Map<String, Attendee> attendees = new HashMap<>();
+        MeetingRoom meetingRoom = new MeetingRoom("P15", 20, null);
+        Date date = new Date();                
+        Meeting meeting = new Meeting(UUID.randomUUID().toString(), date, 45, "fad", "P15", emp, attendees, 0, meetingRoom);
+        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+
+        
+        //stopper client applikasjon. 
+        if (true) System.exit(0);
+        */
+	}
 }
