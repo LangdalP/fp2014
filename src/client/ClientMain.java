@@ -50,6 +50,20 @@ public class ClientMain {
         clientConn.sendTransferObject(obj);
     }
     
+    public static void sendLogout() {
+    	TransferObject logout = new TransferObject(MessageType.REQUEST, TransferType.LOGOUT);
+    	sendTransferObject(logout);
+    }
+    
+    public static void closeConnection() {
+    	listener.stop();
+    	clientConn.close();
+    }
+    
+    public static void shutdownClient() {
+    	System.exit(0);
+    }
+    
     public static void main(String[] args) {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
@@ -57,6 +71,8 @@ public class ClientMain {
 		System.out.println("Login ferdig");
 		
 		// Laste inn modell her
+		TransferObject pls_get_model = new TransferObject(MessageType.REQUEST, TransferType.INIT_MODEL);
+		ClientMain.sendTransferObject(pls_get_model);
 		
 		// Starte hovedvindu her, og gi referanse til modell
 		gui.showMainPanel(null);
