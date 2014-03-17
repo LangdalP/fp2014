@@ -2,6 +2,7 @@ package model.impl;
 
 import java.util.*;
 
+import db.ModelDbImpl;
 import db.ModelDbService;
 import model.*;
 
@@ -48,7 +49,10 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public void addMeeting(Meeting meeting){
+        //@todo sjekk om møterom er ledig.
+
         mapFutureMeetings.put(meeting.getMeetingID(), meeting);
+        mapMeetingRooms.get(meeting.getMeetingRoom().getName()).addUpcomingMeetings(meeting);
     }
 
     @Override

@@ -4,11 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import model.Attendee;
-import model.CalendarModel;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
+import model.*;
 import model.impl.ModelImpl;
 
 /**
@@ -22,18 +18,9 @@ public class ModelDbImpl implements CalendarModel {
     private ModelDbService dbService;
     private ModelImpl model;
 
-    public ModelDbImpl(ModelImpl model) {
-    	this.model = model;
-        dbService = new ModelDbService();
-    }
-
-
     @Override
     public void addMeeting(Meeting meeting) {
-        System.out.println("add meeting to database: " + meeting.toString());
         dbService.addMeeting(meeting);
-        //dbService.updateMeetingIdToAttendees(meeting.getMeetingID(), meeting.getAttendees());
-        //oppdater tabell deltaker_ansatt //oppdater andre avhengigheter i database.
     }
 
     @Override
@@ -47,25 +34,30 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void addGroupToMeeting(Meeting meeting, String groupname) {
+    public void addGroupToMeeting(Meeting meeting, Group group) {
+        for (Employee emp: group.getEmployees()){
+            dbService.addAttendee(meeting, new Attendee(emp, false, false, new Date(), false, null));
+        }
     }
 
     @Override
     public void editMeeting(Meeting meeting) {
+        dbService.updateMeeting(meeting);
     }
 
     @Override
     public void removeMeeting(String meetingid) {
-//        dbService.removeMeetingById(String meetingid);
+        dbService.removeMeetingById(meetingid);
     }
 
     @Override
     public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
+        //@todo fix this
     }
 
     @Override
-    public List<Meeting> getMeetingsByEmployee(Employee employee) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public List<Meeting> getMeetingsByEmployee(Employee employee) throws CompileNotSupportedException{
+        throw new CompileNotSupportedException("trengs ikke. FÃ¥r ut fra mapFutureMeetings");
     }
 
     /*
@@ -113,15 +105,15 @@ public class ModelDbImpl implements CalendarModel {
     */
 
     public Map<String, MeetingRoom> getMeetingRooms() {
-    	Map<String, MeetingRoom> dbRoomsMap = dbService.getMeetingRooms();	// Møterommet har ingen upcomingMeetings
+    	Map<String, MeetingRoom> dbRoomsMap = dbService.getMeetingRooms();	// Mï¿½terommet har ingen upcomingMeetings
     	for (MeetingRoom dbRoom : dbRoomsMap.values()) {
     		List<Meeting> dbMeetings = dbService.getUpcomingMeetingsInMeetingRoom(dbRoom.getName());
     		for (Meeting emptyMeet : dbMeetings) {
-    			// Fyller møterom med møter
+    			// Fyller mï¿½terom med mï¿½ter
     			Meeting modelMeet = model.getMapFutureMeetings().get(emptyMeet.getMeetingID());
     			dbRoom.addUpcomingMeetings(modelMeet);
     			
-    			// Setter referansen i Meeting modelMeet til dette møterommet
+    			// Setter referansen i Meeting modelMeet til dette mï¿½terommet
     			modelMeet.setMeetingRoomBooked(true);
     			modelMeet.setMeetingRoom(dbRoom);
     			
@@ -153,7 +145,7 @@ public class ModelDbImpl implements CalendarModel {
 
 
 	@Override
-	public Map<String, List<String>> getMapGroups() {
+	public Map<String, Group> getMapGroups() {
 		// TODO Auto-generated method stub
 		return null;
 	}
