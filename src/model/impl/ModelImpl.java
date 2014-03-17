@@ -24,11 +24,27 @@ public class ModelImpl implements CalendarModel {
     private final Map<String, List<String>> mapGroups; //
 
 
+
     public ModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, List<String>> mapGroups) {
         this.mapFutureMeetings = mapFutureMeetings;
         this.mapEmployees = mapEmployees;
         this.mapMeetingRooms = mapMeetingRooms;
         this.mapGroups = mapGroups;
+    }
+
+    @Override
+    public Map<String, Meeting> getMapFutureMeetings() {
+        return mapFutureMeetings;
+    }
+
+    @Override
+    public Map<String, Employee> getMapEmployees() {
+        return mapEmployees;
+    }
+
+    @Override
+    public Map<String, List<String>> getMapGroups() {
+        return mapGroups;
     }
 
     @Override
@@ -47,22 +63,6 @@ public class ModelImpl implements CalendarModel {
         mapFutureMeetings.get(meeting.getMeetingID()).removeAttendee(attendee);
     }
 
-    @Override
-    public void addGroupToMeeting(Meeting meeting, String groupname) {
-
-    }
-
-    @Override
-    public void setAttendeeStatus(Attendee attendee, boolean attendeeStatus) {
-
-
-    }
-
-    @Override
-    public void editMeeting(Meeting meeting) {
-        // TODO Auto-generated method stub
-
-    }
 
     @Override
     public void removeMeeting(String meetingid) {
@@ -87,7 +87,7 @@ public class ModelImpl implements CalendarModel {
     }
 
     @Override
-    public Map<String, Meeting> getAllMeetings() {
+    public Map<String, Meeting> getOldMeetings() {
         return new ModelDbService().getAllMeetings();
     }
 
@@ -104,6 +104,23 @@ public class ModelImpl implements CalendarModel {
     public void setAlarm(Attendee attendee) {
 //        attendee.
     }
+
+    @Override
+    public void addGroupToMeeting(Meeting meeting, String groupname) {
+
+    }
+
+    @Override
+    public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+    }
+
+    @Override
+    public void editMeeting(Meeting meeting) {
+
+        // TODO Auto-generated method stub
+
+    }
+
 
 
     @Override
