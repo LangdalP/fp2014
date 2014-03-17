@@ -269,7 +269,7 @@ public class ModelDbService {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
             ps.setInt(3, meeting.getDuration());
-            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka mï¿½terom
+            ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka møterom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
             ps.executeUpdate();
@@ -277,11 +277,11 @@ public class ModelDbService {
             e.printStackTrace();
         }
     }
+    
+    public void addMeetingById(String meetingID) {
+    	//
+    }
 
-    /*
-       @todo FORSLAG: i modellen trenger vi alle ansatte fra alle grupper. Group by gruppe.navn
-        metoden skal kunne brukes i konstruktÃ¸ren til ModelImpl. Map<String, List<String>>
-     */
     public List<Employee> getEmployeesInGroup(Group group) {
     	String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
     	List<Employee> emps = new ArrayList<>();
@@ -297,27 +297,6 @@ public class ModelDbService {
         }
     	return emps;
     }
-
-    /*
-        @todo FORSLAG: hent fra avtale_mÃ¸terom. MeetingRoom skal inneholde liste med mÃ¸ter.
-        @todo liste med mÃ¸terom som vi trenger i gui vil man fÃ¥ fra keyset til map.
-        @todo slÃ¥ sammen getMeetingRooms og getUpcomingMeetingsInMeetingRoom
-     */
-    public List<MeetingRoom> getMeetingRooms2() {
-    	String sql = "select * from møterom";
-    	List<MeetingRoom> rooms = new ArrayList<>();
-    	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
-            	rooms.add(room);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    	return rooms;
-    }
-
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
@@ -341,6 +320,9 @@ public class ModelDbService {
     	return meetings;
     }
     
+    /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
+     * vi som regel berre sette 
+     */
     public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
     	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
