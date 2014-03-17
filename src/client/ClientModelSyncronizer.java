@@ -100,5 +100,10 @@ public class ClientModelSyncronizer implements CalendarModel {
         return null;
     }
 
+    @Override
+    public Map<String, MeetingRoom> getMapMeetingRoom() {
+        return null;
+    }
+
 
 }
