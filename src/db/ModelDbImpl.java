@@ -43,6 +43,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void removeAttendeeFromMeeting(Meeting meeting, Attendee emp) {
+    	dbService.removeAttendee(meeting, emp);
     }
 
     @Override

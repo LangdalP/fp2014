@@ -231,7 +231,6 @@ public class ModelDbService {
             ps.setString(2, attendee.getEmployee().getUsername());
             ps.setBoolean(3, attendee.getAttendeeStatus());
             ps.setTimestamp(4, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
-//            new java.sql.Date(1999, 1,1);
             ps.setTimestamp(5, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
             ps.setBoolean(6, attendee.getHasAlarm());
             ps.executeUpdate();
@@ -241,7 +240,13 @@ public class ModelDbService {
     }
     
     public void removeAttendee(Meeting meet, Attendee att) {
-    	
+    	String sql = "DELETE FROM deltager_ansatt where epost = ?";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        	ps.setString(1, att.getEmployee().getUsername());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
