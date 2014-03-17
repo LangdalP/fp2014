@@ -21,9 +21,22 @@ public class LoginPanel extends JPanel {
 	private GridBagLayout layout = new GridBagLayout();
 	private JTextField usernameField;
 	private JPasswordField passwordField;
+	private GuiMain parent;
 	
 	public LoginPanel() {
+		this.parent = null;
 		setLayout(layout);
+		
+		init();
+	}
+	
+	public LoginPanel(GuiMain parent) {
+		this.parent = parent;
+		setLayout(layout);
+		
+		if (this.parent == null) {
+			System.out.println("Hmm");
+		}
 		
 		init();
 	}
@@ -46,16 +59,32 @@ public class LoginPanel extends JPanel {
 		add(passwordField, c);
 		
 		JButton loginButton = new JButton("Logg inn");
-		Action loginAction = new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// Kode som kjører når knappen blir trykt på
-			}
-		};
+		Action loginAction = new LoginAction("Logg inn", parent);
+		loginButton.setAction(loginAction);
 		c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 		add(loginButton, c);
 		
 		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		
+	}
+	
+	private class LoginAction extends AbstractAction {
+		
+		private GuiMain gui;
+		
+		public LoginAction(String name, GuiMain parent) {
+			super();
+	        putValue(Action.NAME, name);
+			this.gui = parent;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			String username = usernameField.getText();
+			String password = new String(passwordField.getPassword());
+			
+			gui.loginDataEntered(username, password);
+		}
 		
 	}
 	
