@@ -13,8 +13,11 @@ import model.*;
  *  Bruk toString for å se på tilstand.
  */
 public class ModelImpl implements CalendarModel {
+	/** key = meetingID */
 	private final Map<String, Meeting> mapFutureMeetings;
+	/** key = userName */
     private final Map<String, Employee> mapEmployees;
+    /** key = roomName */
     private final Map<String, MeetingRoom> mapMeetingRooms;
     /** Key gruppe.navn, Value list med epost for ansatt.  */
     private final Map<String, List<String>> mapGroups; //
