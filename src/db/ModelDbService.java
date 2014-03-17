@@ -224,7 +224,7 @@ public class ModelDbService {
         return list;
     }
     
-    public void addAttendee(Attendee attendee, Meeting meeting) {
+    public void addAttendee(Meeting meeting, Attendee attendee) {
         String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
@@ -238,6 +238,10 @@ public class ModelDbService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void removeAttendee(Meeting meet, Attendee att) {
+    	
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
