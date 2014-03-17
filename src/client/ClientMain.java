@@ -74,6 +74,7 @@ public class ClientMain {
     public static void main(String[] args) {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
+		gui.showLogin();
 		
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		gui.setLocationByPlatform(true);
