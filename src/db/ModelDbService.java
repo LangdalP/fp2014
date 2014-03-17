@@ -72,7 +72,7 @@ public class ModelDbService {
         return groups;
     }
     
-    // Skal ikkje vere n�dvendig � bruke
+    // Skal ikkje vere nødvendig å bruke
     public void addGroup(Group group) {
         String sql = "insert into gruppe (navn) values(?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
@@ -256,7 +256,7 @@ public class ModelDbService {
     }
     
     public void addMeetingRoom(MeetingRoom meetingRoom) {
-        String sql = "insert into m�terom(m�terom_navn, maks_antall) values( ?, ?)";
+        String sql = "insert into møterom(møterom_navn, maks_antall) values( ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setInt(2, meetingRoom.getMaxPeople());
@@ -306,8 +306,8 @@ public class ModelDbService {
 
     public List<Meeting> getUpcomingMeetingsInMeetingRoom(String roomName) {
     	String sql = 	"select a.id, a.dato, a.varighet, a.sted, a.eier_ansatt, a.sist_endret from avtale a " +
-    					"natural join avtale_m�terom am " +
-    					"where am.m�terom_navn = ?";
+    					"natural join avtale_møterom am " +
+    					"where am.møterom_navn = ?";
     	List<Meeting> meetings = new ArrayList<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, roomName);
@@ -327,12 +327,12 @@ public class ModelDbService {
     }
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
-     * vi som regel berre sette eksternt_antall. S�g at vi hadde eigen metode for
-     * dette (dvs. updateExternalAttendee), s� gav nytt navn til metoden slik at
+     * vi som regel berre sette eksternt_antall. Søg at vi hadde eigen metode for
+     * dette (dvs. updateExternalAttendee), så gav nytt navn til metoden slik at
      * den kan virke som generell booking-metode for meetingroom
      */
     public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "insert into avtale_m�terom(id, m�terom_navn, eksternt_antall)) values(?, ?, ?)";
+    	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, meetingRoom.getName());
@@ -344,7 +344,7 @@ public class ModelDbService {
     }
     
     public void updateExternalAttendee(Meeting meeting) {
-    	String sql = "update avtale_m�terom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setInt(1, meeting.getGuestAmount());
             ps.setString(2, meeting.getMeetingID());
@@ -355,7 +355,7 @@ public class ModelDbService {
     }
     
     public void updateMeetingRoom(Meeting meeting, MeetingRoom meetingRoom) {
-    	String sql = "update avtale_m�terom set eksternt_antall=? where id=?";
+    	String sql = "update avtale_møterom set eksternt_antall=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meetingRoom.getName());
             ps.setString(2, meeting.getMeetingID());
@@ -399,12 +399,12 @@ public class ModelDbService {
     }
 
     public Map<String, MeetingRoom> getMeetingRooms(){
-    	String sql = "select * from m�terom";
+    	String sql = "select * from møterom";
     	Map<String, MeetingRoom> roomsMap = new HashMap<>();
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-            	MeetingRoom room = new MeetingRoom(rs.getString("m�terom_navn"), rs.getInt("maks_antall"), null);
+            	MeetingRoom room = new MeetingRoom(rs.getString("møterom_navn"), rs.getInt("maks_antall"), null);
             	roomsMap.put(room.getName(), room);
             }
         } catch (SQLException e) {
@@ -413,7 +413,7 @@ public class ModelDbService {
     	return roomsMap;
     }
 
-    /*@todo implementer st�tte for initiering av modell.  */
+    /*@todo implementer støtte for initiering av modell.  */
     public Map<String, Group> getMapGroups() {
     	String sql = "select * from gruppe";
         Map<String, Group> groupsMap = new HashMap<>();
