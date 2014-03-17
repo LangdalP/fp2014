@@ -4,6 +4,8 @@ package protocol;
 public enum TransferType {
     /** Viser at beskjeden ikkje er request. */
     NOT_A_REQUEST,
+
+    /** REQUEST  ingen objekter. RESPONSE  Obj0=mapEmployees, Obj1 = mapGroups, Obj2 = mapMeetingRooms, Obj3 = mapFutureMeetings */
     INIT_MODEL,
 
     /** REQUEST: Obj0 = String username, Obj 1 = String password
