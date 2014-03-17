@@ -188,11 +188,22 @@ public class ModelDbService {
     }
     
     // Hentar alle m�te, men uten attendees og meetingroom
-    public Map<String,Meeting> getAllMeetings() {
+    public Map<String,Meeting> getMapMeetings(Boolean before) {
         Map<String, Meeting> list = new HashMap<>();
-        String sql = "select * from avtale";
+        String sql = null;
+        if (before != null && before == true) {
+        	sql = "select * from avtale where dato < ?";
+        } else if (before != null && before == false) {
+        	sql = "select * from avtale where dato > ?";
+        } else {
+        	sql = "select * from avtale";
+        }
         Meeting meeting = null;
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+        	if (before != null) {
+        		Date nowDate = new Date();
+        		ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
+        	}
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 meeting = new Meeting(rs.getString("id"));
@@ -211,33 +222,6 @@ public class ModelDbService {
             e.printStackTrace();
         }
         return list;
-    }
-    
-    public Map<String,Meeting> getOldMeetings() {
-    	Date nowDate = new Date();
-        Map<String, Meeting> oldMeetMap = new HashMap<>();
-        String sql = "select * from avtale where dato < ?";
-        Meeting meeting = null;
-        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-        	ps.setTimestamp(1, new java.sql.Timestamp(nowDate.getTime()));
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                meeting = new Meeting(rs.getString("id"));
-                meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
-                meeting.setDuration(rs.getInt("varighet"));
-                meeting.setMeetingLocation(rs.getString("sted"));
-                Employee owner = getEmployee(rs.getString("eier_ansatt"));
-                meeting.setMeetingOwner(owner);
-                meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
-                meeting.setMeetingRoomBooked(false);
-                meeting.setMeetingRoom(null);
-                
-                oldMeetMap.put(meeting.getMeetingID(), meeting);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return oldMeetMap;
     }
     
     public void addAttendee(Attendee attendee, Meeting meeting) {

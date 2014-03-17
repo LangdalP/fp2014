@@ -89,12 +89,6 @@ public class ModelDbImpl implements CalendarModel {
     public List<Meeting> getMeetings(List<Employee> emps) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
-    @Override
-    public void setAlarm(Attendee attendee) {
-
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
     
     public Map<String, Employee> getEmployees() {
     	return dbService.getEmployees();
@@ -145,7 +139,7 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getOldMeetings() {
-		return dbService.getOldMeetings();
+		return dbService.getMapMeetings(true);
 	}
 
 
@@ -167,5 +161,12 @@ public class ModelDbImpl implements CalendarModel {
 	public Map<String, Meeting> getMapFutureMeetings() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public void setAlarm(Meeting meeting, Attendee attendee, Date alarmTime) {
+		// TODO Auto-generated method stub
+		
 	}
 }
