@@ -4,12 +4,16 @@ import gui.GuiMain;
 
 import java.util.GregorianCalendar;
 
+import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.TransferObject;
 import protocol.TransferType;
 
 public class ClientMain {
     public static Boolean loggedin;
+    
+    public static boolean modelLoaded = false;
+    public static ModelImpl model = null;
     
     public static final String serverIP = "localhost";
     public static final int serverPort = 54545;
@@ -42,12 +46,35 @@ public class ClientMain {
         return loggedin;
     }
 
-    public synchronized void setLoggedin(Boolean loggedin) {
+    public static synchronized void setLoggedin(Boolean loggedin) {
         ClientMain.loggedin = loggedin;
+    }
+    
+    public static synchronized void setModel(ModelImpl model) {
+    	modelLoaded = true;
+    	ClientMain.model = model;
+    }
+    
+    public static synchronized ModelImpl getModel() {
+    	return ClientMain.model;
     }
 
     public static void sendTransferObject(TransferObject obj) {
         clientConn.sendTransferObject(obj);
+    }
+    
+    public static void sendLogout() {
+    	TransferObject logout = new TransferObject(MessageType.REQUEST, TransferType.LOGOUT);
+    	sendTransferObject(logout);
+    }
+    
+    public static void closeConnection() {
+    	listener.stop();
+    	clientConn.close();
+    }
+    
+    public static void shutdownClient() {
+    	System.exit(0);
     }
     
     public static void main(String[] args) {
@@ -57,6 +84,9 @@ public class ClientMain {
 		System.out.println("Login ferdig");
 		
 		// Laste inn modell her
+		TransferObject pls_get_model = new TransferObject(MessageType.REQUEST, TransferType.INIT_MODEL);
+		// Spør om modell
+		ClientMain.sendTransferObject(pls_get_model);
 		
 		// Starte hovedvindu her, og gi referanse til modell
 		gui.showMainPanel(null);
