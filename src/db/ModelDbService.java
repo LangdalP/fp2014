@@ -225,16 +225,15 @@ public class ModelDbService {
     }
     
     public void addAttendee(Attendee attendee, Meeting meeting) {
-        String sql = "insert into deltager_ansatt(avtale_id, epost, gruppe_navn, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
+        String sql = "insert into deltager_ansatt(avtale_id, epost, deltagelse_status, sist_varslet, alarm_tid, alarm_satt) values(?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, attendee.getEmployee().getUsername());
-            ps.setString(3, null);
-            ps.setBoolean(4, attendee.getAttendeeStatus());
-            ps.setTimestamp(5, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
+            ps.setBoolean(3, attendee.getAttendeeStatus());
+            ps.setTimestamp(4, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
 //            new java.sql.Date(1999, 1,1);
-            ps.setTimestamp(6, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
-            ps.setBoolean(7, attendee.getHasAlarm());
+            ps.setTimestamp(5, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setBoolean(6, attendee.getHasAlarm());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

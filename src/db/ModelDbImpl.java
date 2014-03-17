@@ -38,6 +38,7 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
+    	dbService.addAttendee(attendee, meeting);
     }
 
     @Override
