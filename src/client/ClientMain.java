@@ -2,18 +2,8 @@ package client;
 
 import gui.GuiMain;
 
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
-import javax.swing.JFrame;
-
-import model.Attendee;
-import model.Employee;
-import model.Meeting;
-import model.MeetingRoom;
 import protocol.MessageType;
 import protocol.TransferObject;
 import protocol.TransferType;
@@ -27,7 +17,6 @@ public class ClientMain {
     private static ConnectionListener listener;
 
     public ClientMain() {
-    	/*
         clientConn = new ClientConnection(serverIP, serverPort);
         listener = new ConnectionListener(clientConn.getConnectionSocket(), this);
         
@@ -35,16 +24,6 @@ public class ClientMain {
         Thread listenThread = new Thread(listener);
         listenThread.start();
         
-        */
-//        boolean login = validateLogin("pedervl", "kake55");
-//        System.out.println("LOGIN: " + login);
-        
-//        clientConn.sendTransferObject(new TransferObject(MessageType.REQUEST, RequestType.ADD_MEETING, new Meeting(UUID.randomUUID().toString())));
-//        new Gui(model);
-//        listener.stop();
-//        clientConn.close();
-//        System.out.println("exit");
-//        if (true) System.exit(0);
     }
     
     public static boolean validateLogin(String login, String passwd){
@@ -75,10 +54,12 @@ public class ClientMain {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
 		gui.showLogin();
+		System.out.println("Login ferdig");
 		
-		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		gui.setLocationByPlatform(true);
-		gui.setVisible(true);
+		// Laste inn modell her
+		
+		// Starte hovedvindu her, og gi referanse til modell
+		gui.showMainPanel(null);
 		/*
         ClientMain.validateLogin("test@epost.no", "passord");
 
@@ -94,5 +75,6 @@ public class ClientMain {
         //stopper client applikasjon. 
         if (true) System.exit(0);
         */
+		System.exit(0);
 	}
 }
