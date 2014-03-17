@@ -321,9 +321,11 @@ public class ModelDbService {
     }
     
     /* Gjorde endring: Metoda var addExternalAttendee, men i praksis vil
-     * vi som regel berre sette 
+     * vi som regel berre sette eksternt_antall. Såg at vi hadde eigen metode for
+     * dette (dvs. updateExternalAttendee), så gav nytt navn til metoden slik at
+     * den kan virke som generell booking-metode for meetingroom
      */
-    public void addExternalAttendee(Meeting meeting, MeetingRoom meetingRoom) {
+    public void addMeetingRoomBooking(Meeting meeting, MeetingRoom meetingRoom) {
     	String sql = "insert into avtale_møterom(id, møterom_navn, eksternt_antall)) values(?, ?, ?)";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
@@ -357,7 +359,10 @@ public class ModelDbService {
         }
     }
    
-    public void updateMeeting(Meeting meeting, MeetingRoom meetingRoom) {
+    /*
+     * Fjerna MeetingRoom frå parameter (input), sidan det ikkje bli brukt til noko
+     */
+    public void updateMeeting(Meeting meeting) {
     	String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setTimestamp(1, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
@@ -402,7 +407,7 @@ public class ModelDbService {
     	return roomsMap;
     }
 
-    /*@todo implementer stÃ¸tte for initiering av modell.  */
+    /*@todo implementer støtte for initiering av modell.  */
     public Map<String, Group> getMapGroups() {
     	String sql = "select * from gruppe";
         Map<String, Group> groupsMap = new HashMap<>();
