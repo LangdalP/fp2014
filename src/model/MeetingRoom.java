@@ -22,10 +22,6 @@ public class MeetingRoom implements Serializable{
 	public int getMaxPeople() {
 		return maxPeople;
 	}
-
-
-	public void addUpcomingMeetings(Meeting meeting){
-	}
 	
 
     @Override
