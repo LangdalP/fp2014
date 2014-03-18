@@ -134,11 +134,18 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public String toString() {
-        return "ModelImpl{" + "\n"+
-                "mapFutureMeetings=" + mapFutureMeetings + "\n"+
-                ", mapEmployees=" + mapEmployees + "\n"+
-                ", mapMeetingRooms=" + mapMeetingRooms + "\n"+
-                ", mapGroups=" + mapGroups + "\n"+
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("ModelImpl{" + "\n");
+        sb.append("mapFutureMeetings:\n");
+        for (Meeting m : mapFutureMeetings.values()) sb.append(m.toString()+"\n\n");
+        for (MeetingRoom mr : mapMeetingRooms.values()) sb.append(mr.toString()+"\n");
+        for (Employee e : mapEmployees.values()) sb.append(e.toString()+"\n");
+        for (Group g : mapGroups.values()) sb.append(g.toString()+"\n");
+        sb.append("\n");
+        return sb.toString();
+    }
+
+    public boolean isMeetingRoomAvailable(MeetingRoom mr, Date meetingStart, Integer duration) {
+        return false;
     }
 }
