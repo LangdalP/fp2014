@@ -81,6 +81,7 @@ public class RequestHandler {
                 break;
             }
 
+
             case REMOVE_ATTENDEE_FROM_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 Attendee attendee = (Attendee) obj.getObject(1);

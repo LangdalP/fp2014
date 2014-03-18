@@ -16,6 +16,9 @@ public class ClientModelImpl extends ModelImpl {
 
     public ClientModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, Group> mapGroups) {
         super(mapFutureMeetings, mapEmployees, mapMeetingRooms, mapGroups);
+        for (MeetingRoom mr : mapMeetingRooms.values()){
+            mapMeetingRoomAvailable.put(mr.getName(), false);
+        }
     }
 
 
