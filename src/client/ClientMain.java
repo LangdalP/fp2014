@@ -80,11 +80,8 @@ public class ClientMain {
     public static void main(String[] args) {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
-		//gui.showLogin();
-		ClientMain.validateLogin("peder.langdal@gmail.com", "pass2");
-		while (ClientMain.getLoggedin() != true) {
-			
-		}
+		gui.showLogin();
+		
 		System.out.println("Login ferdig");
 		
 		// Laste inn modell her
@@ -96,7 +93,7 @@ public class ClientMain {
 			//
 		}
 		
-		System.out.println(ClientMain.getModel().toString());
+		gui.showMainPanel(ClientMain.getModel());
 		
 		// Starte hovedvindu her, og gi referanse til modell
 		
