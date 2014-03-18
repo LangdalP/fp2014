@@ -32,17 +32,16 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
-import client.ClientMain;
-import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
 import model.impl.ModelImpl;
 
 import org.jdesktop.swingx.JXDatePicker;
+
 import protocol.MessageType;
 import protocol.TransferObject;
 import protocol.TransferType;
-import sun.plugin2.message.Message;
+import client.ClientMain;
 
 public class NewMeetingPanel extends JPanel {
 	
@@ -50,15 +49,14 @@ public class NewMeetingPanel extends JPanel {
 	
 	// Verdi-felt på venstresida
 	private JTextArea descText;
-	private JComboBox<Integer> dateDropdown;
-	private JComboBox<Integer> startTimeDropdown;
-	private JComboBox<Integer> durationDropdown;
+	private JXDatePicker datePicker;
+	private JComboBox<GuiTimeOfDay> startTimeDropdown;
+	private JComboBox<GuiTimeOfDay> durationDropdown;
 	private JRadioButton participateYesButton;
 	private JRadioButton participateNoButton;
 	private JRadioButton alarmYesButton;
 	private JRadioButton alarmNoButton;
-	private JComboBox<Integer> alarmHoursDropdown;
-	private JComboBox<Integer> alarmMinutesDropdown;
+	private JComboBox<GuiTimeOfDay> alarmTimeDropdown;
 	
 	// Verdi-felt på høgresida
 	private JList<String> addEmpList;
@@ -83,12 +81,13 @@ public class NewMeetingPanel extends JPanel {
 		lp.setLayout(new GridBagLayout());
 		
 		// Testkode
-		Integer[] testNums = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31};
-		DefaultComboBoxModel<Integer> datoComboBoxModel = new DefaultComboBoxModel<>(testNums);
-		DefaultComboBoxModel<Integer> startTimeComboBoxModel = new DefaultComboBoxModel<>(testNums);
-		DefaultComboBoxModel<Integer> durationComboBoxModel = new DefaultComboBoxModel<>(testNums);
-		DefaultComboBoxModel<Integer> alarmHoursComboBoxModel = new DefaultComboBoxModel<>(testNums);
-		DefaultComboBoxModel<Integer> alarmMinutesComboBoxModel = new DefaultComboBoxModel<>(testNums);
+		GuiTimeOfDay[] startTimeArray = GuiTimeOfDay.getTimesOfDayArray();
+		GuiTimeOfDay[] durationTimeArray = GuiTimeOfDay.getDurationTimesArray();
+		GuiTimeOfDay[] alarmTimeArray = GuiTimeOfDay.getAlarmTimesArray();
+		
+		DefaultComboBoxModel<GuiTimeOfDay> startTimeComboBoxModel = new DefaultComboBoxModel<>(startTimeArray);
+		DefaultComboBoxModel<GuiTimeOfDay> durationComboBoxModel = new DefaultComboBoxModel<>(durationTimeArray);
+		DefaultComboBoxModel<GuiTimeOfDay> alarmTimeComboBoxModel = new DefaultComboBoxModel<>(alarmTimeArray);
 		
 		// Testkode slutt
 		GridBagConstraints c = new GridBagConstraints();
@@ -107,7 +106,6 @@ public class NewMeetingPanel extends JPanel {
 		JLabel dateLabel = new JLabel("Dato: ");
 		c.gridx = 0; c.gridy = 1; c.gridheight = 1; c.gridwidth = 1;
 		lp.add(dateLabel, c);
-		dateDropdown = new JComboBox<>(datoComboBoxModel);
 		JXDatePicker datePicker = new JXDatePicker(new Date());
 		c.gridx = 1; c.gridy = 1; c.gridheight = 1; c.gridwidth = 4;
 		lp.add(datePicker, c);
@@ -158,12 +156,9 @@ public class NewMeetingPanel extends JPanel {
 		alarmGroup.add(alarmYesButton);
 		alarmGroup.add(alarmNoButton);
 		
-		alarmHoursDropdown = new JComboBox<>(alarmHoursComboBoxModel);
+		alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
 		c.gridx = 3; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmHoursDropdown, c);
-		alarmMinutesDropdown = new JComboBox<>(alarmMinutesComboBoxModel);
-		c.gridx = 4; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmMinutesDropdown, c);
+		lp.add(alarmTimeDropdown, c);
 		
 		GridBagConstraints cl = new GridBagConstraints();
 		cl.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
