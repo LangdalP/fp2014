@@ -49,8 +49,12 @@ public class ModelDbService {
 //        new ModelDbService().updateExternalAttendee(meeting);
 //        
 //        System.out.println("test");
+       
         
-        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
+        new ModelDbService().addEmployee(new Employee("even.hansen.kalender.no", "Even Hansen"));
+      
+        
+//        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
     }
 
     public ModelDbService() {
@@ -128,63 +132,6 @@ public class ModelDbService {
     }
  
 
-  
-//    private Attendee getAttendee(){
-//    	String sql = "select * from deltager_ansatt;";
-//    	Attendee attendee = null;
-//    	List<Attendee> attendees;
-//        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()) {
-//            	
-//            	attendee = new Attendee(rs.getString("navn"));
-//                
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(group.getGroupName());
-//        return group;
-//    }
-
-    public List<Attendee> getAttendeesToMeeting(Meeting meeting) {
-        String sql = "select * from deltager_ansatt where avtale_id = ?";
-        List<Attendee> attendees = new ArrayList<>(); 
-        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-            ps.setString(1, meeting.getMeetingID());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Employee employee = getEmployee(rs.getString("epost"));
-                System.out.println("EMPLOYEE: " + employee);
-                int attendeeInt =  rs.getInt("deltagelse_status");
-                boolean attendeeStatus = false;
-                boolean hasResponded = false;
-                if(attendeeInt == 0){ //0 betyr ikke svart
-                    hasResponded = false;
-                }
-                else if(attendeeInt == 1){ //1 betyr ikke deltar
-                    hasResponded = true;
-                }
-                else if(attendeeInt == 2){ //2 betyr deltar
-                    hasResponded = true;
-                    attendeeStatus = true;
-                }
-                Date lastNotification = rs.getDate("sist_varslet");
-                Date alarmTime = rs.getDate("alarm_tid");
-                boolean hasAlarm = rs.getBoolean("alarm_satt");
-                Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
-                meeting.getAttendees().add(attendee);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        for (Attendee attendee : attendees) {
-            System.out.println(attendee.getEmployee().getUsername() + ", " + attendee.getHasResponded() + ", " + attendee.getAttendeeStatus() + ", "
-                    + attendee.getLastNotification() + ", " + attendee.getHasAlarm() + ", " + attendee.getAlarmTime());
-        }
-        return attendees;
-    }
-    
     // Hentar alle møter om before = null, hentar alle gamle møte om before == true, og hentar alle nye møter om before == false
     public Map<String,Meeting> getMapMeetings(Boolean before) {
         //mer effektivt å hente ut alle employees èn gang.
@@ -207,21 +154,44 @@ public class ModelDbService {
             Meeting meeting = null;
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                meeting = new Meeting(rs.getString("id"));
-                meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
-                meeting.setDuration(rs.getInt("varighet"));
-                meeting.setMeetingLocation(rs.getString("sted"));
+                String id = rs.getString("id");
+                if (mapMeetings.get(id) == null){
+                    meeting = new Meeting(rs.getString("id"));
+                    meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
+                    meeting.setDuration(rs.getInt("varighet"));
+                    meeting.setMeetingLocation(rs.getString("sted"));
 
-                Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
-                meeting.setMeetingOwner(owner);
-                meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
-                String moterom = rs.getString("moterom_navn");
-                if (moterom != null) {
-                    meeting.setMeetingRoom(new MeetingRoom(moterom, rs.getInt("eksternt_antall")));
+                    Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
+                    meeting.setMeetingOwner(owner);
+                    meeting.setLastChanged(new Date(rs.getTimestamp("dato").getTime()));
+                    String moterom = rs.getString("moterom_navn");
+                    if (moterom != null) {
+                        meeting.setMeetingRoom(new MeetingRoom(moterom, rs.getInt("eksternt_antall")));
+                    }
+
+
+                    mapMeetings.put(meeting.getMeetingID(), meeting);
                 }
-                // Fylle med ansatte
-                getAttendeesToMeeting(meeting);
-                mapMeetings.put(meeting.getMeetingID(), meeting);
+
+                int attendeeInt =  rs.getInt("deltagelse_status");
+                Employee employee = employeeMap.get(rs.getString("epost"));
+                boolean attendeeStatus = false;
+                boolean hasResponded = false;
+                if(attendeeInt == 0){ //0 betyr ikke svart
+                    hasResponded = false;
+                }
+                else if(attendeeInt == 1){ //1 betyr ikke deltar
+                    hasResponded = true;
+                }
+                else if(attendeeInt == 2){ //2 betyr deltar
+                    hasResponded = true;
+                    attendeeStatus = true;
+                }
+                Date lastNotification = rs.getDate("sist_varslet");
+                Date alarmTime = rs.getDate("alarm_tid");
+                boolean hasAlarm = rs.getBoolean("alarm_satt");
+                Attendee attendee = new Attendee(employee, hasResponded, attendeeStatus, lastNotification, hasAlarm, alarmTime);
+                mapMeetings.get(id).addAttendee(attendee);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -380,7 +350,7 @@ public class ModelDbService {
     }
    
     /*
-     * Fjerna MeetingRoom frå parameter (input), sidan det ikkje bli brukt til noko
+     * Fjerna MeetingRoom fra parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
         String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";

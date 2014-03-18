@@ -26,8 +26,6 @@ public interface CalendarModel {
 
     public void removeMeeting(String meetingid);                                            //krav 5 og 9
 
-    public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting);                //krav 6 og 10
-
     public List<Meeting> getMeetingsByEmployee(Employee employee) throws Exception;                             //krav 7 og 8
 
     /**

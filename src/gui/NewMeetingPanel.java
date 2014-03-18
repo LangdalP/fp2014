@@ -6,8 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.swing.AbstractAction;
@@ -17,7 +18,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -31,9 +31,18 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import javax.swing.text.DocumentFilter.FilterBypass;
 
+import client.ClientMain;
+import model.Group;
 import model.Meeting;
+import model.MeetingRoom;
+import model.impl.ModelImpl;
+
+import org.jdesktop.swingx.JXDatePicker;
+import protocol.MessageType;
+import protocol.TransferObject;
+import protocol.TransferType;
+import sun.plugin2.message.Message;
 
 public class NewMeetingPanel extends JPanel {
 	
@@ -59,10 +68,12 @@ public class NewMeetingPanel extends JPanel {
 	private JComboBox<String> roomsDropdown;
 	private JTextField locationTextField;
 	
+	private ModelImpl model;
 	
-	public NewMeetingPanel() {
-		setLayout(layout);
+	public NewMeetingPanel(ModelImpl model) {
+		this.model = model;
 		
+		setLayout(layout);
 		init();
 	}
 	
@@ -97,8 +108,9 @@ public class NewMeetingPanel extends JPanel {
 		c.gridx = 0; c.gridy = 1; c.gridheight = 1; c.gridwidth = 1;
 		lp.add(dateLabel, c);
 		dateDropdown = new JComboBox<>(datoComboBoxModel);
+		JXDatePicker datePicker = new JXDatePicker(new Date());
 		c.gridx = 1; c.gridy = 1; c.gridheight = 1; c.gridwidth = 4;
-		lp.add(dateDropdown, c);
+		lp.add(datePicker, c);
 		
 		// Starttid
 		JLabel startLabel = new JLabel("Starttid: ");
@@ -161,12 +173,18 @@ public class NewMeetingPanel extends JPanel {
 		// START HØGRESIDE
 		
 		DefaultListModel<String> nameListModel = new DefaultListModel<>();
-		nameListModel.addElement("Ivar Åsen");
-		nameListModel.addElement("Knud Knudsen");
-		nameListModel.addElement("Fred Perry");
-		
-		String[] testRooms = {"411", "414", "421", "424"};
-		DefaultComboBoxModel<String> roomsComboBoxModel = new DefaultComboBoxModel<>(testRooms);
+
+        for (String key : model.getMapEmployees().keySet()){
+            //@todo hvis employee er bruker ikke legg til.
+		    nameListModel.addElement(model.getMapEmployees().get(key).getName());
+        }
+
+        List<MeetingRoom> rooms = new ArrayList<>(model.getMapMeetingRoom().values());
+        String[] roomsArr = new String[rooms.size()];
+        for (int i = 0; i < rooms.size(); i++){
+            roomsArr[i] = rooms.get(i).getName();
+        }
+		DefaultComboBoxModel<String> roomsComboBoxModel = new DefaultComboBoxModel<>(roomsArr);
 		
 		
 		// Testkode slutt
@@ -239,6 +257,13 @@ public class NewMeetingPanel extends JPanel {
 		
 	}
 	
+	private Date computeDateFromDateAndTimeOfDay(Date selectedDate, GuiTimeOfDay selectedTime) {
+		Date returnDate = new Date(selectedDate.getTime());
+		returnDate.setHours(selectedTime.getHours());
+		returnDate.setMinutes(selectedTime.getMinutes());
+		return returnDate; 
+	}
+	
 	private class NewMeetingAction extends AbstractAction {
 		
 		public NewMeetingAction() {
@@ -253,9 +278,12 @@ public class NewMeetingPanel extends JPanel {
 			meeting.setDuration((Integer) durationDropdown.getSelectedItem());
 			// todo: Legg til deltakere
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
-			
-			
-		}
+
+//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
+
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+
+        }
 		
 	}
 	
@@ -283,7 +311,7 @@ public class NewMeetingPanel extends JPanel {
 	public static void main(String[] args) {
 		
 		JFrame frame = new JFrame("Test av opprett avtale");
-		NewMeetingPanel panel = new NewMeetingPanel();
+		NewMeetingPanel panel = new NewMeetingPanel(null);
 		frame.setContentPane(panel);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
