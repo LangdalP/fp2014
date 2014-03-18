@@ -4,12 +4,9 @@ import model.Employee;
 import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
-import model.impl.ModelImpl;
 import protocol.MessageType;
 import protocol.TransferObject;
-import protocol.TransferType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -39,9 +36,10 @@ public class ResponseHandler {
                 model.addMeeting((Meeting) obj.getObject(0));
                 break;
             }
-            case IS_MEETING_ROOM_AVAILABLE:{
-                boolean available = (Boolean) obj.getObject(0);
-                System.out.println("handle is room available: " + available);
+            case GET_AVAILABLE_MEETING_ROOMS:{
+                Map<String, MeetingRoom> availableMeetingRooms = (Map<String, MeetingRoom>) obj.getObject(0);
+                System.out.println("handle is room available: " + availableMeetingRooms);
+                model.setMapMeetingRoomAvailable(availableMeetingRooms);
 
                 break;
             }

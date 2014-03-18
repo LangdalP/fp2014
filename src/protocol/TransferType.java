@@ -27,8 +27,8 @@ public enum TransferType {
     /** Obj0 = Meeting, Obj1 = Employee*/
     REMOVE_ATTENDEE_FROM_MEETING,
 
-    /**REQUEST: Obj0=MeetingRoom, Obj1=Date meetingStart, Obj2=int duration, RESPONS: Obj0=boolean  */
-    IS_MEETING_ROOM_AVAILABLE,
+    /**REQUEST: Obj0=MeetingRoom, Obj1=Date meetingStart, Obj2=int duration, Obj3=int minAttendees, RESPONS: Obj0=Map<String, MeetingRoom>   */
+    GET_AVAILABLE_MEETING_ROOMS,
 
     /* GET REQUESTS Object er tom som default.*/
 
