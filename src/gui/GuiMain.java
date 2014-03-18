@@ -68,6 +68,11 @@ public class GuiMain extends JFrame {
 		contentPanel.add(calendarPanel, c);
 		
 		pack();
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationByPlatform(true);
+		setVisible(true);
+		
 	}
 	
 	public void loginDataEntered(String username, String password) {
