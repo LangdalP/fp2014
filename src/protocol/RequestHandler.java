@@ -94,6 +94,7 @@ public class RequestHandler {
                 Date meetingStart = (Date) obj.getObject(1);
                 Integer duration = (Integer) obj.getObject(2);
                 Integer minAttendees = (Integer) obj.getObject(3);
+                System.out.println(mr + "\t" + meetingStart + "\t" + duration + "\t" + minAttendees);
                 Map<String, MeetingRoom> map = model.getAvailableMeetingRooms(mr, meetingStart, duration, minAttendees);
                 System.out.println("send back ");
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_AVAILABLE_MEETING_ROOMS, map));

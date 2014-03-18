@@ -35,7 +35,6 @@ import javax.swing.text.PlainDocument;
 import client.ClientModelImpl;
 import model.Meeting;
 import model.MeetingRoom;
-import model.impl.ModelImpl;
 
 import org.jdesktop.swingx.JXDatePicker;
 
@@ -126,7 +125,8 @@ public class NewMeetingPanel extends JPanel {
                 GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
                 int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
                 MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, mr, meetingtime ,duration));
+                int antAttendees = 5;
+                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime ,duration, antAttendees));
                 while (model.getMapMeetingRoomAvailable().get(mr.getName())!= null){
 
                 }
@@ -293,8 +293,10 @@ public class NewMeetingPanel extends JPanel {
 			// todo: Legg til deltakere
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
 
-//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
-            System.out.println(model.isMeetingRoomAvailable(meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
+//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
+            for (String name : model.getMapMeetingRoomAvailable().keySet()){
+                System.out.println(model.getMapMeetingRoomAvailable().get(name));
+            }
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 
         }
