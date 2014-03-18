@@ -93,6 +93,7 @@ public class ClientMain {
 			//
 		}
 		
+		System.out.println(ClientMain.getModel());
 		gui.showMainPanel(ClientMain.getModel());
 		
 		// Starte hovedvindu her, og gi referanse til modell
@@ -112,6 +113,5 @@ public class ClientMain {
         //stopper client applikasjon. 
         if (true) System.exit(0);
         */
-		System.exit(0);
 	}
 }
