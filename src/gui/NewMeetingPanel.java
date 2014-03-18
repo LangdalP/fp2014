@@ -6,7 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.swing.AbstractAction;
@@ -30,7 +32,9 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
+import model.Group;
 import model.Meeting;
+import model.MeetingRoom;
 import model.impl.ModelImpl;
 
 import org.jdesktop.swingx.JXDatePicker;
@@ -163,12 +167,18 @@ public class NewMeetingPanel extends JPanel {
 		// START HØGRESIDE
 		
 		DefaultListModel<String> nameListModel = new DefaultListModel<>();
-		nameListModel.addElement("Ivar Åsen");
-		nameListModel.addElement("Knud Knudsen");
-		nameListModel.addElement("Fred Perry");
-		
-		String[] testRooms = {"411", "414", "421", "424"};
-		DefaultComboBoxModel<String> roomsComboBoxModel = new DefaultComboBoxModel<>(testRooms);
+
+        for (String key : model.getMapEmployees().keySet()){
+            //@todo hvis employee er bruker ikke legg til.
+		    nameListModel.addElement(model.getMapEmployees().get(key).getName());
+        }
+
+        List<MeetingRoom> rooms = new ArrayList<>(model.getMapMeetingRoom().values());
+        String[] roomsArr = new String[rooms.size()];
+        for (int i = 0; i < rooms.size(); i++){
+            roomsArr[i] = rooms.get(i).getName();
+        }
+		DefaultComboBoxModel<String> roomsComboBoxModel = new DefaultComboBoxModel<>(roomsArr);
 		
 		
 		// Testkode slutt
