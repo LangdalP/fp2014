@@ -38,6 +38,11 @@ public class ResponseHandler {
                 model.addMeeting((Meeting) obj.getObject(0));
                 break;
             }
+            case IS_MEETING_ROOM_AVAILABLE:{
+                boolean available = (Boolean) obj.getObject(0);
+
+                break;
+            }
 
         }
 

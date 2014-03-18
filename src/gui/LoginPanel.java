@@ -60,7 +60,8 @@ public class LoginPanel extends JPanel {
 		loginButton.setAction(loginAction);
 		c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 		add(loginButton, c);
-		
+
+        passwordField.setText("pass2");
 		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		
 	}
