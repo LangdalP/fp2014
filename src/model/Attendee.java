@@ -85,4 +85,16 @@ public class Attendee implements Serializable{
     public int hashCode() {
         return employee.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Attendee{" +
+                "employee=" + employee +
+                ", hasResponded=" + hasResponded +
+                ", attendeeStatus=" + attendeeStatus +
+                ", lastNotification=" + lastNotification +
+                ", hasAlarm=" + hasAlarm +
+                ", alarmTime=" + alarmTime +
+                '}';
+    }
 }
