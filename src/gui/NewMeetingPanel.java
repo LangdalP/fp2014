@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,7 +16,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -31,9 +29,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import javax.swing.text.DocumentFilter.FilterBypass;
 
 import model.Meeting;
+import model.impl.ModelImpl;
 
 public class NewMeetingPanel extends JPanel {
 	
@@ -59,10 +57,12 @@ public class NewMeetingPanel extends JPanel {
 	private JComboBox<String> roomsDropdown;
 	private JTextField locationTextField;
 	
+	private ModelImpl model;
 	
-	public NewMeetingPanel() {
-		setLayout(layout);
+	public NewMeetingPanel(ModelImpl model) {
+		this.model = model;
 		
+		setLayout(layout);
 		init();
 	}
 	
