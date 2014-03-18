@@ -33,6 +33,8 @@ import javax.swing.text.PlainDocument;
 import model.Meeting;
 import model.impl.ModelImpl;
 
+import org.jdesktop.swingx.JXDatePicker;
+
 public class NewMeetingPanel extends JPanel {
 	
 	private GridBagLayout layout = new GridBagLayout();
@@ -97,8 +99,9 @@ public class NewMeetingPanel extends JPanel {
 		c.gridx = 0; c.gridy = 1; c.gridheight = 1; c.gridwidth = 1;
 		lp.add(dateLabel, c);
 		dateDropdown = new JComboBox<>(datoComboBoxModel);
+		JXDatePicker datePicker = new JXDatePicker(new Date());
 		c.gridx = 1; c.gridy = 1; c.gridheight = 1; c.gridwidth = 4;
-		lp.add(dateDropdown, c);
+		lp.add(datePicker, c);
 		
 		// Starttid
 		JLabel startLabel = new JLabel("Starttid: ");
