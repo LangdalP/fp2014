@@ -32,6 +32,7 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
+import client.ClientModelImpl;
 import model.Meeting;
 import model.MeetingRoom;
 import model.impl.ModelImpl;
@@ -66,9 +67,9 @@ public class NewMeetingPanel extends JPanel {
 	private JComboBox<String> roomsDropdown;
 	private JTextField locationTextField;
 	
-	private ModelImpl model;
+	private ClientModelImpl model;
 	
-	public NewMeetingPanel(ModelImpl model) {
+	public NewMeetingPanel(ClientModelImpl model) {
 		this.model = model;
 		
 		setLayout(layout);
@@ -106,7 +107,8 @@ public class NewMeetingPanel extends JPanel {
 		JLabel dateLabel = new JLabel("Dato: ");
 		c.gridx = 0; c.gridy = 1; c.gridheight = 1; c.gridwidth = 1;
 		lp.add(dateLabel, c);
-		JXDatePicker datePicker = new JXDatePicker(new Date());
+		datePicker = new JXDatePicker(new Date());
+        datePicker.setDate(new Date());
 		c.gridx = 1; c.gridy = 1; c.gridheight = 1; c.gridwidth = 4;
 		lp.add(datePicker, c);
 		
@@ -116,6 +118,22 @@ public class NewMeetingPanel extends JPanel {
 		lp.add(startLabel, c);
 		startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
 		c.gridx = 1; c.gridy = 2; c.gridheight = 1; c.gridwidth = 4;
+        startTimeDropdown.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String meetingRoomName = roomsDropdown.getSelectedItem().toString();
+                Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
+                GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+                int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
+                MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
+                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, mr, meetingtime ,duration));
+                while (model.getMapMeetingRoomAvailable().get(mr.getName())!= null){
+
+                }
+                System.out.println("check is room available!");
+
+            }
+        });
 		lp.add(startTimeDropdown, c);
 		
 		// Varigheit
@@ -252,8 +270,9 @@ public class NewMeetingPanel extends JPanel {
 		
 	}
 	
-	private Date computeDateFromDateAndTimeOfDay(Date selectedDate, GuiTimeOfDay selectedTime) {
-		Date returnDate = new Date(selectedDate.getTime());
+	private Date computeDateFromDateAndTimeOfDay(GuiTimeOfDay selectedTime) {
+        System.out.println(datePicker);
+        Date returnDate = datePicker.getDate();
 		returnDate.setHours(selectedTime.getHours());
 		returnDate.setMinutes(selectedTime.getMinutes());
 		return returnDate; 
@@ -275,7 +294,7 @@ public class NewMeetingPanel extends JPanel {
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
 
 //            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
-
+            System.out.println(model.isMeetingRoomAvailable(meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 
         }

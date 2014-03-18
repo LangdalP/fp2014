@@ -13,7 +13,7 @@ public class ClientMain {
     public static Boolean loggedin;
     
     public static boolean modelLoaded = false;
-    public static ModelImpl model = null;
+    public static ClientModelImpl model = null;
     
     public static final String serverIP = "localhost";
     public static final int serverPort = 54545;
@@ -50,12 +50,12 @@ public class ClientMain {
         ClientMain.loggedin = loggedin;
     }
     
-    public static synchronized void setModel(ModelImpl model) {
+    public static synchronized void setModel(ClientModelImpl model) {
     	modelLoaded = true;
     	ClientMain.model = model;
     }
     
-    public static synchronized ModelImpl getModel() {
+    public static synchronized ClientModelImpl getModel() {
     	return ClientMain.model;
     }
 
@@ -86,7 +86,7 @@ public class ClientMain {
 		
 		// Laste inn modell her
 		TransferObject pls_get_model = new TransferObject(MessageType.REQUEST, TransferType.INIT_MODEL);
-		// Spør om modell
+		// Spï¿½r om modell
 		ClientMain.sendTransferObject(pls_get_model);
 		
 		while (ClientMain.getModel() == null) {

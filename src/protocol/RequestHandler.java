@@ -94,6 +94,7 @@ public class RequestHandler {
                 Date meetingStart = (Date) obj.getObject(1);
                 Integer duration = (Integer) obj.getObject(2);
                 boolean available = model.isMeetingRoomAvailable(mr, meetingStart, duration);
+                System.out.println("send back " + available);
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.IS_MEETING_ROOM_AVAILABLE, available));
                 break;
             }
