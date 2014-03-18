@@ -252,6 +252,13 @@ public class NewMeetingPanel extends JPanel {
 		
 	}
 	
+	private Date computeDateFromDateAndTimeOfDay(Date selectedDate, GuiTimeOfDay selectedTime) {
+		Date returnDate = new Date(selectedDate.getTime());
+		returnDate.setHours(selectedTime.getHours());
+		returnDate.setMinutes(selectedTime.getMinutes());
+		return returnDate; 
+	}
+	
 	private class NewMeetingAction extends AbstractAction {
 		
 		public NewMeetingAction() {
