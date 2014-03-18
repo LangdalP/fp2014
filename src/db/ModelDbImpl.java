@@ -54,11 +54,6 @@ public class ModelDbImpl implements CalendarModel {
     }
 
     @Override
-    public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
-        dbService.addMeetingRoomBooking(meeting, meetingRoom);
-    }
-
-    @Override
     public List<Meeting> getMeetingsByEmployee(Employee employee) throws Exception{
         throw new Exception("trengs ikke. Får ut fra mapFutureMeetings");
     }

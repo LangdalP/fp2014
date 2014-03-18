@@ -57,7 +57,6 @@ public class ModelImpl implements CalendarModel {
         //@todo sjekk om møterom er ledig.
 
         mapFutureMeetings.put(meeting.getMeetingID(), meeting);
-        mapMeetingRooms.get(meeting.getMeetingRoom().getName()).addUpcomingMeetings(meeting);
     }
 
     @Override
@@ -76,11 +75,6 @@ public class ModelImpl implements CalendarModel {
     public void removeMeeting(String meetingid) {
         mapFutureMeetings.remove(meetingid);
 
-    }
-
-    @Override
-    public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
-        mapMeetingRooms.get(meetingRoom.getName()).addUpcomingMeetings(meeting);
     }
 
     @Override
