@@ -283,7 +283,7 @@ public class NewMeetingPanel extends JPanel {
 	public static void main(String[] args) {
 		
 		JFrame frame = new JFrame("Test av opprett avtale");
-		NewMeetingPanel panel = new NewMeetingPanel();
+		NewMeetingPanel panel = new NewMeetingPanel(null);
 		frame.setContentPane(panel);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
