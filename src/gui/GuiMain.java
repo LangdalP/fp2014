@@ -35,6 +35,7 @@ public class GuiMain extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
+		setTitle("Logg inn");
 		setVisible(true);
 		
 		while (getLoggedIn() == false) {
@@ -71,6 +72,7 @@ public class GuiMain extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
+		setTitle("CalendarPro 2.3");
 		setVisible(true);
 		
 	}
