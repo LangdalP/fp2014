@@ -49,8 +49,12 @@ public class ModelDbService {
 //        new ModelDbService().updateExternalAttendee(meeting);
 //        
 //        System.out.println("test");
+       
         
-        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
+        new ModelDbService().addEmployee(new Employee("even.hansen.kalender.no", "Even Hansen"));
+      
+        
+//        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
     }
 
     public ModelDbService() {
@@ -346,7 +350,7 @@ public class ModelDbService {
     }
    
     /*
-     * Fjerna MeetingRoom frå parameter (input), sidan det ikkje bli brukt til noko
+     * Fjerna MeetingRoom fra parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
         String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
