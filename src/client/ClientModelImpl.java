@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class ClientModelImpl extends ModelImpl {
     private Map<String, MeetingRoom> mapMeetingRoomAvailable;
+    private String username;
 
     public ClientModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, Group> mapGroups) {
         super(mapFutureMeetings, mapEmployees, mapMeetingRooms, mapGroups);
@@ -28,5 +29,13 @@ public class ClientModelImpl extends ModelImpl {
 
     public void setMapMeetingRoomAvailable(Map<String, MeetingRoom> mapMeetingRoomAvailable) {
         this.mapMeetingRoomAvailable = mapMeetingRoomAvailable;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

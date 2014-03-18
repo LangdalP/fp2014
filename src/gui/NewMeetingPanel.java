@@ -117,24 +117,8 @@ public class NewMeetingPanel extends JPanel {
 		lp.add(startLabel, c);
 		startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
 		c.gridx = 1; c.gridy = 2; c.gridheight = 1; c.gridwidth = 4;
-        startTimeDropdown.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String meetingRoomName = roomsDropdown.getSelectedItem().toString();
-                Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
-                GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
-                int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
-                MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-                int antAttendees = 5;
-                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime ,duration, antAttendees));
-                while (model.getMapMeetingRoomAvailable().get(mr.getName())!= null){
-
-                }
-                System.out.println("check is room available!");
-
-            }
-        });
-		lp.add(startTimeDropdown, c);
+        startTimeDropdown.addActionListener(listener);
+        lp.add(startTimeDropdown, c);
 		
 		// Varigheit
 		JLabel durationLabel = new JLabel("Varighet: ");
@@ -158,7 +142,7 @@ public class NewMeetingPanel extends JPanel {
 		ButtonGroup participateGroup = new ButtonGroup();
 		participateGroup.add(participateYesButton);
 		participateGroup.add(participateNoButton);
-		
+
 		// Alarm
 		JLabel alarmLabel = new JLabel("Alarm før møte: ");
 		c.gridx = 0; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
@@ -188,7 +172,7 @@ public class NewMeetingPanel extends JPanel {
 		DefaultListModel<String> nameListModel = new DefaultListModel<>();
 
         for (String key : model.getMapEmployees().keySet()){
-            //@todo hvis employee er bruker ikke legg til.
+            if (key.equals(model.getUsername())) continue;
 		    nameListModel.addElement(model.getMapEmployees().get(key).getName());
         }
 
@@ -262,6 +246,7 @@ public class NewMeetingPanel extends JPanel {
 		rp.add(cancelButton, c);
 
 		JButton saveButton = new JButton("Lagre");
+        saveButton.setAction(new NewMeetingAction());
 		c.gridx = 1; c.gridy = 8; c.gridheight = 1; c.gridwidth = 2;
 		rp.add(saveButton, c);
 		
@@ -269,12 +254,33 @@ public class NewMeetingPanel extends JPanel {
 		add(rp, cl);
 		
 	}
+
+    private ActionListener listener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int antAttendees = 0;
+            if (participateYesButton.isSelected()) antAttendees++;
+            antAttendees += addEmpList.getSelectedValuesList().size();
+            antAttendees += Integer.parseInt(extraField.getText());
+
+            System.out.println(antAttendees);
+            String meetingRoomName = roomsDropdown.getSelectedItem().toString();
+            Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
+            GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+            int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
+            MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime ,duration, antAttendees));
+            System.out.println("check is room available!");
+        }
+    };
+
 	
 	private Date computeDateFromDateAndTimeOfDay(GuiTimeOfDay selectedTime) {
         System.out.println(datePicker);
         Date returnDate = datePicker.getDate();
 		returnDate.setHours(selectedTime.getHours());
 		returnDate.setMinutes(selectedTime.getMinutes());
+
 		return returnDate; 
 	}
 	
@@ -286,18 +292,22 @@ public class NewMeetingPanel extends JPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			Meeting meeting = new Meeting(UUID.randomUUID().toString());
+            System.out.println("action");
+            Meeting meeting = new Meeting(UUID.randomUUID().toString());
 			meeting.setDescription(descText.getText());
 			meeting.setMeetingTime(new Date());
-			meeting.setDuration((Integer) durationDropdown.getSelectedItem());
+			GuiTimeOfDay time = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+            meeting.setDuration(time.getHours() * 60 + time.getMinutes());
+
 			// todo: Legg til deltakere
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
+            int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration(), antAttendee));
 
-//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
             for (String name : model.getMapMeetingRoomAvailable().keySet()){
                 System.out.println(model.getMapMeetingRoomAvailable().get(name));
             }
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 
         }
 		
