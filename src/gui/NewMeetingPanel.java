@@ -32,12 +32,17 @@ import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
+import client.ClientMain;
 import model.Group;
 import model.Meeting;
 import model.MeetingRoom;
 import model.impl.ModelImpl;
 
 import org.jdesktop.swingx.JXDatePicker;
+import protocol.MessageType;
+import protocol.TransferObject;
+import protocol.TransferType;
+import sun.plugin2.message.Message;
 
 public class NewMeetingPanel extends JPanel {
 	
@@ -273,9 +278,12 @@ public class NewMeetingPanel extends JPanel {
 			meeting.setDuration((Integer) durationDropdown.getSelectedItem());
 			// todo: Legg til deltakere
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
-			
-			
-		}
+
+//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.IS_MEETING_ROOM_AVAILABLE, meeting.getMeetingRoom(), meeting.getMeetingTime(), meeting.getDuration()));
+
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+
+        }
 		
 	}
 	
