@@ -37,8 +37,16 @@ public class GuiMain extends JFrame {
 		setLocationByPlatform(true);
 		setVisible(true);
 		
-		while (getLoggedIn() != true) {
-			// wait
+		while (getLoggedIn() == false) {
+			while (ClientMain.getLoggedin() == null) {
+				// wait
+				
+			}
+			if (ClientMain.getLoggedin() == true) {
+				setLoggedIn(true);
+			} else {
+				setLoggedIn(false);
+			}
 		}
 		setVisible(false);
 	}
@@ -47,12 +55,15 @@ public class GuiMain extends JFrame {
 		this.model = model;
 		// Må sette upperPanel til "Hjem" og calendarPanel til kalender
 		setContentPane(contentPanel);
-		upperPanel = new JPanel();
-		calendarPanel = new JPanel();
+		
+		upperPanel = new JPanel();		// Skal vere "Hjem"
+		calendarPanel = new JPanel();	// Skal vere Kalendervisning
 		GridBagConstraints c = new GridBagConstraints();
 		
+		NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
+		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(upperPanel, c);
+		contentPanel.add(newMeetingPanel, c);
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel, c);
 		

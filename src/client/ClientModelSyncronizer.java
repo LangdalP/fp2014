@@ -57,12 +57,6 @@ public class ClientModelSyncronizer implements CalendarModel {
 	}
 
 	@Override
-	public void reserveMeetingRoom(MeetingRoom meetingRoom, Meeting meeting) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public List<Meeting> getMeetingsByEmployee(Employee employee) {
 		// TODO Auto-generated method stub
 		return null;
