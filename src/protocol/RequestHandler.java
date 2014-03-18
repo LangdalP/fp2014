@@ -3,15 +3,13 @@ package protocol;
 import db.ModelDbImpl;
 import db.ModelDbService;
 
-import model.Attendee;
-import model.CalendarModel;
-import model.Employee;
-import model.Meeting;
+import model.*;
 import model.impl.ModelImpl;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,11 +22,11 @@ import java.util.List;
 public class RequestHandler {
     private static RequestHandler instance;
     private static ModelImpl model;
-    private static CalendarModel dbModelImpl;
+//    private static CalendarModel dbModelImpl;
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-        dbModelImpl = new ModelDbImpl();
+//        dbModelImpl = new ModelDbImpl();
         instance = this;
     }
 
@@ -71,8 +69,9 @@ public class RequestHandler {
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 model.addMeeting(meeting);
-                dbModelImpl.addMeeting(meeting);
+//                dbModelImpl.addMeeting(meeting);
                 //sync.addMeeting(meeting);
+                System.out.println(model);
                 break;
             }
             case ADD_ATTENDEE_TO_MEETING:{
@@ -89,6 +88,16 @@ public class RequestHandler {
 //                sync.removeAttendeeFromMeeting(meeting, attendee);
                 break;
             }
+            case IS_MEETING_ROOM_AVAILABLE:{
+                MeetingRoom mr = (MeetingRoom) obj.getObject(0);
+                Date meetingStart = (Date) obj.getObject(1);
+                Integer duration = (Integer) obj.getObject(2);
+                boolean available = model.isMeetingRoomAvailable(mr, meetingStart, duration);
+                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.IS_MEETING_ROOM_AVAILABLE, available));
+                break;
+            }
+
+
             case GET_EMPLOYEES: {
                 List<Employee> list = new ArrayList<>(model.getMapEmployees().values());
                 System.out.println("employees: " + list.size());
