@@ -25,6 +25,7 @@ public class GuiTimeOfDay {
 		String strHours = Integer.toString(hours);
 		String strMinutes = Integer.toString(minutes);
 		
+		// Fyller med ekstra 0 før einsifra tal, f.eks 9 blir 09 og 0 blir 00;
 		return ("00" + strHours).substring(strHours.length()) + ": " + ("00" + strMinutes).substring(strMinutes.length());
 	}
 	
