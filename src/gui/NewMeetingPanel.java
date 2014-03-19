@@ -351,20 +351,19 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         roomLocationGroup.add(locationRadioButton);
 
         // Knappar
-        JButton cancelButton = new JButton("Avbryt");
+          // Overrides i InfoMeetingPanel
         c.gridx = 0;
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 1;
-        rp.add(cancelButton, c);
+        rp.add(getLeftButton() , c);
 
-        JButton saveButton = new JButton("Lagre");
-        saveButton.setAction(new NewMeetingAction("Lagre"));
+      
         c.gridx = 1;
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 2;
-        rp.add(saveButton, c);
+        rp.add(getRightButton(), c);
 
         cl.gridx = 1;
         c.gridy = 0;
@@ -374,6 +373,22 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         add(rp, cl);
 
     }
+    
+    public JButton getLeftButton(){
+    	 JButton cancelButton =  new JButton("Avbryt");
+    	 return cancelButton;
+    	
+    }
+    
+    public JButton getRightButton(){
+    	
+  	   JButton saveButton = new JButton("Lagre");
+       saveButton.setAction(new NewMeetingAction("Lagre"));
+       return saveButton;
+    }
+    
+    	
+    
 
     private ActionListener updateAvailableRooms = new ActionListener() {
         @Override
