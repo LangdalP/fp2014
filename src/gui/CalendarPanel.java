@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ import client.ClientModelImpl;
 public class CalendarPanel extends JPanel {
 	
 	private static final Dimension TOP_LABEL_DIMENSION = new Dimension(80, 40);
-	private static final Dimension TIME_LABEL_DIMENSION = new Dimension(80, 25);
+	private static final Dimension TIME_LABEL_DIMENSION = new Dimension(80, 30);
 	
 	private GridBagLayout layout = new GridBagLayout();
 	private ClientModelImpl model;
@@ -88,8 +89,6 @@ public class CalendarPanel extends JPanel {
 			
 			setLayout(new GridBagLayout());
 			
-			// TODO - FJERN NÅR UNØDVENDIG
-			setPreferredSize(new Dimension(80, 370));
 			
 			initTopLabel();
 			initMeetings();
@@ -122,11 +121,41 @@ public class CalendarPanel extends JPanel {
 		}
 		
 		private void initMeetings() {
-			JPanel fillerPanel = new JPanel();
-			fillerPanel.setPreferredSize(new Dimension(80, 325));
+			// Container-panel
+			MeetingContainerPanel mCont = new MeetingContainerPanel();
+			mCont.setPreferredSize(new Dimension(80, 390));
 			c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
-			add(fillerPanel, c);
+			add(mCont, c);
+			
+			
 		}
+	}
+	
+	// Inneheld alle møte, og teiknar horisontale strekar bort til tidspunkta
+	private class MeetingContainerPanel extends JPanel {
+		
+		public MeetingContainerPanel() {
+			setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			
+			g.setColor(Color.GRAY);
+			
+			int numLines = 12;
+			int linePos = 30;
+			for (int i=0; i<numLines; i++) {
+				g.drawLine(0, linePos, 80, linePos);
+				
+				linePos += 30;
+			}
+			
+		}
+		
+		
+		
 	}
 	
 	// Lagar venstresida av kalenderen, dvs. alle tidspunkta
