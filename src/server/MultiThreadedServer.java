@@ -1,24 +1,31 @@
 package server;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MultiThreadedServer implements Runnable {
-	
+
+    // Liste med workers
+    private static List<ClientWorker> workers;
     private int serverPort;
     private ServerSocket serverSocket = null;
     private boolean isStopped = false;
     // Kanskje un�dvendig
     private Thread runningThread = null;
-    
-    // Liste med workers
-    private List<ClientWorker> workers = new ArrayList<>();
+
+    private static Map<String, ObjectOutputStream> usersLoggedIn;
+
 
     public MultiThreadedServer(int port){
         this.serverPort = port;
+        workers = new ArrayList<>();
+        usersLoggedIn = new HashMap<>();
     }
     
     public void run(){
@@ -41,9 +48,8 @@ public class MultiThreadedServer implements Runnable {
             System.out.println("Accepting client");
             
             // Lagar ny ClientWorker og tr�d
-            ClientWorker newWorker = new ClientWorker(acceptedSocket);
+            ClientWorker newWorker = new ClientWorker(acceptedSocket, usersLoggedIn);
             workers.add(newWorker);
-            
             new Thread(newWorker).start();
         }
         System.out.println("Server Stopped.") ;
@@ -83,5 +89,15 @@ public class MultiThreadedServer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException("Cannot open port 8080", e);
         }
+    }
+
+    public static synchronized void addClient(String username, ObjectOutputStream outStream){
+        usersLoggedIn.put(username, outStream);
+    };
+
+    public static synchronized Map<String, ObjectOutputStream> getClients(){
+        for (String username : usersLoggedIn.keySet()) System.out.println("loggedin: " + username);
+
+        return usersLoggedIn;
     }
 }
