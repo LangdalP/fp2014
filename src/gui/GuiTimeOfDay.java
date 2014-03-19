@@ -25,15 +25,15 @@ public class GuiTimeOfDay {
 		String strHours = Integer.toString(hours);
 		String strMinutes = Integer.toString(minutes);
 		
-		// Fyller med ekstra 0 før einsifra tal, f.eks 9 blir 09 og 0 blir 00;
+		// Fyller med ekstra 0 fï¿½r einsifra tal, f.eks 9 blir 09 og 0 blir 00;
 		return ("00" + strHours).substring(strHours.length()) + ": " + ("00" + strMinutes).substring(strMinutes.length());
 	}
 	
 	public static GuiTimeOfDay[] getTimesOfDayArray() {
-		GuiTimeOfDay[] times = new GuiTimeOfDay[48];
+		GuiTimeOfDay[] times = new GuiTimeOfDay[24];
 		
 		int counter = 0;
-		for (int i=0; i<24; i++) {
+		for (int i=8; i<20; i++) {
 			for (int j=0; j<60; j+=30) {
 				times[counter] = new GuiTimeOfDay(i, j);
 				counter++;
