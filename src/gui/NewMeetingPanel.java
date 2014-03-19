@@ -469,10 +469,19 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             }
 
             //LEGG TIL BRUKER.
-            Employee userEmp = model.getMapEmployees().get(model.getUsername());
-//            Attendee userAttendee = new Attendee(userEmp, )
-//            meeting.addAttendee(userAttendee);
+            boolean hasResponded = (participateYesButton.isSelected() || participateNoButton.isSelected()) ? true : false;
+            Boolean attendeeStatus = null;
+            if (participateYesButton.isSelected()) attendeeStatus = true;
+            if (participateNoButton.isSelected()) attendeeStatus = false;
+            boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
+            GuiTimeOfDay timeAlarm  = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
+            Long timeBeforeMeeting = new Date().getTime() + (timeAlarm.getHours() * 60 + timeAlarm.getMinutes() * 1000);
 
+            Employee userEmp = model.getMapEmployees().get(model.getUsername());
+            Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, new Date(timeBeforeMeeting));
+            meeting.addAttendee(userAttendee);
+
+            //set eksterne deltagere.
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
             int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
 
