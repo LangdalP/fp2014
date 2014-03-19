@@ -5,11 +5,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -26,6 +26,8 @@ public class CalendarPanel extends JPanel {
 	
 	private static final Dimension TOP_LABEL_DIMENSION = new Dimension(80, 40);
 	private static final Dimension TIME_LABEL_DIMENSION = new Dimension(80, 30);
+	private static final int DAY_COLUMN_MAX_WIDTH = 80;
+	private static final int VERT_PX_PER_HOUR = 30;
 	
 	private GridBagLayout layout = new GridBagLayout();
 	private ClientModelImpl model;
@@ -138,52 +140,225 @@ public class CalendarPanel extends JPanel {
 			c.anchor = GridBagConstraints.NORTHWEST;
 			add(mCont, c);
 			
-			Meeting meeting = new Meeting("whatever id");
-			Date testTime = new Date();
-			meeting.setDuration(60);
-			meeting.setMeetingTime(testTime);
-			meeting.setDescription("Møte");
-			//mCont.addMeeting(meeting);
+			if (dayDate.getDay() == new Date().getDay()) {
+				Meeting meeting1 = new Meeting("whatever id");
+				Date testTime = new Date();
+				testTime.setHours(12);
+				testTime.setMinutes(0);
+				meeting1.setDuration(60);
+				meeting1.setMeetingTime(testTime);
+				meeting1.setDescription("Møte");
+				mCont.addMeeting(meeting1);
+				
+				Meeting meeting2 = new Meeting("whatever id2");
+				Date testTime2 = new Date();
+				testTime2.setHours(12);
+				testTime2.setMinutes(30);
+				meeting2.setDuration(60);
+				meeting2.setMeetingTime(testTime2);
+				meeting2.setDescription("Møte2");
+				mCont.addMeeting(meeting2);
+				
+				Meeting meeting3 = new Meeting("whatever id3");
+				Date testTime3 = new Date();
+				testTime3.setHours(11);
+				testTime3.setMinutes(30);
+				meeting3.setDuration(60);
+				meeting3.setMeetingTime(testTime3);
+				meeting3.setDescription("Møte3");
+				mCont.addMeeting(meeting3);
+				
+				Meeting meeting4 = new Meeting("whatever id4");
+				Date testTime4 = new Date();
+				testTime4.setHours(10);
+				testTime4.setMinutes(0);
+				meeting4.setDuration(90);
+				meeting4.setMeetingTime(testTime4);
+				meeting4.setDescription("Møte4");
+				mCont.addMeeting(meeting4);
+				
+				Meeting meeting5 = new Meeting("whatever id5");
+				Date testTime5 = new Date();
+				testTime5.setHours(13);
+				testTime5.setMinutes(0);
+				meeting5.setDuration(90);
+				meeting5.setMeetingTime(testTime5);
+				meeting5.setDescription("Møte5");
+				mCont.addMeeting(meeting5);
+				
+				Meeting meeting6 = new Meeting("whatever id6");
+				Date testTime6 = new Date();
+				testTime6.setHours(9);
+				testTime6.setMinutes(0);
+				meeting6.setDuration(60);
+				meeting6.setMeetingTime(testTime6);
+				meeting6.setDescription("Møte6");
+				mCont.addMeeting(meeting6);
+			}
 		}
 	}
 	
 	// Inneheld alle møte, og teiknar horisontale strekar bort til tidspunkta
 	private class MeetingContainerPanel extends JPanel {
 		
-		private GridBagConstraints c = new GridBagConstraints();
+		int numColumns = 1;
+		int colWidth = 80;
+		List<Meeting> meetings = new ArrayList<>();
+		List<Meeting> addedMeetings = new ArrayList<>();
 		
 		public MeetingContainerPanel() {
-			setLayout(new GridBagLayout());
 			setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
 			setPreferredSize(new Dimension(80, 390));
 			setMinimumSize(new Dimension(80, 390));
+			setLayout(null);
 		}
 		
 		public void addMeeting(Meeting meeting) {
+			meetings.add(meeting);
+			
+			System.out.println("Trying to add meeting to gui: " + meeting.getMeetingID());
+			
 			int startHour = meeting.getMeetingTime().getHours();
 			int startMinute = meeting.getMeetingTime().getMinutes();
 			int duration = meeting.getDuration();
 			
 			// Sjekkar at møtet er mellom 8 og 20:
 			if (startHour<8 || startHour>20) return;
+			System.out.println("Meeting between 8 and 20");
 			
-			CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meeting);
-			// Calculate gridposition
-			int gridY = (startHour-8)*2;
-			if (startMinute == 30) {
-				gridY += 1;
+			// Kjører sjekk om det blir overlapp
+			numColumns = calculateMaxOverlap();
+			System.out.println("Calc Max Overlap: " + numColumns);
+			colWidth = DAY_COLUMN_MAX_WIDTH/numColumns;
+			System.out.println("Col width: " + colWidth);
+			// Fjernar alle avtalePanel frå hovudpanelet
+			removeAll();
+			addedMeetings.clear();
+			
+			for (Meeting meet: meetings) {
+				System.out.println("Starting to add meeting: " + meet.getMeetingID());
+				float startH = hourAndMinutesToFloat(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
+				float endH = startH + (float) (meet.getDuration()/60);
+				if (meet.getDuration() % 60 > 0) endH += 0.5;
+				System.out.println("startH: " + startH + " | endH: " + endH);
+				
+				int overlaps = 0;
+				
+				// Beregning av overlapp
+				int numHalfHours = 2*(meet.getDuration()/60);
+				if (meet.getDuration() % 60 > 0) numHalfHours += 1;
+				
+				int currentHour = meet.getMeetingTime().getHours();
+				int currentMinutes = meet.getMeetingTime().getMinutes();
+				for (int i=0; i<numHalfHours; i++) {
+					overlaps = Math.max(overlaps, numAddedMeetingsAtTime(currentHour, currentMinutes));
+					
+					if (currentMinutes == 30) {
+						currentMinutes = 0;
+						currentHour++;
+					} else {
+						currentMinutes = 30;
+					}
+					
+				}
+				// Beregning av overlapp ferdig
+				
+				System.out.println("Overlaps: " + overlaps);
+				int colPos = overlaps;
+				int xPos = colWidth*colPos;
+				int yPos = calculateVertPosFromTime(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
+				
+				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth);
+				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
+				add(meetPan);
+				addedMeetings.add(meet);
 			}
-			
-			c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1; c.weightx = 1; c.weighty = 1;
-			c.fill = GridBagConstraints.BOTH;
-			c.anchor = GridBagConstraints.NORTHWEST;
-			c.insets = new Insets(90, 0, 0, 0);
-			add(meetPan, c);
-			
 			
 			repaint();
 		}
-
+		
+		private int calculateMaxOverlap() {
+			
+			int max = 0;
+			
+			for (int hour=8; hour<20; hour++) {
+				for (int mins=0; mins<60; mins+=30) {
+					int meetingsAtTime = numMeetingsAtTime(hour, mins);
+					System.out.println("Meetings at " + hour + ":" + mins + " - " + meetingsAtTime);
+					max = Math.max(max, meetingsAtTime);
+				}
+			}
+			System.out.println("Max overlap: " + max);
+			return max;
+		}
+		
+		private int calculateVertPosFromTime(int hour, int minutes) {
+			int correctedHour = hour - 8;
+			int y = correctedHour * VERT_PX_PER_HOUR;
+			if (minutes == 30) y+= (VERT_PX_PER_HOUR/2);
+			
+			return y;
+		}
+		
+		private int numMeetingsAtTime(int hour, int minutes) {
+			int num = 0;
+			float timeFloat = (float) hour;
+			if(minutes == 30) timeFloat += 0.5;
+			
+			for (Meeting meet : meetings) {
+				float startHour = (float) meet.getMeetingTime().getHours();
+				if (meet.getMeetingTime().getMinutes() == 30) startHour += 0.5;
+				
+				float endHour = startHour + (float) (meet.getDuration()/60);
+				if (meet.getDuration() % 60 > 0) endHour += 0.5;
+				
+				if ((timeFloat >= startHour) && (timeFloat <= endHour)) {
+					num++;
+				}
+			}
+			return num;
+		}
+		
+		private int numAddedMeetingsAtTime(int hour, int minutes) {
+			int num = 0;
+			float timeFloat = (float) hour;
+			if(minutes == 30) timeFloat += 0.5;
+			
+			for (Meeting meet : addedMeetings) {
+				float startHour = (float) meet.getMeetingTime().getHours();
+				if (meet.getMeetingTime().getMinutes() == 30) startHour += 0.5;
+				
+				float endHour = startHour + (float) (meet.getDuration()/60);
+				if (meet.getDuration() % 60 > 0) endHour += 0.5;
+				
+				if ((timeFloat >= startHour) && (timeFloat <= endHour)) {
+					num++;
+				}
+			}
+			return num;
+		}
+		
+		private float hourAndMinutesToFloat(int hour, int minutes) {
+			float startHour = (float) hour;
+			if (minutes == 30) startHour += 0.5;
+			return startHour;
+		}
+		
+		private int hourFromFloat(float time) {
+			return ((int) time);
+		}
+		
+		private int minutesFromFloat(float time) {
+			float remainder = time%1;
+			
+			if ((remainder < 0.1) && (remainder > -0.1)) {
+				return 0;
+			} else {
+				return 30;
+			}
+		}
+		
+		// Teiknar horisontale linjer kvar time
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
@@ -199,9 +374,6 @@ public class CalendarPanel extends JPanel {
 			}
 			
 		}
-		
-		
-		
 	}
 	
 	// Lagar venstresida av kalenderen, dvs. alle tidspunkta
