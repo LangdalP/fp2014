@@ -13,21 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -35,6 +21,8 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
 import client.ClientModelImpl;
+import model.Attendee;
+import model.Employee;
 import model.Meeting;
 import model.MeetingRoom;
 
@@ -61,7 +49,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	protected JComboBox<GuiTimeOfDay> alarmTimeDropdown;
 	
 	// Verdi-felt på høgresida
-	protected JList<String> addEmpList;
+	protected JList<Employee> addEmpList;
     protected JTextField extraField;
     protected JRadioButton roomRadioButton;
     protected JRadioButton locationRadioButton;
@@ -227,11 +215,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
         // START HØGRESIDE
 
-        DefaultListModel<String> nameListModel = new DefaultListModel<>();
+        DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
 
         for (String key : model.getMapEmployees().keySet()) {
             if (key.equals(model.getUsername())) continue;
-            nameListModel.addElement(model.getMapEmployees().get(key).getName());
+            nameListModel.addElement(model.getMapEmployees().get(key));
         }
 
 
@@ -250,9 +238,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 3;
         rp.add(addEmpLabel, c);
-        addEmpList = new JList<>(nameListModel);
+        addEmpList = new JList<Employee>(nameListModel);
         addEmpList.setFixedCellWidth(200);
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
+        addEmpList.setCellRenderer(new EmployeeCellRenderer());
+
         c.gridx = 0;
         c.gridy = 1;
         c.gridheight = 2;
@@ -472,7 +462,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 			GuiTimeOfDay time = (GuiTimeOfDay) durationDropdown.getSelectedItem();
             meeting.setDuration(time.getHours() * 60 + time.getMinutes());
 
-			// todo: Legg til deltakere
+            List<Employee> emps = addEmpList.getSelectedValuesList();
+            for (Employee emp : emps){
+                System.out.println(model.getMapEmployees());
+                meeting.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
+            }
+
+            //LEGG TIL BRUKER.
+            Employee userEmp = model.getMapEmployees().get(model.getUsername());
+//            Attendee userAttendee = new Attendee(userEmp, )
+//            meeting.addAttendee(userAttendee);
+
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
             int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
 
@@ -574,4 +574,33 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
 		   }
 		}
+
+
+    public class EmployeeCellRenderer2 implements ListCellRenderer{
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            return null;
+        }
+    }
+
+    public class EmployeeCellRenderer implements ListCellRenderer {
+        protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
+        public Component getListCellRendererComponent(JList list, Object value, int index,
+                                                      boolean isSelected, boolean cellHasFocus) {
+            Font theFont = null;
+            Color theForeground = null;
+            String theText = null;
+
+            JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
+                    isSelected, cellHasFocus);
+
+            Employee emp = (Employee) value;
+            renderer.setText(emp.getName());
+            renderer.setFont(theFont);
+            return renderer;
+        }
+    }
+
 }
