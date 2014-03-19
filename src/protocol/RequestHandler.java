@@ -4,6 +4,7 @@ import db.ModelDbService;
 
 import model.*;
 import model.impl.ModelImpl;
+import server.ServerModelSyncronizer;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -17,7 +18,6 @@ import java.util.Map;
  * User: Christoffer Buvik
  * Date: 07.03.14
  * Time: 14:08
- * To change this template use File | Settings | File Templates.
  */
 public class RequestHandler {
     private static RequestHandler instance;
@@ -46,7 +46,7 @@ public class RequestHandler {
         return false;
     }
 
-    public static void handleInit(TransferObject obj, String username, ObjectOutputStream objOutput) throws IOException {
+    public static void handleInit(TransferObject obj, ObjectOutputStream objOutput) throws IOException {
         TransferObject transferObject = new TransferObject(MessageType.RESPONSE, TransferType.INIT_MODEL,
                 model.getMapEmployees(),
                 model.getMapGroups(),
@@ -57,7 +57,7 @@ public class RequestHandler {
         objOutput.writeObject(transferObject);
 
     }
-    public static void handleRequest(TransferObject obj, ObjectOutputStream objOutput) throws IOException {
+    public static void handleRequest(TransferObject obj, ObjectOutputStream objOutput, ServerModelSyncronizer sync) throws IOException {
         if (obj.getMsgType() != MessageType.REQUEST) return;
 
         TransferType type = obj.getTransferType();
@@ -69,9 +69,9 @@ public class RequestHandler {
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 model.addMeeting(meeting);
+                System.out.println("ADD MEETING: \n"+ meeting);
 //                dbModelImpl.addMeeting(meeting);
-                //sync.addMeeting(meeting);
-                System.out.println(model);
+                sync.addMeeting(meeting);
                 break;
             }
             case ADD_ATTENDEE_TO_MEETING:{
