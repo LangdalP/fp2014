@@ -36,16 +36,8 @@ public class ClientModelImpl extends ModelImpl {
     public void setMapMeetingRoomAvailable(Map<String, MeetingRoom> mapMeetingRoomAvailable) {
         Map<String, MeetingRoom> oldMap = mapMeetingRoomAvailable;
         this.mapMeetingRoomAvailable = mapMeetingRoomAvailable;
-        System.out.println("nr listeners: " + pcs.getPropertyChangeListeners().length);
-        for (PropertyChangeListener list : pcs.getPropertyChangeListeners()){
-            pcs.firePropertyChange(new PropertyChangeEvent(list, ROOMS, oldMap, this.mapMeetingRoomAvailable));
-            System.out.println(list.getClass());
-        }
-        pcs.firePropertyChange(ROOMS, oldMap, this.mapMeetingRoomAvailable);
-        for (MeetingRoom mr : this.mapMeetingRoomAvailable.values()){
-            System.out.println(mr);
-        }
         System.out.println("fire pcs");
+        pcs.firePropertyChange(ROOMS, null, null);   //sender varsel. mottaker får oppdaterte verdier fra modellen.
     }
 
     public String getUsername() {
