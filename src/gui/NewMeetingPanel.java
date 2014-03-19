@@ -6,6 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +46,7 @@ import protocol.TransferObject;
 import protocol.TransferType;
 import client.ClientMain;
 
-public class NewMeetingPanel extends JPanel {
+public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	
 	private GridBagLayout layout = new GridBagLayout();
 	
@@ -70,7 +73,7 @@ public class NewMeetingPanel extends JPanel {
 	
 	public NewMeetingPanel(ClientModelImpl model) {
 		this.model = model;
-		
+		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
 		init();
 	}
@@ -117,7 +120,7 @@ public class NewMeetingPanel extends JPanel {
 		lp.add(startLabel, c);
 		startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
 		c.gridx = 1; c.gridy = 2; c.gridheight = 1; c.gridwidth = 4;
-        startTimeDropdown.addActionListener(listener);
+        startTimeDropdown.addActionListener(updateAvailableRooms);
         lp.add(startTimeDropdown, c);
 		
 		// Varigheit
@@ -208,6 +211,7 @@ public class NewMeetingPanel extends JPanel {
 		PlainDocument doc = (PlainDocument) extraField.getDocument();
 		doc.setDocumentFilter(new MyIntFilter());
 		extraField.setColumns(2);
+        extraField.addActionListener(updateAvailableRooms);
 		c.gridx = 1; c.gridy = 3; c.gridheight = 1; c.gridwidth = 2;
 		rp.add(extraField, c);
 		
@@ -255,7 +259,7 @@ public class NewMeetingPanel extends JPanel {
 		
 	}
 
-    private ActionListener listener = new ActionListener() {
+    private ActionListener updateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             int antAttendees = 0;
@@ -269,8 +273,7 @@ public class NewMeetingPanel extends JPanel {
             GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
             int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
             MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime ,duration, antAttendees));
-            System.out.println("check is room available!");
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime, duration, antAttendees));
         }
     };
 
@@ -283,8 +286,16 @@ public class NewMeetingPanel extends JPanel {
 
 		return returnDate; 
 	}
-	
-	private class NewMeetingAction extends AbstractAction {
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println("event received:");
+        if (evt.getPropertyName().equals(ClientModelImpl.ROOMS)) {
+            System.out.println("test");
+        }
+    }
+
+    private class NewMeetingAction extends AbstractAction {
 		
 		public NewMeetingAction() {
 			
