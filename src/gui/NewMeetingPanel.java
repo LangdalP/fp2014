@@ -1,11 +1,13 @@
 package gui;
 
-import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +45,7 @@ import protocol.TransferObject;
 import protocol.TransferType;
 import client.ClientMain;
 
-public class NewMeetingPanel extends JPanel {
+public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	
 	private GridBagLayout layout = new GridBagLayout();
 	
@@ -67,195 +69,313 @@ public class NewMeetingPanel extends JPanel {
 	private JTextField locationTextField;
 	
 	private ClientModelImpl model;
-	
-	public NewMeetingPanel(ClientModelImpl model) {
+    private DefaultComboBoxModel<String> roomsComboBoxModel;
+    private String[] rooms;
+
+    public NewMeetingPanel(ClientModelImpl model) {
 		this.model = model;
-		
+		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
 		init();
 	}
-	
-	private void init() {
-		
-		JPanel lp = new JPanel();
-		lp.setLayout(new GridBagLayout());
-		
-		// Testkode
-		GuiTimeOfDay[] startTimeArray = GuiTimeOfDay.getTimesOfDayArray();
-		GuiTimeOfDay[] durationTimeArray = GuiTimeOfDay.getDurationTimesArray();
-		GuiTimeOfDay[] alarmTimeArray = GuiTimeOfDay.getAlarmTimesArray();
-		
-		DefaultComboBoxModel<GuiTimeOfDay> startTimeComboBoxModel = new DefaultComboBoxModel<>(startTimeArray);
-		DefaultComboBoxModel<GuiTimeOfDay> durationComboBoxModel = new DefaultComboBoxModel<>(durationTimeArray);
-		DefaultComboBoxModel<GuiTimeOfDay> alarmTimeComboBoxModel = new DefaultComboBoxModel<>(alarmTimeArray);
-		
-		// Testkode slutt
-		GridBagConstraints c = new GridBagConstraints();
-		Insets emptyInsets = new Insets(0, 0, 0, 0);
-		
-		// Beskrivelse
-		JLabel descLabel = new JLabel("Beskrivelse: ");
-		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1; c.insets = new Insets(10, 10, 0, 0);
-		lp.add(descLabel, c);
-		descText = new JTextArea(3, 14);
-		descText.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		c.gridx = 1; c.gridy = 0; c.gridheight = 1; c.gridwidth = 4;
-		lp.add(descText, c);
-		
-		// Dato
-		JLabel dateLabel = new JLabel("Dato: ");
-		c.gridx = 0; c.gridy = 1; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(dateLabel, c);
-		datePicker = new JXDatePicker(new Date());
+
+    private void init() {
+
+        JPanel lp = new JPanel();
+        lp.setLayout(new GridBagLayout());
+
+        // Testkode
+        GuiTimeOfDay[] startTimeArray = GuiTimeOfDay.getTimesOfDayArray();
+        GuiTimeOfDay[] durationTimeArray = GuiTimeOfDay.getDurationTimesArray();
+        GuiTimeOfDay[] alarmTimeArray = GuiTimeOfDay.getAlarmTimesArray();
+
+        DefaultComboBoxModel<GuiTimeOfDay> startTimeComboBoxModel = new DefaultComboBoxModel<>(startTimeArray);
+        DefaultComboBoxModel<GuiTimeOfDay> durationComboBoxModel = new DefaultComboBoxModel<>(durationTimeArray);
+        DefaultComboBoxModel<GuiTimeOfDay> alarmTimeComboBoxModel = new DefaultComboBoxModel<>(alarmTimeArray);
+
+        // Testkode slutt
+        GridBagConstraints c = new GridBagConstraints();
+        Insets emptyInsets = new Insets(0, 0, 0, 0);
+
+        // Beskrivelse
+        JLabel descLabel = new JLabel("Beskrivelse: ");
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        c.insets = new Insets(10, 10, 0, 0);
+        lp.add(descLabel, c);
+        descText = new JTextArea(3, 14);
+        descText.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 4;
+        lp.add(descText, c);
+
+        // Dato
+        JLabel dateLabel = new JLabel("Dato: ");
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(dateLabel, c);
+        datePicker = new JXDatePicker(new Date());
         datePicker.setDate(new Date());
-		c.gridx = 1; c.gridy = 1; c.gridheight = 1; c.gridwidth = 4;
-		lp.add(datePicker, c);
-		
-		// Starttid
-		JLabel startLabel = new JLabel("Starttid: ");
-		c.gridx = 0; c.gridy = 2; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(startLabel, c);
-		startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
-		c.gridx = 1; c.gridy = 2; c.gridheight = 1; c.gridwidth = 4;
-        startTimeDropdown.addActionListener(listener);
+        c.gridx = 1;
+        c.gridy = 1;
+        c.gridheight = 1;
+        c.gridwidth = 4;
+        lp.add(datePicker, c);
+
+        // Starttid
+        JLabel startLabel = new JLabel("Starttid: ");
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(startLabel, c);
+        startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
+        c.gridx = 1;
+        c.gridy = 2;
+        c.gridheight = 1;
+        c.gridwidth = 4;
+        startTimeDropdown.addActionListener(updateAvailableRooms);
         lp.add(startTimeDropdown, c);
-		
-		// Varigheit
-		JLabel durationLabel = new JLabel("Varighet: ");
-		c.gridx = 0; c.gridy = 3; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(durationLabel, c);
-		durationDropdown = new JComboBox<>(durationComboBoxModel);
-		c.gridx = 1; c.gridy = 3; c.gridheight = 1; c.gridwidth = 4;
-		lp.add(durationDropdown, c);
-		
-		// Deltakelse
-		JLabel participateLabel = new JLabel("Delta på møte: ");
-		c.gridx = 0; c.gridy = 4; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(participateLabel, c);
-		participateYesButton = new JRadioButton("Ja");
-		c.gridx = 1; c.gridy = 4; c.gridheight = 1; c.gridwidth = 2;
-		lp.add(participateYesButton, c);
-		participateNoButton = new JRadioButton("Nei");
-		c.gridx = 3; c.gridy = 4; c.gridheight = 1; c.gridwidth = 2;
-		lp.add(participateNoButton, c);
-		
-		ButtonGroup participateGroup = new ButtonGroup();
-		participateGroup.add(participateYesButton);
-		participateGroup.add(participateNoButton);
 
-		// Alarm
-		JLabel alarmLabel = new JLabel("Alarm før møte: ");
-		c.gridx = 0; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmLabel, c);
-		alarmYesButton = new JRadioButton("På");
-		c.gridx = 1; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmYesButton, c);
-		alarmNoButton = new JRadioButton("Av");
-		c.gridx = 2; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmNoButton, c);
-		
-		ButtonGroup alarmGroup = new ButtonGroup();
-		alarmGroup.add(alarmYesButton);
-		alarmGroup.add(alarmNoButton);
-		
-		alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
-		c.gridx = 3; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		lp.add(alarmTimeDropdown, c);
-		
-		GridBagConstraints cl = new GridBagConstraints();
-		cl.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-		add(lp, cl);
-		// SLUTT VENSTRESIDE
-		
-		// START HØGRESIDE
-		
-		DefaultListModel<String> nameListModel = new DefaultListModel<>();
+        // Varigheit
+        JLabel durationLabel = new JLabel("Varighet: ");
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(durationLabel, c);
+        durationDropdown = new JComboBox<>(durationComboBoxModel);
+        c.gridx = 1;
+        c.gridy = 3;
+        c.gridheight = 1;
+        c.gridwidth = 4;
+        lp.add(durationDropdown, c);
 
-        for (String key : model.getMapEmployees().keySet()){
+        // Deltakelse
+        JLabel participateLabel = new JLabel("Delta på møte: ");
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(participateLabel, c);
+        participateYesButton = new JRadioButton("Ja");
+        c.gridx = 1;
+        c.gridy = 4;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        lp.add(participateYesButton, c);
+        participateNoButton = new JRadioButton("Nei");
+        c.gridx = 3;
+        c.gridy = 4;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        lp.add(participateNoButton, c);
+
+        ButtonGroup participateGroup = new ButtonGroup();
+        participateGroup.add(participateYesButton);
+        participateGroup.add(participateNoButton);
+
+        // Alarm
+        JLabel alarmLabel = new JLabel("Alarm før møte: ");
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(alarmLabel, c);
+        alarmYesButton = new JRadioButton("På");
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(alarmYesButton, c);
+        alarmNoButton = new JRadioButton("Av");
+        c.gridx = 2;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(alarmNoButton, c);
+
+        ButtonGroup alarmGroup = new ButtonGroup();
+        alarmGroup.add(alarmYesButton);
+        alarmGroup.add(alarmNoButton);
+
+        alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
+        c.gridx = 3;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        lp.add(alarmTimeDropdown, c);
+
+        GridBagConstraints cl = new GridBagConstraints();
+        cl.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        add(lp, cl);
+        // SLUTT VENSTRESIDE
+
+        // START HØGRESIDE
+
+        DefaultListModel<String> nameListModel = new DefaultListModel<>();
+
+        for (String key : model.getMapEmployees().keySet()) {
             if (key.equals(model.getUsername())) continue;
-		    nameListModel.addElement(model.getMapEmployees().get(key).getName());
+            nameListModel.addElement(model.getMapEmployees().get(key).getName());
         }
 
-        List<MeetingRoom> rooms = new ArrayList<>(model.getMapMeetingRoom().values());
-        String[] roomsArr = new String[rooms.size()];
-        for (int i = 0; i < rooms.size(); i++){
-            roomsArr[i] = rooms.get(i).getName();
-        }
-		DefaultComboBoxModel<String> roomsComboBoxModel = new DefaultComboBoxModel<>(roomsArr);
-		
-		
-		// Testkode slutt
-		JPanel rp = new JPanel();
-		rp.setLayout(new GridBagLayout());
-		
-		c = new GridBagConstraints();
-		
-		// Legg til deltakere
-		JLabel addEmpLabel = new JLabel("Legg til deltakere");
-		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 3;
-		rp.add(addEmpLabel, c);
-		addEmpList = new JList<>(nameListModel);
-		addEmpList.setFixedCellWidth(200);
-		JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
-		c.gridx = 0; c.gridy = 1; c.gridheight = 2; c.gridwidth = 3;
-		rp.add(addEmpListScroller, c);
-		
-		JLabel extraLabel = new JLabel("Ekstra deltakere: ");
-		c.gridx = 0; c.gridy = 3; c.gridheight = 1; c.gridwidth = 1;
-		rp.add(extraLabel, c);
-		extraField = new JTextField(2);
-		extraField.setText("0");
-		PlainDocument doc = (PlainDocument) extraField.getDocument();
-		doc.setDocumentFilter(new MyIntFilter());
-		extraField.setColumns(2);
-		c.gridx = 1; c.gridy = 3; c.gridheight = 1; c.gridwidth = 2;
-		rp.add(extraField, c);
-		
-		// Velg rom/sted
-		LocationRadioButtonListener roomOrLocationListener = new LocationRadioButtonListener();
-		
-		JLabel chooseRoomLabel = new JLabel("Velg et tilgjengelig rom: ");
-		c.gridx = 0; c.gridy = 4; c.gridheight = 1; c.gridwidth = 3;
-		rp.add(chooseRoomLabel, c);
-		roomRadioButton = new JRadioButton();
-		roomRadioButton.addActionListener(roomOrLocationListener);
-		c.gridx = 0; c.gridy = 5; c.gridheight = 1; c.gridwidth = 1;
-		rp.add(roomRadioButton, c);
-		roomsDropdown = new JComboBox<>(roomsComboBoxModel);
-		c.gridx = 1; c.gridy = 5; c.gridheight = 1; c.gridwidth = 2;
-		rp.add(roomsDropdown, c);
-		
-		JLabel roomOrLocationLabel = new JLabel("eller velg annet sted: ");
-		c.gridx = 0; c.gridy = 6; c.gridheight = 1; c.gridwidth = 3;
-		rp.add(roomOrLocationLabel, c);
-		locationRadioButton = new JRadioButton();
-		locationRadioButton.addActionListener(roomOrLocationListener);
-		c.gridx = 0; c.gridy = 7; c.gridheight = 1; c.gridwidth = 1;
-		rp.add(locationRadioButton, c);
-		locationTextField = new JTextField(15);
-		c.gridx = 1; c.gridy = 7; c.gridheight = 1; c.gridwidth = 2;
-		rp.add(locationTextField, c);
-		
-		ButtonGroup roomLocationGroup = new ButtonGroup();
-		roomLocationGroup.add(roomRadioButton);
-		roomLocationGroup.add(locationRadioButton);
-		
-		// Knappar
-		JButton cancelButton = new JButton("Avbryt");
-		c.gridx = 0; c.gridy = 8; c.gridheight = 1; c.gridwidth = 1;
-		rp.add(cancelButton, c);
 
-		JButton saveButton = new JButton("Lagre");
-        saveButton.setAction(new NewMeetingAction());
-		c.gridx = 1; c.gridy = 8; c.gridheight = 1; c.gridwidth = 2;
-		rp.add(saveButton, c);
-		
-		cl.gridx = 1; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1; cl.insets = new Insets(0, 50, 0, 0);
-		add(rp, cl);
-		
-	}
 
-    private ActionListener listener = new ActionListener() {
+
+        // Testkode slutt
+        JPanel rp = new JPanel();
+        rp.setLayout(new GridBagLayout());
+
+        c = new GridBagConstraints();
+
+        // Legg til deltakere
+        JLabel addEmpLabel = new JLabel("Legg til deltakere");
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 3;
+        rp.add(addEmpLabel, c);
+        addEmpList = new JList<>(nameListModel);
+        addEmpList.setFixedCellWidth(200);
+        JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridheight = 2;
+        c.gridwidth = 3;
+        rp.add(addEmpListScroller, c);
+
+        JLabel extraLabel = new JLabel("Ekstra deltakere: ");
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        rp.add(extraLabel, c);
+        extraField = new JTextField(2);
+        extraField.setText("0");
+        PlainDocument doc = (PlainDocument) extraField.getDocument();
+        doc.setDocumentFilter(new MyIntFilter());
+        extraField.setColumns(2);
+        extraField.addActionListener(updateAvailableRooms);
+        extraField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+        c.gridx = 1;
+        c.gridy = 3;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        rp.add(extraField, c);
+
+        // Velg rom/sted
+        LocationRadioButtonListener roomOrLocationListener = new LocationRadioButtonListener();
+
+//
+        roomRadioButton = new JRadioButton();
+        roomRadioButton.addActionListener(roomOrLocationListener);
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        rp.add(roomRadioButton, c);
+        roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(true));
+        roomsDropdown = new JComboBox<>(roomsComboBoxModel);
+        c.gridx = 1;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        Dimension dim = new Dimension(175, 20);
+        roomsDropdown.setPreferredSize(dim);
+        roomsDropdown.setMaximumSize(dim);
+        roomsDropdown.setMinimumSize(dim);
+        roomsDropdown.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                roomRadioButton.setSelected(true);
+                locationRadioButton.setSelected(false);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
+        rp.add(roomsDropdown, c);
+
+
+        locationRadioButton = new JRadioButton();
+        locationRadioButton.addActionListener(roomOrLocationListener);
+        c.gridx = 0;
+        c.gridy = 7;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        rp.add(locationRadioButton, c);
+        final String defaultText = "[Velg ett annet sted:]";
+        locationTextField = new JTextField(defaultText, 15);
+        locationTextField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                locationRadioButton.setSelected(true);
+                roomRadioButton.setSelected(false);
+                if (locationTextField.getText().equals(defaultText)){
+                    locationTextField.setText("");
+                };
+
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (locationTextField.getText().isEmpty()){
+                    locationTextField.setText(defaultText);
+                }
+            }
+        });
+        c.gridx = 1;
+        c.gridy = 7;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        rp.add(locationTextField, c);
+
+        ButtonGroup roomLocationGroup = new ButtonGroup();
+        roomLocationGroup.add(roomRadioButton);
+        roomLocationGroup.add(locationRadioButton);
+
+        // Knappar
+        JButton cancelButton = new JButton("Avbryt");
+        c.gridx = 0;
+        c.gridy = 8;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        rp.add(cancelButton, c);
+
+        JButton saveButton = new JButton("Lagre");
+        saveButton.setAction(new NewMeetingAction("Lagre"));
+        c.gridx = 1;
+        c.gridy = 8;
+        c.gridheight = 1;
+        c.gridwidth = 2;
+        rp.add(saveButton, c);
+
+        cl.gridx = 1;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        cl.insets = new Insets(0, 50, 0, 0);
+        add(rp, cl);
+
+    }
+
+    private ActionListener updateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             int antAttendees = 0;
@@ -269,8 +389,7 @@ public class NewMeetingPanel extends JPanel {
             GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
             int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
             MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime ,duration, antAttendees));
-            System.out.println("check is room available!");
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime, duration, antAttendees));
         }
     };
 
@@ -283,21 +402,49 @@ public class NewMeetingPanel extends JPanel {
 
 		return returnDate; 
 	}
-	
-	private class NewMeetingAction extends AbstractAction {
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ClientModelImpl.ROOMS)) {
+            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
+            roomsDropdown.setModel(roomsComboBoxModel);
+
+        }
+    }
+
+    public String[] getRooms(boolean init) {
+        List<MeetingRoom> rooms = null;
+        if (init) rooms = new ArrayList<>(model.getMapMeetingRoom().values());
+        else rooms = new ArrayList<>(model.getMapMeetingRoomAvailable().values());
+        String[] roomsArr = new String[rooms.size()+1];
+        roomsArr[0] = "Velg rom";
+        for (int i = 1; i < rooms.size(); i++){
+            roomsArr[i] = rooms.get(i).getName();
+        }
+        return roomsArr;
+    }
+
+    private class NewMeetingAction extends AbstractAction {
 		
-		public NewMeetingAction() {
-			
+		public NewMeetingAction(String tittel) {
+			putValue(AbstractAction.NAME, tittel);
+
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+            String selectedRoom = (String) roomsDropdown.getSelectedItem();
+            if (selectedRoom.contains("Velg rom"))  {
+                //@todo popupbeskjed om å velge rom.
+                return;
+            }
             System.out.println("action");
             Meeting meeting = new Meeting(UUID.randomUUID().toString());
 			meeting.setDescription(descText.getText());
 			meeting.setMeetingTime(new Date());
 			GuiTimeOfDay time = (GuiTimeOfDay) durationDropdown.getSelectedItem();
             meeting.setDuration(time.getHours() * 60 + time.getMinutes());
+            meeting.setMeetingRoom(model.getMapMeetingRoomAvailable().get(roomsDropdown.getSelectedItem()));
 
 			// todo: Legg til deltakere
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
