@@ -50,26 +50,26 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	private GridBagLayout layout = new GridBagLayout();
 	
 	// Verdi-felt på venstresida
-	private JTextArea descText;
-	private JXDatePicker datePicker;
-	private JComboBox<GuiTimeOfDay> startTimeDropdown;
-	private JComboBox<GuiTimeOfDay> durationDropdown;
-	private JRadioButton participateYesButton;
-	private JRadioButton participateNoButton;
-	private JRadioButton alarmYesButton;
-	private JRadioButton alarmNoButton;
-	private JComboBox<GuiTimeOfDay> alarmTimeDropdown;
+	protected JTextArea descText;
+    protected JXDatePicker datePicker;
+    protected JComboBox<GuiTimeOfDay> startTimeDropdown;
+    protected JComboBox<GuiTimeOfDay> durationDropdown;
+    protected JRadioButton participateYesButton;
+    protected JRadioButton participateNoButton;
+	protected JRadioButton alarmYesButton;
+	protected JRadioButton alarmNoButton;
+	protected JComboBox<GuiTimeOfDay> alarmTimeDropdown;
 	
 	// Verdi-felt på høgresida
-	private JList<String> addEmpList;
-	private JTextField extraField;
-	private JRadioButton roomRadioButton;
-	private JRadioButton locationRadioButton;
-	private JComboBox<String> roomsDropdown;
-	private JTextField locationTextField;
-	
-	private ClientModelImpl model;
-    private DefaultComboBoxModel<String> roomsComboBoxModel;
+	protected JList<String> addEmpList;
+    protected JTextField extraField;
+    protected JRadioButton roomRadioButton;
+    protected JRadioButton locationRadioButton;
+    protected JComboBox<String> roomsDropdown;
+    protected JTextField locationTextField;
+
+    protected ClientModelImpl model;
+    protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
     public NewMeetingPanel(ClientModelImpl model) {
