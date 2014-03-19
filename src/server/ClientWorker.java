@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.Map;
 
 import protocol.*;
 
@@ -15,19 +17,23 @@ import protocol.*;
  * To change this template use File | Settings | File Templates.
  */
 public class ClientWorker implements Runnable {
-	
-	private Socket serverSocket = null;
+
+    private final Map<String, ObjectOutputStream> usersLoggedIn;
+    private final ServerModelSyncronizer sync;
+    private Socket serverSocket = null;
 	private ObjectInputStream objInput;
 	private ObjectOutputStream objOutput;
     private boolean loggedIn = false;
-    private static String username = "";
+    private String username = "";
 	
 	private boolean isStopped = true;
 	private Thread runningThread = null;
 	
-    public ClientWorker(Socket givenSocket) {
+    public ClientWorker(Socket givenSocket, Map<String, ObjectOutputStream> usersLoggedIn) {
     	this.serverSocket = givenSocket;
-    	
+        this.usersLoggedIn = usersLoggedIn;
+        sync = new ServerModelSyncronizer();
+
     	try {
     		objInput = new ObjectInputStream(serverSocket.getInputStream());
 			objOutput = new ObjectOutputStream(serverSocket.getOutputStream());
@@ -56,7 +62,12 @@ public class ClientWorker implements Runnable {
 
                 if (messageType == MessageType.REQUEST && transferType == TransferType.LOGIN){
                     loggedIn = RequestHandler.handleLogin(transObj);
+                    String username = (String) transObj.getObject(0);
                     System.out.println("From server: Client logged in: " + loggedIn);
+//                    usersLoggedIn.put(username, objOutput);
+                    setUsername(username);
+                    MultiThreadedServer.addClient(username, objOutput);
+                    MultiThreadedServer.getClients();  //printer alle som er logget inn hver gang en ny logger inn.
                     objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.LOGIN, loggedIn));
                 }
 
@@ -64,9 +75,9 @@ public class ClientWorker implements Runnable {
                 try {
                     if (loggedIn){
                         if (messageType == messageType.REQUEST && transferType == TransferType.INIT_MODEL){
-                            RequestHandler.handleInit(transObj, username, objOutput);
+                            RequestHandler.handleInit(transObj, objOutput);
                         }
-                        else RequestHandler.handleRequest(transObj, objOutput);
+                        else RequestHandler.handleRequest(transObj, objOutput, sync);
                     }
                     else System.out.println("Client not authorized yet!");
                     success = true;
@@ -120,4 +131,14 @@ public class ClientWorker implements Runnable {
     public Socket getSocket() {
     	return serverSocket;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+        sync.setUsername(username);
+    }
+
 }
