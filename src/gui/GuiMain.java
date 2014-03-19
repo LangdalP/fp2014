@@ -8,6 +8,7 @@ import java.awt.event.WindowListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import client.ClientModelImpl;
 import model.impl.ModelImpl;
 import client.ClientMain;
 
@@ -19,7 +20,7 @@ public class GuiMain extends JFrame {
 	private JPanel calendarPanel;
 	private GridBagLayout layout = new GridBagLayout();
 	
-	private ModelImpl model;
+	private ClientModelImpl model;
 	
 	public GuiMain() {
 		setContentPane(contentPanel);
@@ -52,9 +53,9 @@ public class GuiMain extends JFrame {
 		setVisible(false);
 	}
 	
-	public void showMainPanel(ModelImpl model) {
+	public void showMainPanel(ClientModelImpl model) {
 		this.model = model;
-		// Må sette upperPanel til "Hjem" og calendarPanel til kalender
+		// Mï¿½ sette upperPanel til "Hjem" og calendarPanel til kalender
 		setContentPane(contentPanel);
 		
 		upperPanel = new JPanel();		// Skal vere "Hjem"

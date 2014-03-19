@@ -10,13 +10,14 @@ import protocol.TransferObject;
 import protocol.TransferType;
 
 public class ClientMain {
-    public static Boolean loggedin;
+    private static Boolean loggedin;
+    private static String username;
+
+    private static boolean modelLoaded = false;
+    private static ClientModelImpl model = null;
     
-    public static boolean modelLoaded = false;
-    public static ModelImpl model = null;
-    
-    public static final String serverIP = "localhost";
-    public static final int serverPort = 54545;
+    private static final String serverIP = "localhost";
+    private static final int serverPort = 54545;
     private static ClientConnection clientConn;
     private static ConnectionListener listener;
 
@@ -38,7 +39,8 @@ public class ClientMain {
         long start = new GregorianCalendar().getTimeInMillis();
         while (getLoggedin() == null && start < start + 2000){
         }
-        if (loggedin == null) loggedin = false;
+        if (loggedin == null) setLoggedin(false);
+        username = login;
         return loggedin;
     }
 
@@ -50,12 +52,12 @@ public class ClientMain {
         ClientMain.loggedin = loggedin;
     }
     
-    public static synchronized void setModel(ModelImpl model) {
+    public static synchronized void setModel(ClientModelImpl model) {
     	modelLoaded = true;
     	ClientMain.model = model;
     }
     
-    public static synchronized ModelImpl getModel() {
+    public static synchronized ClientModelImpl getModel() {
     	return ClientMain.model;
     }
 
@@ -81,18 +83,18 @@ public class ClientMain {
 		ClientMain client = new ClientMain();
 		GuiMain gui = new GuiMain();
 		gui.showLogin();
-		
+
 		System.out.println("Login ferdig");
-		
+
 		// Laste inn modell her
 		TransferObject pls_get_model = new TransferObject(MessageType.REQUEST, TransferType.INIT_MODEL);
-		// Spør om modell
+		// Spï¿½r om modell
 		ClientMain.sendTransferObject(pls_get_model);
-		
 		while (ClientMain.getModel() == null) {
 			//
 		}
-		
+
+        getModel().setUsername(username);
 		System.out.println(ClientMain.getModel());
 		gui.showMainPanel(ClientMain.getModel());
 		

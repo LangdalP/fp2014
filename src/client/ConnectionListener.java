@@ -53,7 +53,7 @@ public class ConnectionListener implements Runnable {
                 	}
                 } else if (transferType == TransferType.INIT_MODEL){
                 	System.out.println("Inside init model");
-                    ModelImpl model = responseHandler.handleInit(incomingObj);
+                    ClientModelImpl model = responseHandler.handleInit(incomingObj);
                     clientMain.setModel(model);
                 } else responseHandler.handleResponse(incomingObj);
 

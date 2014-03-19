@@ -1,6 +1,5 @@
 package protocol;
 
-import db.ModelDbImpl;
 import db.ModelDbService;
 
 import model.*;
@@ -11,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,12 +89,15 @@ public class RequestHandler {
 //                sync.removeAttendeeFromMeeting(meeting, attendee);
                 break;
             }
-            case IS_MEETING_ROOM_AVAILABLE:{
+            case GET_AVAILABLE_MEETING_ROOMS:{
                 MeetingRoom mr = (MeetingRoom) obj.getObject(0);
                 Date meetingStart = (Date) obj.getObject(1);
                 Integer duration = (Integer) obj.getObject(2);
-                boolean available = model.isMeetingRoomAvailable(mr, meetingStart, duration);
-                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.IS_MEETING_ROOM_AVAILABLE, available));
+                Integer minAttendees = (Integer) obj.getObject(3);
+                System.out.println(mr + "\t" + meetingStart + "\t" + duration + "\t" + minAttendees);
+                Map<String, MeetingRoom> map = model.getAvailableMeetingRooms(mr, meetingStart, duration, minAttendees);
+                System.out.println("send back ");
+                objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_AVAILABLE_MEETING_ROOMS, map));
                 break;
             }
 
