@@ -8,10 +8,8 @@ import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
 
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
@@ -366,8 +364,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     }
     
     public JButton getLeftButton(){
-    	 JButton cancelButton =  new JButton("Avbryt");
-    	 return cancelButton;
+        JButton cancelButton =  new JButton("Avbryt");
+        cancelButton.setAction(new CancelAction("Avbryt"));
+        return cancelButton;
     	
     }
     
@@ -431,6 +430,20 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         return roomsArr;
     }
 
+    private class CancelAction extends AbstractAction{
+
+        private CancelAction(String tittel) {
+            putValue(AbstractAction.NAME, tittel);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (Meeting m : model.getMapFutureMeetings().values()){
+                System.out.println(model.getUsername() + "\t" + m.getDescription());
+            }
+        }
+    }
+
     //SAVE BUTTON
     private class NewMeetingAction extends AbstractAction {
 		
@@ -470,23 +483,32 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
             //LEGG TIL BRUKER.
             boolean hasResponded = (participateYesButton.isSelected() || participateNoButton.isSelected()) ? true : false;
-            Boolean attendeeStatus = null;
+            Boolean attendeeStatus = false;
             if (participateYesButton.isSelected()) attendeeStatus = true;
             if (participateNoButton.isSelected()) attendeeStatus = false;
             boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
             GuiTimeOfDay timeAlarm  = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
-            Long timeBeforeMeeting = new Date().getTime() + (timeAlarm.getHours() * 60 + timeAlarm.getMinutes() * 1000);
+
+            Long minusAlarmTime = meeting.getMeetingTime().getTime() - new Long(timeAlarm.getHours() * 60 + timeAlarm.getMinutes()) * 60 * 1000;
+            Calendar cal = new GregorianCalendar();
+            cal.setTimeInMillis(minusAlarmTime);
 
             Employee userEmp = model.getMapEmployees().get(model.getUsername());
-            Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, new Date(timeBeforeMeeting));
+            Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, cal.getTime());
             meeting.addAttendee(userAttendee);
 
             //set eksterne deltagere.
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
             int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
 
-            System.out.println(meeting);
-//            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+//            System.out.println(meeting);
+            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+
+
+//            System.out.println("nr futureMeetings: " + model.getMapFutureMeetings().size());
+//            for (Meeting m : model.getMapFutureMeetings().values()){
+//                System.out.println(m.getMeetingOwner().getUsername() + "\t"+ m.getMeetingTime());
+//            }
 
         }
 		
