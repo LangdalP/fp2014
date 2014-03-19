@@ -38,6 +38,7 @@ public class Meeting implements Serializable{
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
 		this.meetingRoomName = meetingRoom.getName();
+        mapAttendees = new HashMap<>();
 
 	}
 
@@ -116,7 +117,8 @@ public class Meeting implements Serializable{
     }
 	
 	public void addAttendee(Attendee attendee){
-		mapAttendees.put(attendee.getEmployee().getUsername(), attendee);
+        System.out.println(attendee.getEmployee());
+        mapAttendees.put(attendee.getEmployee().getUsername(), attendee);
 	}
 	
 	public void removeAttendee(Attendee attendee){
