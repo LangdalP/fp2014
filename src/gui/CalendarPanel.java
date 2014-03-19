@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,6 +33,7 @@ public class CalendarPanel extends JPanel {
 	public CalendarPanel(ClientModelImpl model) {
 		setLayout(layout);
 		this.model = model;
+		
 		
 		init();
 	}
@@ -88,10 +90,19 @@ public class CalendarPanel extends JPanel {
 			this.meetingsThisDay = meetingsThisDay;
 			
 			setLayout(new GridBagLayout());
-			
+			setPreferredSize(new Dimension(80, 430));
+			setMinimumSize(new Dimension(80, 430));
 			
 			initTopLabel();
 			initMeetings();
+		}
+		
+		public void setMeetings(Map<String, Meeting> meetingsThisDay) {
+			this.meetingsThisDay = meetingsThisDay;
+		}
+		
+		private void redrawMeetings() {
+			// TODO kode
 		}
 		
 		private void initTopLabel() {
@@ -123,19 +134,54 @@ public class CalendarPanel extends JPanel {
 		private void initMeetings() {
 			// Container-panel
 			MeetingContainerPanel mCont = new MeetingContainerPanel();
-			mCont.setPreferredSize(new Dimension(80, 390));
-			c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+			c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1; c.fill = GridBagConstraints.BOTH;
+			c.anchor = GridBagConstraints.NORTHWEST;
 			add(mCont, c);
 			
-			
+			Meeting meeting = new Meeting("whatever id");
+			Date testTime = new Date();
+			meeting.setDuration(60);
+			meeting.setMeetingTime(testTime);
+			meeting.setDescription("Møte");
+			//mCont.addMeeting(meeting);
 		}
 	}
 	
 	// Inneheld alle møte, og teiknar horisontale strekar bort til tidspunkta
 	private class MeetingContainerPanel extends JPanel {
 		
+		private GridBagConstraints c = new GridBagConstraints();
+		
 		public MeetingContainerPanel() {
+			setLayout(new GridBagLayout());
 			setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
+			setPreferredSize(new Dimension(80, 390));
+			setMinimumSize(new Dimension(80, 390));
+		}
+		
+		public void addMeeting(Meeting meeting) {
+			int startHour = meeting.getMeetingTime().getHours();
+			int startMinute = meeting.getMeetingTime().getMinutes();
+			int duration = meeting.getDuration();
+			
+			// Sjekkar at møtet er mellom 8 og 20:
+			if (startHour<8 || startHour>20) return;
+			
+			CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meeting);
+			// Calculate gridposition
+			int gridY = (startHour-8)*2;
+			if (startMinute == 30) {
+				gridY += 1;
+			}
+			
+			c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1; c.weightx = 1; c.weighty = 1;
+			c.fill = GridBagConstraints.BOTH;
+			c.anchor = GridBagConstraints.NORTHWEST;
+			c.insets = new Insets(90, 0, 0, 0);
+			add(meetPan, c);
+			
+			
+			repaint();
 		}
 
 		@Override
