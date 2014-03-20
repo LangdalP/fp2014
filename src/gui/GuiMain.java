@@ -59,7 +59,7 @@ public class GuiMain extends JFrame {
 		setContentPane(contentPanel);
 		
 		upperPanel = new JPanel();		// Skal vere "Hjem"
-		calendarPanel = new JPanel();	// Skal vere Kalendervisning
+		calendarPanel = new CalendarPanel(model);
 		GridBagConstraints c = new GridBagConstraints();
 		
 		NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
