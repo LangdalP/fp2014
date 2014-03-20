@@ -1,18 +1,20 @@
 package gui;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import client.ClientModelImpl;
 import model.Meeting;
-import model.impl.ModelImpl;
 import client.ClientMain;
+import client.ClientModelImpl;
 
 public class GuiMain extends JFrame implements PropertyChangeListener {
 	
@@ -21,6 +23,8 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	private JPanel upperPanel;
 	private JPanel calendarPanel;
 	private GridBagLayout layout = new GridBagLayout();
+	private GridBagConstraints topConstraint;
+	private GridBagConstraints bottomConstraint;
 	
 	private ClientModelImpl model;
 	
@@ -64,6 +68,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		this.model = model;
 		// M� sette upperPanel til "Hjem" og calendarPanel til kalender
 		setContentPane(contentPanel);
+		//contentPanel.setLayout(layout);
 		
 		upperPanel = new JPanel();		// Skal vere "Hjem"
 		calendarPanel = new CalendarPanel(model);
@@ -74,11 +79,11 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
         Meeting meeting = model.getMapFutureMeetings().get("mote3");
 		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
 
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(panel, c);
-		contentPanel.add(panel, c);
-		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(calendarPanel, c);
+		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
+		contentPanel.add(panel);
+		//c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+		contentPanel.add(calendarPanel);
+		
 		setLocation(0,0);
 		pack();
 		
@@ -159,7 +164,19 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+		Meeting meet = (Meeting) evt.getNewValue();
 		System.out.println(evt.getPropertyName());
+		if (evt.getPropertyName().equals("EDIT_MEETING")) {
+			NewMeetingPanel editPanel = new NewMeetingPanel(model, meet);
+			contentPanel.add(editPanel, 0);
+			contentPanel.remove(1);
+		} else if (evt.getPropertyName().equals("SHOW_MEETING")) {
+			InfoMeetingPanel infoPanel = new InfoMeetingPanel(model, meet);
+			contentPanel.add(infoPanel, 0);
+			contentPanel.remove(1);
+		}
+		contentPanel.revalidate();
+		contentPanel.repaint();
 	}
 	
 }
