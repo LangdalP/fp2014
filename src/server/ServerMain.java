@@ -30,7 +30,7 @@ public class ServerMain {
         Map<String, Employee> employees = modeldb.getMapEmployees();
         Map<String, Group> groups = new ModelDbService().getMapGroups();
         Map<String, MeetingRoom> meetingRooms = modeldb.getMapMeetingRoom();
-        Map<String, Meeting> meetings = modeldb.getOldMeetings();
+        Map<String, Meeting> meetings = modeldb.getMapFutureMeetings();
         model = new ModelImpl(meetings, employees, meetingRooms, groups);
         requestHandler = new RequestHandler(model);
         System.out.println(model.toString());
