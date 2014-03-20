@@ -160,6 +160,7 @@ public class ModelDbService {
                     meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
                     meeting.setDuration(rs.getInt("varighet"));
                     meeting.setMeetingLocation(rs.getString("sted"));
+                    meeting.setDescription(rs.getString("beskrivelse"));
 
                     Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
                     meeting.setMeetingOwner(owner);
