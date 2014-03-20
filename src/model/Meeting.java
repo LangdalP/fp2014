@@ -8,9 +8,9 @@ public class Meeting implements Serializable{
 	private static final long serialVersionUID = 5308232820435917628L;
 	
 	private String meetingID;
-	private Date meetingTime;
+	private Date meetingTime = new Date();
 	private int duration; //#minute
-	private String description;
+	private String description = "";
 	private String meetingLocation;
 	private Employee meetingOwner;
 	private Map<String, Attendee> mapAttendees;
