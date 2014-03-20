@@ -3,6 +3,8 @@ package gui;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,7 +13,7 @@ import client.ClientModelImpl;
 import model.impl.ModelImpl;
 import client.ClientMain;
 
-public class GuiMain extends JFrame {
+public class GuiMain extends JFrame implements PropertyChangeListener {
 	
 	private boolean loggedIn = false;
 	private JPanel contentPanel = new JPanel();
@@ -64,6 +66,8 @@ public class GuiMain extends JFrame {
 		
 		upperPanel = new JPanel();		// Skal vere "Hjem"
 		calendarPanel = new CalendarPanel(model);
+		calendarPanel.addPropertyChangeListener(this);
+		
 		GridBagConstraints c = new GridBagConstraints();
 		
 		NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
@@ -147,6 +151,12 @@ public class GuiMain extends JFrame {
 			// TODO Auto-generated method stub
 			
 		}
+	}
+
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println(evt.getPropertyName());
 	}
 	
 }
