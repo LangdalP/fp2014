@@ -3,15 +3,18 @@ package gui;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import client.ClientModelImpl;
+import model.Meeting;
 import model.impl.ModelImpl;
 import client.ClientMain;
 
-public class GuiMain extends JFrame {
+public class GuiMain extends JFrame implements PropertyChangeListener {
 	
 	private boolean loggedIn = false;
 	private JPanel contentPanel = new JPanel();
@@ -64,14 +67,15 @@ public class GuiMain extends JFrame {
 		
 		upperPanel = new JPanel();		// Skal vere "Hjem"
 		calendarPanel = new CalendarPanel(model);
+		calendarPanel.addPropertyChangeListener(this);
+		
 		GridBagConstraints c = new GridBagConstraints();
 		
-	//	NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
-		InfoMeetingPanel panel = new InfoMeetingPanel(this.model);
-		
-		
+        Meeting meeting = model.getMapFutureMeetings().get("mote3");
+		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
+
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-	//	contentPanel.add(newMeetingPanel, c);
+		contentPanel.add(panel, c);
 		contentPanel.add(panel, c);
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel, c);
@@ -150,6 +154,12 @@ public class GuiMain extends JFrame {
 			// TODO Auto-generated method stub
 			
 		}
+	}
+
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		System.out.println(evt.getPropertyName());
 	}
 	
 }

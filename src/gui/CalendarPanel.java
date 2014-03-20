@@ -1,11 +1,17 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +24,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -27,7 +32,7 @@ import model.Employee;
 import model.Meeting;
 import client.ClientModelImpl;
 
-public class CalendarPanel extends JPanel {
+public class CalendarPanel extends JPanel implements PropertyChangeListener, MouseListener {
 	
 	private static final Dimension TOP_LABEL_DIMENSION = new Dimension(80, 40);
 	private static final Dimension TIME_LABEL_DIMENSION = new Dimension(80, 30);
@@ -44,11 +49,14 @@ public class CalendarPanel extends JPanel {
 	private HashMap<Employee, List<Meeting>> meetingsByEmployee = new HashMap<>();
 	private GridBagLayout containerLayout = new GridBagLayout();
 	private HashMap<Integer, GridBagConstraints> constraints = new HashMap<>();
+	private CalendarPanel thisRef;
+	private PropertyChangeSupport pcs;
 	
 	public CalendarPanel(ClientModelImpl model) {
 		setLayout(new GridBagLayout());
 		this.model = model;
-		
+		this.thisRef = this;
+		this.pcs = new PropertyChangeSupport(this);
 		
 		init();
 	}
@@ -103,7 +111,7 @@ public class CalendarPanel extends JPanel {
 		long newTimeMs = currentMs - (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
 		
-		addDaysToContainer();
+		refreshDays();
 		
 	}
 	
@@ -114,7 +122,7 @@ public class CalendarPanel extends JPanel {
 		long newTimeMs = currentMs + (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
 		
-		addDaysToContainer();
+		refreshDays();
 	}
 	
 	public void setEmployeesToShow(List<Employee> emps) {
@@ -125,13 +133,11 @@ public class CalendarPanel extends JPanel {
 			meetingsByEmployee.put(emp, meetingsForEmp);
 		}
 		
-		removeAllDayPanels();
-		addDaysToContainer();
+		refreshDays();
 	}
 	
-	private void addDaysToContainer() {
-		
-		System.out.println("Inside redraw");
+	private void refreshDays() {
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
@@ -154,16 +160,6 @@ public class CalendarPanel extends JPanel {
 		calendarContainer.revalidate();
 		calendarContainer.repaint();
 		repaint();
-	}
-	
-	private void removeAllDayPanels() {
-		if (calendarContainer.getComponentCount() != 8) {
-			System.out.println("Cannot remove!");
-			return;
-		}
-		for (int i = 7; i>0; i--) {
-			calendarContainer.remove(i);
-		}
 	}
 	
 	// Lagar panelet for ein dag, dvs. ei kolonne i kalenderen
@@ -297,6 +293,8 @@ public class CalendarPanel extends JPanel {
 				
 				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth);
 				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
+				meetPan.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				meetPan.addMouseListener(thisRef);
 				add(meetPan);
 				addedMeetings.add(meet);
 			}
@@ -516,6 +514,53 @@ public class CalendarPanel extends JPanel {
 		}
 		
 		return outMeets;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent arg0) {
+		// Modellen har endra seg
+		refreshDays();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		CalendarMeetingPanel meetPan = (CalendarMeetingPanel) e.getComponent();
+		Meeting clickedMeet = meetPan.getMeeting();
+		boolean owner = false;
+		clickedMeet.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
+		if (clickedMeet.getMeetingOwner().getUsername().equals(model.getUsername())) owner = true;
+		
+		String eventName = owner ? "EDIT_MEETING" : "SHOW_MEETING"; 
+		System.out.println("Clicked on " + clickedMeet.getMeetingID());
+		pcs.firePropertyChange(eventName, null, clickedMeet);
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		pcs.addPropertyChangeListener(listener);
 	}
 	
 }
