@@ -65,7 +65,10 @@ public class CalendarPanel extends JPanel {
 		calendarContainer.add(timePanel, c);
 		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
 		for (Date day : allDaysOfWeek) {
-			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
+			List<Meeting> myMeetingsThisDay = getMeetingsOnDate(meetingsByEmployee.get(myEmployee), day);
+			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
+			mapEmpMeets.put(myEmployee, myMeetingsThisDay);
+			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
 			c.gridx += 1;
 			calendarContainer.add(dayPanel, c);
 		}
@@ -98,9 +101,9 @@ public class CalendarPanel extends JPanel {
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 		for (Date day : allDaysOfWeek) {
 			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
-			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
+			//CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
 			c.gridx += 1;
-			calendarContainer.add(dayPanel, c);
+			//calendarContainer.add(dayPanel, c);
 		}
 		repaint();
 	}
@@ -119,9 +122,9 @@ public class CalendarPanel extends JPanel {
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 		for (Date day : allDaysOfWeek) {
 			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
-			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
+			//CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
 			c.gridx += 1;
-			calendarContainer.add(dayPanel, c);
+			//calendarContainer.add(dayPanel, c);
 		}
 		repaint();
 	}
@@ -135,10 +138,10 @@ public class CalendarPanel extends JPanel {
 	private class CalendarDayPanel extends JPanel {
 		
 		private Date dayDate;
-		private Map<String, Meeting> meetingsThisDay;
+		private Map<Employee, List<Meeting>> meetingsThisDay;
 		private GridBagConstraints c = new GridBagConstraints();
 		
-		public CalendarDayPanel(Date dayDate, Map<String, Meeting> meetingsThisDay) {
+		public CalendarDayPanel(Date dayDate, Map<Employee, List<Meeting>> meetingsThisDay) {
 			this.dayDate = dayDate;
 			this.meetingsThisDay = meetingsThisDay;
 			
@@ -153,7 +156,7 @@ public class CalendarPanel extends JPanel {
 		}
 		
 		public void setMeetings(Map<String, Meeting> meetingsThisDay) {
-			this.meetingsThisDay = meetingsThisDay;
+			//this.meetingsThisDay = meetingsThisDay;
 		}
 		
 		private void redrawMeetings() {
@@ -193,60 +196,15 @@ public class CalendarPanel extends JPanel {
 			c.anchor = GridBagConstraints.NORTHWEST;
 			add(mCont, c);
 			
-			if (dayDate.getDay() == new Date().getDay()) {
-				Meeting meeting1 = new Meeting("whatever id");
-				Date testTime = new Date();
-				testTime.setHours(12);
-				testTime.setMinutes(0);
-				meeting1.setDuration(60);
-				meeting1.setMeetingTime(testTime);
-				meeting1.setDescription("Møte");
-				mCont.addMeeting(meeting1);
+			// TODO: Finne forskjellige fargar
+			
+			for (Employee emp : meetingsThisDay.keySet()) {
+				// Noke koder for farge her
+				List<Meeting> empMeets = meetingsThisDay.get(emp);
+				for (Meeting empMeeting : empMeets) {
+					mCont.addMeeting(empMeeting);
+				}
 				
-				Meeting meeting2 = new Meeting("whatever id2");
-				Date testTime2 = new Date();
-				testTime2.setHours(12);
-				testTime2.setMinutes(30);
-				meeting2.setDuration(60);
-				meeting2.setMeetingTime(testTime2);
-				meeting2.setDescription("Møte2");
-				mCont.addMeeting(meeting2);
-				
-				Meeting meeting3 = new Meeting("whatever id3");
-				Date testTime3 = new Date();
-				testTime3.setHours(11);
-				testTime3.setMinutes(30);
-				meeting3.setDuration(60);
-				meeting3.setMeetingTime(testTime3);
-				meeting3.setDescription("Møte3");
-				mCont.addMeeting(meeting3);
-				
-				Meeting meeting4 = new Meeting("whatever id4");
-				Date testTime4 = new Date();
-				testTime4.setHours(10);
-				testTime4.setMinutes(0);
-				meeting4.setDuration(90);
-				meeting4.setMeetingTime(testTime4);
-				meeting4.setDescription("Møte4");
-				mCont.addMeeting(meeting4);
-				
-				Meeting meeting5 = new Meeting("whatever id5");
-				Date testTime5 = new Date();
-				testTime5.setHours(13);
-				testTime5.setMinutes(0);
-				meeting5.setDuration(90);
-				meeting5.setMeetingTime(testTime5);
-				meeting5.setDescription("Møte5");
-				mCont.addMeeting(meeting5);
-				
-				Meeting meeting6 = new Meeting("whatever id6");
-				Date testTime6 = new Date();
-				testTime6.setHours(9);
-				testTime6.setMinutes(0);
-				meeting6.setDuration(60);
-				meeting6.setMeetingTime(testTime6);
-				meeting6.setDescription("Møte6");
-				mCont.addMeeting(meeting6);
 			}
 		}
 	}
@@ -509,19 +467,91 @@ public class CalendarPanel extends JPanel {
 		Date[] returnArray = {monday, tuesday, wednesday, thursday, friday, saturday, sunday};
 		return returnArray;
 	}
-
-	public static void main(String[] args) {
+	
+	private List<Meeting> getMeetingsOnDate(List<Meeting> inMeets, Date date) {
+		Date startOfDay = new Date(date.getTime());
+		startOfDay.setHours(8);
+		startOfDay.setMinutes(0);
+		startOfDay.setSeconds(0);
 		
-		CalendarPanel calPan = new CalendarPanel(null);
+		Date endOfDay = new Date(date.getTime());
+		endOfDay.setHours(21);
+		endOfDay.setMinutes(0);
+		endOfDay.setSeconds(0);
 		
-		JFrame frame = new JFrame("Topptekst");
+		List<Meeting> outMeets = new ArrayList<>();
 		
-		frame.setContentPane(calPan);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setVisible(true);
+		for (Meeting meet : inMeets) {
+			Date meetTime = meet.getMeetingTime();
+			int meetDuration = meet.getDuration();
+			Date meetEndTime = new Date(meetTime.getTime() + meetDuration*60*1000);
+			
+			if (meetTime.after(startOfDay) && meetTime.before(endOfDay) && meetEndTime.before(endOfDay)) {
+				outMeets.add(meet);
+			}
+		}
 		
-		
-		
+		return outMeets;
 	}
+	
 }
+
+/*
+TESTKODE
+
+if (dayDate.getDay() == new Date().getDay()) {
+Meeting meeting1 = new Meeting("whatever id");
+Date testTime = new Date();
+testTime.setHours(12);
+testTime.setMinutes(0);
+meeting1.setDuration(60);
+meeting1.setMeetingTime(testTime);
+meeting1.setDescription("Møte");
+mCont.addMeeting(meeting1);
+
+Meeting meeting2 = new Meeting("whatever id2");
+Date testTime2 = new Date();
+testTime2.setHours(12);
+testTime2.setMinutes(30);
+meeting2.setDuration(60);
+meeting2.setMeetingTime(testTime2);
+meeting2.setDescription("Møte2");
+mCont.addMeeting(meeting2);
+
+Meeting meeting3 = new Meeting("whatever id3");
+Date testTime3 = new Date();
+testTime3.setHours(11);
+testTime3.setMinutes(30);
+meeting3.setDuration(60);
+meeting3.setMeetingTime(testTime3);
+meeting3.setDescription("Møte3");
+mCont.addMeeting(meeting3);
+
+Meeting meeting4 = new Meeting("whatever id4");
+Date testTime4 = new Date();
+testTime4.setHours(10);
+testTime4.setMinutes(0);
+meeting4.setDuration(90);
+meeting4.setMeetingTime(testTime4);
+meeting4.setDescription("Møte4");
+mCont.addMeeting(meeting4);
+
+Meeting meeting5 = new Meeting("whatever id5");
+Date testTime5 = new Date();
+testTime5.setHours(13);
+testTime5.setMinutes(0);
+meeting5.setDuration(90);
+meeting5.setMeetingTime(testTime5);
+meeting5.setDescription("Møte5");
+mCont.addMeeting(meeting5);
+
+Meeting meeting6 = new Meeting("whatever id6");
+Date testTime6 = new Date();
+testTime6.setHours(9);
+testTime6.setMinutes(0);
+meeting6.setDuration(60);
+meeting6.setMeetingTime(testTime6);
+meeting6.setDescription("Møte6");
+mCont.addMeeting(meeting6);
+}
+*/
