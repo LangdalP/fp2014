@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.Date;
+
 import com.sun.xml.internal.ws.util.StringUtils;
 
 public class GuiTimeOfDay {
@@ -95,6 +97,12 @@ public class GuiTimeOfDay {
 		for (GuiTimeOfDay time : alarmTimes) {
 			System.out.println(time);
 		}
+	}
+	
+	public static GuiTimeOfDay getGuiTimeOfDayFromDate(Date inDate) {
+		int dateHours = inDate.getHours();
+		int dateMinutes = inDate.getMinutes();
+		return new GuiTimeOfDay(dateHours, dateMinutes);
 	}
 
 }
