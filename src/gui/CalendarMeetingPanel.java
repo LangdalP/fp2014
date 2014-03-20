@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import model.Attendee;
 import model.Meeting;
 
 public class CalendarMeetingPanel extends JPanel {
@@ -44,11 +45,56 @@ public class CalendarMeetingPanel extends JPanel {
 		return heightPx;
 	}
 	
+	private int numResponseYes() {
+		int yesCounter = 0;
+		for (Attendee att : meet.getAttendees()) {
+			if (att.getHasResponded() == true && att.getAttendeeStatus() == true) {
+				yesCounter++;
+			}
+		}
+		
+		return yesCounter;
+	}
+	
+	private int numResponseNo() {
+		int noCounter = 0;
+		for (Attendee att : meet.getAttendees()) {
+			if (att.getHasResponded() == true && att.getAttendeeStatus() == false) {
+				noCounter++;
+			}
+		}
+		
+		return noCounter;
+	}
+	
+	private int numNotResponded() {
+		int notRespondedCounter = 0;
+		for (Attendee att : meet.getAttendees()) {
+			if (att.getHasResponded() == false) {
+				notRespondedCounter++;
+			}
+		}
+		
+		return notRespondedCounter;
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
 		g.setColor(Color.decode("#6495ED"));
 		g.fillRect(0, 0, widthPx, heightPx);
+		
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, widthPx, 10);
+		
+		g.setColor(Color.GREEN);
+		g.drawString(Integer.toString(numResponseYes()), 5, 10);
+		
+		g.setColor(Color.WHITE);
+		g.drawString(Integer.toString(numNotResponded()), 15, 10);
+		
+		g.setColor(Color.RED);
+		g.drawString(Integer.toString(numResponseNo()), 25, 10);
 	}
 }
