@@ -1,6 +1,7 @@
-package gui;
+package gui.MeetingPanels;
 
 import client.ClientModelImpl;
+import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 
 public class EditPanel extends NewMeetingPanel {

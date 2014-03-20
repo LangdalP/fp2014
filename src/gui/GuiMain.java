@@ -9,9 +9,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import gui.MeetingPanels.InfoMeetingPanel;
+import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 import client.ClientMain;
 import client.ClientModelImpl;

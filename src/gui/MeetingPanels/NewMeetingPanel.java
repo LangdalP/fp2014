@@ -1,4 +1,4 @@
-package gui;
+package gui.MeetingPanels;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +20,7 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
 import client.ClientModelImpl;
+import gui.GuiTimeOfDay;
 import model.Attendee;
 import model.Employee;
 import model.Meeting;
@@ -171,7 +172,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(participateLabel, c);
         participateYesButton = new JRadioButton("Ja");
         participateYesButton.addActionListener(actionUpdateAvailableRooms);
-        participateYesButton.setEnabled(false);
+        if (!meeting.getMapAttendees().containsKey(model.getUsername())) participateYesButton.setEnabled(false);
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
@@ -282,6 +283,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
         addEmpList.addListSelectionListener(listEmployeeSelectionListener());
+
 
         c.gridx = 0;
         c.gridy = 1;
@@ -406,7 +408,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         add(rp, cl);
 
     }
-    
+
     public JButton getLeftButton(){
         JButton cancelButton =  new JButton("Avbryt");
         cancelButton.setAction(new CancelAction("Avbryt"));
@@ -710,13 +712,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		}
 
 
-    public class EmployeeCellRenderer2 implements ListCellRenderer{
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            return null;
-        }
-    }
 
     public class EmployeeCellRenderer implements ListCellRenderer {
         protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -731,7 +726,19 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                     isSelected, cellHasFocus);
 
             Employee emp = (Employee) value;
-            renderer.setText(emp.getName());
+
+            Attendee att = meeting.getMapAttendees().get(emp.getUsername());
+            String isGoing = "";
+            String text = null;
+            if (att != null){
+                if (att.getHasResponded() && att.getAttendeeStatus()) isGoing = "Ja";
+                if (att.getHasResponded() && !att.getAttendeeStatus()) isGoing = "Nei";
+                text = String.format("%-30s %-5s", emp.getName(), isGoing);
+            }
+            if (text == null){
+                text = emp.getName();
+            }
+            renderer.setText(text);
             renderer.setFont(theFont);
             return renderer;
         }

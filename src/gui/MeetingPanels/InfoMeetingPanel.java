@@ -1,9 +1,8 @@
-package gui;
+package gui.MeetingPanels;
 
-
-import javax.swing.JButton;
 
 import client.ClientModelImpl;
+import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 
 public class InfoMeetingPanel extends NewMeetingPanel {
