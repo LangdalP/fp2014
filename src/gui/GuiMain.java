@@ -1,7 +1,6 @@
 package gui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -23,6 +22,11 @@ public class GuiMain extends JFrame {
 	private ClientModelImpl model;
 	
 	public GuiMain() {
+        Dimension size = new Dimension(700,700);
+        contentPanel.setPreferredSize(size);
+        contentPanel.setMinimumSize(size);
+        contentPanel.setMinimumSize(size);
+        contentPanel.setAutoscrolls(true);
 		setContentPane(contentPanel);
 		addWindowListener(new WindowClosedListener());
 		
@@ -71,11 +75,11 @@ public class GuiMain extends JFrame {
 		contentPanel.add(panel, c);
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel, c);
-		
+		setLocation(0,0);
 		pack();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setLocationByPlatform(true);
+//		setLocationByPlatform(true);
 		setTitle("CalendarPro 2.3");
 		setVisible(true);
 		
