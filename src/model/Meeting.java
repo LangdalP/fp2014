@@ -104,7 +104,7 @@ public class Meeting implements Serializable{
 	}
 	
 	public void setMeetingOwner(Employee emp) {
-		this.meetingOwner = meetingOwner;
+		this.meetingOwner = emp;
 	}
 
 
