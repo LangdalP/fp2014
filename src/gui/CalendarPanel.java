@@ -128,6 +128,7 @@ public class CalendarPanel extends JPanel {
 	
 	public void setEmployees(List<Employee> emps) {
 		this.emps = emps;
+		// TODO oppdatere kalender
 	}
 	
 	// Lagar panelet for ein dag, dvs. ei kolonne i kalenderen

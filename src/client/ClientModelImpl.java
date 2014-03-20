@@ -48,7 +48,7 @@ public class ClientModelImpl extends ModelImpl {
         this.username = username;
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener){
+	public void addPropertyChangeListener(PropertyChangeListener listener){
         pcs.addPropertyChangeListener(listener);
     }
 
