@@ -151,7 +151,6 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			
 			System.out.println(counter);
 			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
-			CalendarDayPanel oldPanel = (CalendarDayPanel) calendarContainer.getComponent(counter);
 			calendarContainer.add(dayPanel, constraints.get(counter), counter);
 			System.out.println(constraints.get(counter).gridx);
 			counter++;
@@ -527,7 +526,6 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		CalendarMeetingPanel meetPan = (CalendarMeetingPanel) e.getComponent();
 		Meeting clickedMeet = meetPan.getMeeting();
 		boolean owner = false;
-		clickedMeet.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
 		if (clickedMeet.getMeetingOwner().getUsername().equals(model.getUsername())) owner = true;
 		
 		String eventName = owner ? "EDIT_MEETING" : "SHOW_MEETING"; 
@@ -564,63 +562,3 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 	}
 	
 }
-
-/*
-TESTKODE
-
-if (dayDate.getDay() == new Date().getDay()) {
-Meeting meeting1 = new Meeting("whatever id");
-Date testTime = new Date();
-testTime.setHours(12);
-testTime.setMinutes(0);
-meeting1.setDuration(60);
-meeting1.setMeetingTime(testTime);
-meeting1.setDescription("Møte");
-mCont.addMeeting(meeting1);
-
-Meeting meeting2 = new Meeting("whatever id2");
-Date testTime2 = new Date();
-testTime2.setHours(12);
-testTime2.setMinutes(30);
-meeting2.setDuration(60);
-meeting2.setMeetingTime(testTime2);
-meeting2.setDescription("Møte2");
-mCont.addMeeting(meeting2);
-
-Meeting meeting3 = new Meeting("whatever id3");
-Date testTime3 = new Date();
-testTime3.setHours(11);
-testTime3.setMinutes(30);
-meeting3.setDuration(60);
-meeting3.setMeetingTime(testTime3);
-meeting3.setDescription("Møte3");
-mCont.addMeeting(meeting3);
-
-Meeting meeting4 = new Meeting("whatever id4");
-Date testTime4 = new Date();
-testTime4.setHours(10);
-testTime4.setMinutes(0);
-meeting4.setDuration(90);
-meeting4.setMeetingTime(testTime4);
-meeting4.setDescription("Møte4");
-mCont.addMeeting(meeting4);
-
-Meeting meeting5 = new Meeting("whatever id5");
-Date testTime5 = new Date();
-testTime5.setHours(13);
-testTime5.setMinutes(0);
-meeting5.setDuration(90);
-meeting5.setMeetingTime(testTime5);
-meeting5.setDescription("Møte5");
-mCont.addMeeting(meeting5);
-
-Meeting meeting6 = new Meeting("whatever id6");
-Date testTime6 = new Date();
-testTime6.setHours(9);
-testTime6.setMinutes(0);
-meeting6.setDuration(60);
-meeting6.setMeetingTime(testTime6);
-meeting6.setDescription("Møte6");
-mCont.addMeeting(meeting6);
-}
-*/
