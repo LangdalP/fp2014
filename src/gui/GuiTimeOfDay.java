@@ -1,8 +1,8 @@
 package gui;
 
+import java.util.Calendar;
 import java.util.Date;
-
-import com.sun.xml.internal.ws.util.StringUtils;
+import java.util.GregorianCalendar;
 
 public class GuiTimeOfDay {
 	
@@ -100,8 +100,10 @@ public class GuiTimeOfDay {
 	}
 	
 	public static GuiTimeOfDay getGuiTimeOfDayFromDate(Date inDate) {
-		int dateHours = inDate.getHours();
-		int dateMinutes = inDate.getMinutes();
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(inDate);
+		int dateHours = cal.get(Calendar.HOUR_OF_DAY);
+		int dateMinutes = cal.get(Calendar.MINUTE);
 		return new GuiTimeOfDay(dateHours, dateMinutes);
 	}
 
