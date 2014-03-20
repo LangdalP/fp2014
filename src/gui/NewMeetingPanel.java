@@ -7,11 +7,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -32,6 +33,7 @@ import protocol.TransferType;
 import client.ClientMain;
 
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
+    private final Employee employee;
     protected Meeting meeting; //møte for panelet.
 	
 	private GridBagLayout layout = new GridBagLayout();
@@ -69,6 +71,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     public NewMeetingPanel(ClientModelImpl model, Meeting meeting) {
 		this.model = model;
         this.meeting = meeting;
+        this.employee = model.getMapEmployees().get(model.getUsername());
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
 		init();
@@ -132,13 +135,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(startLabel, c);
         startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
-        startTimeDropdown.addActionListener(updateAvailableRooms);
-//        startTimeDropdown.setSelectedIndex();
+        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
+
+        GuiTimeOfDay t = GuiTimeOfDay.getGuiTimeOfDayFromDate(meeting.getMeetingTime());
+        System.out.println(t.getHours() + "\t" + t.getMinutes());
+//        startTimeDropdown.setSelectedIndex(5);
         c.gridx = 1;
         c.gridy = 2;
         c.gridheight = 1;
         c.gridwidth = 4;
-        startTimeDropdown.addActionListener(updateAvailableRooms);
+        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
         lp.add(startTimeDropdown, c);
 
         // Varigheit
@@ -149,7 +155,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(durationLabel, c);
         durationDropdown = new JComboBox<>(durationComboBoxModel);
-        durationDropdown.addActionListener(updateAvailableRooms);
+        durationDropdown.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 3;
         c.gridheight = 1;
@@ -164,15 +170,15 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(participateLabel, c);
         participateYesButton = new JRadioButton("Ja");
-        participateYesButton.addActionListener(updateAvailableRooms);
-
-
+        participateYesButton.addActionListener(actionUpdateAvailableRooms);
+        participateYesButton.setEnabled(false);
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
         c.gridwidth = 2;
         lp.add(participateYesButton, c);
         participateNoButton = new JRadioButton("Nei");
+        participateNoButton.setEnabled(false);
         c.gridx = 3;
         c.gridy = 4;
         c.gridheight = 1;
@@ -188,6 +194,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             if (userAttendee.getAttendeeStatus()) participateYesButton.setSelected(true);
             if (!userAttendee.getAttendeeStatus()) participateNoButton.setSelected(true);
         }
+        else{
+            participateYesButton.setSelected(false);
+            participateNoButton.setSelected(false);
+        }
 
         // Alarm
         JLabel alarmLabel = new JLabel("Alarm før møte: ");
@@ -197,12 +207,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(alarmLabel, c);
         alarmYesButton = new JRadioButton("På");
+        alarmYesButton.addActionListener(actionSetAlarm());
+        alarmYesButton.setEnabled(false);
         c.gridx = 1;
         c.gridy = 5;
         c.gridheight = 1;
         c.gridwidth = 1;
         lp.add(alarmYesButton, c);
         alarmNoButton = new JRadioButton("Av");
+        alarmNoButton.addActionListener(actionSetAlarm());
+        alarmNoButton.setEnabled(false);
         c.gridx = 2;
         c.gridy = 5;
         c.gridheight = 1;
@@ -221,6 +235,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         }
 
         alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
+        alarmTimeDropdown.addActionListener(actionSetAlarm());
+        alarmTimeDropdown.setEnabled(false);
         c.gridx = 3;
         c.gridy = 5;
         c.gridheight = 1;
@@ -240,7 +256,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
 
         for (String key : model.getMapEmployees().keySet()) {
-            if (key.equals(model.getUsername())) continue;
+//            if (key.equals(model.getUsername())) continue;
             nameListModel.addElement(model.getMapEmployees().get(key));
         }
 
@@ -265,7 +281,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         addEmpList.setVisibleRowCount(5);
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
-//        addEmpList.setSelectedIndices(indices);
+        addEmpList.addListSelectionListener(listEmployeeSelectionListener());
 
         c.gridx = 0;
         c.gridy = 1;
@@ -284,7 +300,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         PlainDocument doc = (PlainDocument) extraField.getDocument();
         doc.setDocumentFilter(new MyIntFilter());
         extraField.setColumns(2);
-        extraField.addActionListener(updateAvailableRooms);
+        extraField.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 3;
         c.gridheight = 1;
@@ -405,10 +421,68 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
        return saveButton;
     }
     
-    	
-    
 
-    private ActionListener updateAvailableRooms = new ActionListener() {
+    public ActionListener actionUpdateAttendeeStatus(){
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TransferObject o = new TransferObject(MessageType.REQUEST, TransferType.UPDATE_ATTENDEE_STATUS);
+                ClientMain.sendTransferObject(o);
+
+            }
+        };
+    }
+
+    public ActionListener actionSetAlarm(){
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Attendee att = meeting.getMapAttendees().get(model.getUsername());
+                //sender kun alarmtid hvis
+                if (att != null){
+                    TransferObject o = new TransferObject(MessageType.REQUEST, TransferType.UPDATE_ALARM);
+//                    ClientMain.sendTransferObject(o);
+
+                }
+
+            }
+        };
+    }
+
+    public ListSelectionListener listEmployeeSelectionListener(){
+        return new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                boolean userAttending = false;
+                for (Employee emp : addEmpList.getSelectedValuesList()){
+                    meeting.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
+                    if (emp.getUsername().equals(model.getUsername())){
+                        userAttending = true;
+                    }
+                }
+                //enable deltager related ting.
+                alarmTimeDropdown.setEnabled(userAttending);
+                alarmYesButton.setEnabled(userAttending);
+                alarmNoButton.setEnabled(userAttending);
+                participateYesButton.setEnabled(userAttending);
+                participateNoButton.setEnabled(userAttending);
+//                if (participateYesButton.isSelected()){
+//                    boolean hasReponded = false;
+//                    participateYesButton.isSelected() hasReponded = true;
+//
+//                    boolean attendeeStatus = participateYesButton.isSelected() ? true: false;
+//                    boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
+//                    GuiTimeOfDay alarmTime = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
+//                    Calendar alarmCal = new GregorianCalendar(meeting.getMeetingTime().getYear(), alarmTime.getHours(), alarmTime.getMinutes());
+//                    meeting.addAttendee(new Attendee(employee, hasReponded, attendeeStatus, new Date(), hasAlarm, alarmCal.getTime()));
+//
+
+                }
+        };
+    }
+
+
+    private ActionListener actionUpdateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             int antAttendees = 0;
