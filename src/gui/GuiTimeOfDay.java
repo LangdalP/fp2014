@@ -107,4 +107,12 @@ public class GuiTimeOfDay {
 		return new GuiTimeOfDay(dateHours, dateMinutes);
 	}
 
+    public static Date getDate(Date date, GuiTimeOfDay guiTimeOfDay){
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, guiTimeOfDay.getHours());
+        cal.set(Calendar.MINUTE, guiTimeOfDay.getMinutes());
+        return cal.getTime();
+    }
+
 }
