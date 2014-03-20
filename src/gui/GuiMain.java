@@ -66,10 +66,13 @@ public class GuiMain extends JFrame {
 		calendarPanel = new CalendarPanel(model);
 		GridBagConstraints c = new GridBagConstraints();
 		
-		NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
+	//	NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
+		InfoMeetingPanel panel = new InfoMeetingPanel(this.model);
+		
 		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(newMeetingPanel, c);
+	//	contentPanel.add(newMeetingPanel, c);
+		contentPanel.add(panel, c);
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel, c);
 		setLocation(0,0);
