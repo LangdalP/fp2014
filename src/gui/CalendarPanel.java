@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,12 +14,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import model.Employee;
 import model.Meeting;
 import client.ClientModelImpl;
 
@@ -29,11 +34,17 @@ public class CalendarPanel extends JPanel {
 	private static final int DAY_COLUMN_MAX_WIDTH = 80;
 	private static final int VERT_PX_PER_HOUR = 30;
 	
-	private GridBagLayout layout = new GridBagLayout();
 	private ClientModelImpl model;
+	private List<Employee> emps = new ArrayList<>();
+	
+	private JPanel calendarContainer = new JPanel();
+	private Date dayInWeek = new Date();
+	private CalendarTimePanel timePanel = new CalendarTimePanel();
+	private GridBagConstraints c2;
+	private HashMap<Employee, List<Meeting>> meetingsByEmployee = new HashMap<>();
 	
 	public CalendarPanel(ClientModelImpl model) {
-		setLayout(layout);
+		setLayout(new GridBagLayout());
 		this.model = model;
 		
 		
@@ -42,42 +53,81 @@ public class CalendarPanel extends JPanel {
 	
 	private void init() {
 		GridBagConstraints c = new GridBagConstraints();
+		c2 = new GridBagConstraints();
 		
-		CalendarTimePanel timePanel = new CalendarTimePanel();
+		Employee myEmployee = model.getMapEmployees().get(model.getUsername());
+		emps.add(myEmployee);
+		System.out.println(myEmployee);
+		meetingsByEmployee.put(myEmployee, model.getMeetingsByEmployee(myEmployee));
+		
+		calendarContainer.setLayout(new GridBagLayout());
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
-		add(timePanel, c);
-		Date nowDay = new Date();
-		Date[] allDaysOfWeek = getAllDaysOfWeek(nowDay);
+		calendarContainer.add(timePanel, c);
+		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
 		for (Date day : allDaysOfWeek) {
 			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
 			c.gridx += 1;
-			add(dayPanel, c);
+			calendarContainer.add(dayPanel, c);
 		}
+		
+		
+		JButton prevWeek = new JButton(new PrevWeekAction("<"));
+		c2.gridx = 0; c2.gridy = 0; c2.gridheight = 10; c2.gridwidth = 1;
+		add(prevWeek, c2);
+		
+		c2.gridx = 1; c2.gridy = 0; c2.gridheight = 10; c2.gridwidth = 10;
+		add(calendarContainer, c2);
+		
+		JButton nextWeek = new JButton(new NextWeekAction(">"));
+		c2.gridx = 11; c2.gridy = 0; c2.gridheight = 10; c2.gridwidth = 1;
+		add(nextWeek, c2);
+
 	}
 	
-	private Date[] getAllDaysOfWeek(Date dayDate) {
-		int millisecsInDay = 24*60*60*1000;
-		
-		int currentDayNum = dayDate.getDay();
-		int correctedDayNum = currentDayNum - 1;
-		int mondayNum = 0;
-		int tuesdayNum = 1;
-		int wednesdayNum = 2;
-		int thursdayNum = 3;
-		int fridayNum = 4;
-		int saturdayNum = 5;
-		int sundayNum = 6;
-		
-		Date monday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-mondayNum));
-		Date tuesday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-tuesdayNum));
-		Date wednesday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-wednesdayNum));
-		Date thursday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-thursdayNum));
-		Date friday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-fridayNum));
-		Date saturday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-saturdayNum));
-		Date sunday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-sundayNum));
-		
-		Date[] returnArray = {monday, tuesday, wednesday, thursday, friday, saturday, sunday};
-		return returnArray;
+	// TODO Fikse bug
+	public void changeWeekBack() {
+		System.out.println("Inside changeWeekBack");
+		long currentMs = dayInWeek.getTime();
+		long newTimeMs = currentMs - (7*24*60*60*1000);
+		dayInWeek = new Date(newTimeMs);
+		for (int i = 7; i>0; i--) {
+			calendarContainer.remove(i);
+		}
+		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
+		for (Date day : allDaysOfWeek) {
+			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
+			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
+			c.gridx += 1;
+			calendarContainer.add(dayPanel, c);
+		}
+		repaint();
+	}
+	
+	// TODO Fikse bug
+	public void changeWeekForward() {
+		System.out.println("Inside changeWeekForward");
+		long currentMs = dayInWeek.getTime();
+		long newTimeMs = currentMs + (7*24*60*60*1000);
+		dayInWeek = new Date(newTimeMs);
+		for (int i = 7; i>0; i--) {
+			calendarContainer.remove(i);
+		}
+		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
+		for (Date day : allDaysOfWeek) {
+			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
+			CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
+			c.gridx += 1;
+			calendarContainer.add(dayPanel, c);
+		}
+		repaint();
+	}
+	
+	public void setEmployees(List<Employee> emps) {
+		this.emps = emps;
 	}
 	
 	// Lagar panelet for ein dag, dvs. ei kolonne i kalenderen
@@ -94,6 +144,8 @@ public class CalendarPanel extends JPanel {
 			setLayout(new GridBagLayout());
 			setPreferredSize(new Dimension(80, 430));
 			setMinimumSize(new Dimension(80, 430));
+			
+			System.out.println("Creating day: " + dayDate.toString());
 			
 			initTopLabel();
 			initMeetings();
@@ -216,31 +268,24 @@ public class CalendarPanel extends JPanel {
 		public void addMeeting(Meeting meeting) {
 			meetings.add(meeting);
 			
-			System.out.println("Trying to add meeting to gui: " + meeting.getMeetingID());
-			
 			int startHour = meeting.getMeetingTime().getHours();
 			int startMinute = meeting.getMeetingTime().getMinutes();
 			int duration = meeting.getDuration();
 			
 			// Sjekkar at møtet er mellom 8 og 20:
 			if (startHour<8 || startHour>20) return;
-			System.out.println("Meeting between 8 and 20");
 			
 			// Kjører sjekk om det blir overlapp
 			numColumns = calculateMaxOverlap();
-			System.out.println("Calc Max Overlap: " + numColumns);
 			colWidth = DAY_COLUMN_MAX_WIDTH/numColumns;
-			System.out.println("Col width: " + colWidth);
 			// Fjernar alle avtalePanel frå hovudpanelet
 			removeAll();
 			addedMeetings.clear();
 			
 			for (Meeting meet: meetings) {
-				System.out.println("Starting to add meeting: " + meet.getMeetingID());
 				float startH = hourAndMinutesToFloat(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
 				float endH = startH + (float) (meet.getDuration()/60);
 				if (meet.getDuration() % 60 > 0) endH += 0.5;
-				System.out.println("startH: " + startH + " | endH: " + endH);
 				
 				int overlaps = 0;
 				
@@ -263,7 +308,6 @@ public class CalendarPanel extends JPanel {
 				}
 				// Beregning av overlapp ferdig
 				
-				System.out.println("Overlaps: " + overlaps);
 				int colPos = overlaps;
 				int xPos = colWidth*colPos;
 				int yPos = calculateVertPosFromTime(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
@@ -284,11 +328,9 @@ public class CalendarPanel extends JPanel {
 			for (int hour=8; hour<20; hour++) {
 				for (int mins=0; mins<60; mins+=30) {
 					int meetingsAtTime = numMeetingsAtTime(hour, mins);
-					System.out.println("Meetings at " + hour + ":" + mins + " - " + meetingsAtTime);
 					max = Math.max(max, meetingsAtTime);
 				}
 			}
-			System.out.println("Max overlap: " + max);
 			return max;
 		}
 		
@@ -414,6 +456,57 @@ public class CalendarPanel extends JPanel {
 		
 		
 		
+	}
+	
+	private class PrevWeekAction extends AbstractAction {
+		
+		public PrevWeekAction(String text) {
+			putValue(Action.NAME, text);
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			changeWeekBack();
+		}
+		
+	}
+	
+	private class NextWeekAction extends AbstractAction {
+		
+		public NextWeekAction(String text) {
+			putValue(Action.NAME, text);
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			changeWeekForward();
+		}
+		
+	}
+	
+	private Date[] getAllDaysOfWeek(Date dayDate) {
+		int millisecsInDay = 24*60*60*1000;
+		
+		int currentDayNum = dayDate.getDay();
+		int correctedDayNum = currentDayNum - 1;
+		int mondayNum = 0;
+		int tuesdayNum = 1;
+		int wednesdayNum = 2;
+		int thursdayNum = 3;
+		int fridayNum = 4;
+		int saturdayNum = 5;
+		int sundayNum = 6;
+		
+		Date monday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-mondayNum));
+		Date tuesday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-tuesdayNum));
+		Date wednesday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-wednesdayNum));
+		Date thursday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-thursdayNum));
+		Date friday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-fridayNum));
+		Date saturday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-saturdayNum));
+		Date sunday = new Date(dayDate.getTime() - millisecsInDay*(correctedDayNum-sundayNum));
+		
+		Date[] returnArray = {monday, tuesday, wednesday, thursday, friday, saturday, sunday};
+		return returnArray;
 	}
 
 	public static void main(String[] args) {
