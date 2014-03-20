@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import model.Meeting;
@@ -96,6 +97,9 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	public void loginDataEntered(String username, String password) {
 		System.out.println("Entered username: " + username + " and password: " + password);
 		boolean success = ClientMain.validateLogin(username, password);
+		if (!success) {
+			JOptionPane.showMessageDialog(null, "Innloggingen var feil");
+		}
 		setLoggedIn(success);
 	}
 	
