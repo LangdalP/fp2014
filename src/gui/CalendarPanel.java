@@ -35,13 +35,15 @@ public class CalendarPanel extends JPanel {
 	private static final int VERT_PX_PER_HOUR = 30;
 	
 	private ClientModelImpl model;
-	private List<Employee> emps = new ArrayList<>();
+	private List<Employee> empsToShow = new ArrayList<>();
 	
 	private JPanel calendarContainer = new JPanel();
 	private Date dayInWeek = new Date();
 	private CalendarTimePanel timePanel = new CalendarTimePanel();
 	private GridBagConstraints c2;
 	private HashMap<Employee, List<Meeting>> meetingsByEmployee = new HashMap<>();
+	private GridBagLayout containerLayout = new GridBagLayout();
+	private HashMap<Integer, GridBagConstraints> constraints = new HashMap<>();
 	
 	public CalendarPanel(ClientModelImpl model) {
 		setLayout(new GridBagLayout());
@@ -56,21 +58,28 @@ public class CalendarPanel extends JPanel {
 		c2 = new GridBagConstraints();
 		
 		Employee myEmployee = model.getMapEmployees().get(model.getUsername());
-		emps.add(myEmployee);
+		empsToShow.add(myEmployee);
 		System.out.println(myEmployee);
 		meetingsByEmployee.put(myEmployee, model.getMeetingsByEmployee(myEmployee));
 		
-		calendarContainer.setLayout(new GridBagLayout());
+		calendarContainer.setLayout(containerLayout);
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 		calendarContainer.add(timePanel, c);
+		
 		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
+		int counter = 1;
 		for (Date day : allDaysOfWeek) {
-			List<Meeting> myMeetingsThisDay = getMeetingsOnDate(meetingsByEmployee.get(myEmployee), day);
 			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
-			mapEmpMeets.put(myEmployee, myMeetingsThisDay);
+			for (Employee emp : meetingsByEmployee.keySet()) {
+				List<Meeting> empMeetingsThisDay = getMeetingsOnDate(model.getMeetingsByEmployee(emp), day);
+				mapEmpMeets.put(emp, empMeetingsThisDay);
+			}
+
 			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
-			c.gridx += 1;
+			c.gridx += 1; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 			calendarContainer.add(dayPanel, c);
+			constraints.put(counter, containerLayout.getConstraints(dayPanel));
+			counter++;
 		}
 		
 		
@@ -93,19 +102,9 @@ public class CalendarPanel extends JPanel {
 		long currentMs = dayInWeek.getTime();
 		long newTimeMs = currentMs - (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
-		for (int i = 7; i>0; i--) {
-			calendarContainer.remove(i);
-		}
-		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
-		for (Date day : allDaysOfWeek) {
-			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
-			//CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
-			c.gridx += 1;
-			//calendarContainer.add(dayPanel, c);
-		}
-		repaint();
+		
+		addDaysToContainer();
+		
 	}
 	
 	// TODO Fikse bug
@@ -114,24 +113,57 @@ public class CalendarPanel extends JPanel {
 		long currentMs = dayInWeek.getTime();
 		long newTimeMs = currentMs + (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
-		for (int i = 7; i>0; i--) {
-			calendarContainer.remove(i);
+		
+		addDaysToContainer();
+	}
+	
+	public void setEmployeesToShow(List<Employee> emps) {
+		this.empsToShow = emps;
+		meetingsByEmployee.clear();
+		for (Employee emp : empsToShow) {
+			List<Meeting> meetingsForEmp = model.getMeetingsByEmployee(emp);
+			meetingsByEmployee.put(emp, meetingsForEmp);
 		}
-		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
+		
+		removeAllDayPanels();
+		addDaysToContainer();
+	}
+	
+	private void addDaysToContainer() {
+		
+		System.out.println("Inside redraw");
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
+		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
+		int counter = 1;
 		for (Date day : allDaysOfWeek) {
-			// TODO treng metode for å finne alle avtalar per dag, kanskje også per ansatt
-			//CalendarDayPanel dayPanel = new CalendarDayPanel(day, new HashMap<String, Meeting>());
-			c.gridx += 1;
-			//calendarContainer.add(dayPanel, c);
+			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
+			for (Employee emp : meetingsByEmployee.keySet()) {
+				List<Meeting> empMeetingsThisDay = getMeetingsOnDate(model.getMeetingsByEmployee(emp), day);
+				mapEmpMeets.put(emp, empMeetingsThisDay);
+			}
+			
+			System.out.println(counter);
+			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
+			CalendarDayPanel oldPanel = (CalendarDayPanel) calendarContainer.getComponent(counter);
+			calendarContainer.add(dayPanel, constraints.get(counter), counter);
+			System.out.println(constraints.get(counter).gridx);
+			counter++;
 		}
+		
+		calendarContainer.revalidate();
+		calendarContainer.repaint();
 		repaint();
 	}
 	
-	public void setEmployees(List<Employee> emps) {
-		this.emps = emps;
-		// TODO oppdatere kalender
+	private void removeAllDayPanels() {
+		if (calendarContainer.getComponentCount() != 8) {
+			System.out.println("Cannot remove!");
+			return;
+		}
+		for (int i = 7; i>0; i--) {
+			calendarContainer.remove(i);
+		}
 	}
 	
 	// Lagar panelet for ein dag, dvs. ei kolonne i kalenderen
@@ -153,14 +185,6 @@ public class CalendarPanel extends JPanel {
 			
 			initTopLabel();
 			initMeetings();
-		}
-		
-		public void setMeetings(Map<String, Meeting> meetingsThisDay) {
-			//this.meetingsThisDay = meetingsThisDay;
-		}
-		
-		private void redrawMeetings() {
-			// TODO kode
 		}
 		
 		private void initTopLabel() {
