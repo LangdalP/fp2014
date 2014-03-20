@@ -58,6 +58,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
+ //		knapper
+    
+    protected JButton lb = getLeftButton();
+    protected JButton rb = getRightButton();
+    
     final String defaultText = "[Velg ett annet sted:]";
 
     public NewMeetingPanel(ClientModelImpl model) {
@@ -67,6 +72,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		init();
 	}
 
+    
     private void init() {
 
         JPanel lp = new JPanel();
@@ -345,14 +351,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 1;
-        rp.add(getLeftButton() , c);
+    
+        rp.add(lb , c);
 
       
         c.gridx = 1;
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 2;
-        rp.add(getRightButton(), c);
+       
+        rp.add(rb, c);
 
         cl.gridx = 1;
         c.gridy = 0;
