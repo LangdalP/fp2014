@@ -1,5 +1,6 @@
 package protocol;
 
+import db.ModelDbImpl;
 import db.ModelDbService;
 
 import model.*;
@@ -22,11 +23,11 @@ import java.util.Map;
 public class RequestHandler {
     private static RequestHandler instance;
     private static ModelImpl model;
-//    private static CalendarModel dbModelImpl;
+    private static CalendarModel dbModelImpl;
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-//        dbModelImpl = new ModelDbImpl();
+        dbModelImpl = new ModelDbImpl();
         instance = this;
     }
 
@@ -69,8 +70,8 @@ public class RequestHandler {
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 model.addMeeting(meeting);
-                System.out.println("ADD MEETING: \n"+ meeting);
-//                dbModelImpl.addMeeting(meeting);
+                System.out.println("ADD MEETING: \n" + meeting);
+                dbModelImpl.addMeeting(meeting);
                 sync.addMeeting(meeting);
                 break;
             }
