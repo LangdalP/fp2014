@@ -29,7 +29,7 @@ public class GuiMain extends JFrame {
         contentPanel.setAutoscrolls(true);
 		setContentPane(contentPanel);
 		addWindowListener(new WindowClosedListener());
-
+		
 		pack();
 	}
 	
@@ -67,7 +67,7 @@ public class GuiMain extends JFrame {
 		GridBagConstraints c = new GridBagConstraints();
 		
 		NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
-
+		
 		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(newMeetingPanel, c);
 		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
