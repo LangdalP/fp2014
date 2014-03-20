@@ -77,7 +77,7 @@ public class HomePanel extends JPanel implements PropertyChangeListener{
 		DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
 
 		for (String key : model.getMapEmployees().keySet()) {
-			if (key.equals(model.getUsername())) continue;
+			
 			nameListModel.addElement(model.getMapEmployees().get(key));
 
 
