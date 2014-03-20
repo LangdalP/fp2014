@@ -32,6 +32,7 @@ import protocol.TransferType;
 import client.ClientMain;
 
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
+    protected Meeting meeting; //møte for panelet.
 	
 	private GridBagLayout layout = new GridBagLayout();
 	
@@ -65,8 +66,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     
     final String defaultText = "[Velg ett annet sted:]";
 
-    public NewMeetingPanel(ClientModelImpl model) {
+    public NewMeetingPanel(ClientModelImpl model, Meeting meeting) {
 		this.model = model;
+        this.meeting = meeting;
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
 		init();
@@ -101,6 +103,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(descLabel, c);
         descText = new JTextArea(3, 14);
         descText.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        descText.setText(meeting.getDescription());
         c.gridx = 1;
         c.gridy = 0;
         c.gridheight = 1;
@@ -114,8 +117,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
         lp.add(dateLabel, c);
-        datePicker = new JXDatePicker(new Date());
-        datePicker.setDate(new Date());
+        datePicker = new JXDatePicker(meeting.getMeetingTime());
         c.gridx = 1;
         c.gridy = 1;
         c.gridheight = 1;
@@ -131,6 +133,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(startLabel, c);
         startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
         startTimeDropdown.addActionListener(updateAvailableRooms);
+//        startTimeDropdown.setSelectedIndex();
         c.gridx = 1;
         c.gridy = 2;
         c.gridheight = 1;
@@ -162,6 +165,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(participateLabel, c);
         participateYesButton = new JRadioButton("Ja");
         participateYesButton.addActionListener(updateAvailableRooms);
+
+
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
@@ -177,6 +182,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         ButtonGroup participateGroup = new ButtonGroup();
         participateGroup.add(participateYesButton);
         participateGroup.add(participateNoButton);
+
+        Attendee userAttendee = meeting.getMapAttendees().get(model.getUsername());
+        if (userAttendee.getHasResponded()){
+            if (userAttendee.getAttendeeStatus()) participateYesButton.setSelected(true);
+            if (!userAttendee.getAttendeeStatus()) participateNoButton.setSelected(true);
+        }
 
         // Alarm
         JLabel alarmLabel = new JLabel("Alarm før møte: ");
@@ -201,6 +212,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         ButtonGroup alarmGroup = new ButtonGroup();
         alarmGroup.add(alarmYesButton);
         alarmGroup.add(alarmNoButton);
+
+        if (userAttendee.getHasAlarm()){
+            alarmYesButton.setSelected(true);
+            GuiTimeOfDay guiTime = GuiTimeOfDay.getGuiTimeOfDayFromDate(userAttendee.getAlarmTime());
+
+            //@todo userAttendee.getAlarmTime();
+        }
 
         alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
         c.gridx = 3;
@@ -247,6 +265,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         addEmpList.setVisibleRowCount(5);
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
+//        addEmpList.setSelectedIndices(indices);
 
         c.gridx = 0;
         c.gridy = 1;
@@ -542,14 +561,14 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
 	public static void main(String[] args) {
 		
-		JFrame frame = new JFrame("Test av opprett avtale");
-		NewMeetingPanel panel = new NewMeetingPanel(null);
-		frame.setContentPane(panel);
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocationByPlatform(true);
-		frame.pack();
-		frame.setVisible(true);
+//		JFrame frame = new JFrame("Test av opprett avtale");
+//		NewMeetingPanel panel = new NewMeetingPanel(null);
+//		frame.setContentPane(panel);
+//
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setLocationByPlatform(true);
+//		frame.pack();
+//		frame.setVisible(true);
 		
 	}
 	
