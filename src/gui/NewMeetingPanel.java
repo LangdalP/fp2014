@@ -238,6 +238,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         rp.add(addEmpLabel, c);
         addEmpList = new JList<Employee>(nameListModel);
         addEmpList.setFixedCellWidth(200);
+        addEmpList.setVisibleRowCount(5);
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
 
@@ -496,12 +497,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             Employee userEmp = model.getMapEmployees().get(model.getUsername());
             Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, cal.getTime());
             meeting.addAttendee(userAttendee);
+            meeting.setMeetingOwner(userEmp);
 
             //set eksterne deltagere.
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
             int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
+            System.out.println(meeting);
 
-//            System.out.println(meeting);
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 
 
