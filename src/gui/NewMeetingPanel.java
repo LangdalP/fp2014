@@ -58,6 +58,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
+ //		knapper
+    
+    protected JButton lb = getLeftButton();
+    protected JButton rb = getRightButton();
+    
     final String defaultText = "[Velg ett annet sted:]";
 
     public NewMeetingPanel(ClientModelImpl model) {
@@ -67,6 +72,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		init();
 	}
 
+    
     private void init() {
 
         JPanel lp = new JPanel();
@@ -238,6 +244,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         rp.add(addEmpLabel, c);
         addEmpList = new JList<Employee>(nameListModel);
         addEmpList.setFixedCellWidth(200);
+        addEmpList.setVisibleRowCount(5);
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
 
@@ -345,14 +352,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 1;
-        rp.add(getLeftButton() , c);
+    
+        rp.add(lb , c);
 
       
         c.gridx = 1;
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 2;
-        rp.add(getRightButton(), c);
+       
+        rp.add(rb, c);
 
         cl.gridx = 1;
         c.gridy = 0;
@@ -496,12 +505,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             Employee userEmp = model.getMapEmployees().get(model.getUsername());
             Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, cal.getTime());
             meeting.addAttendee(userAttendee);
+            meeting.setMeetingOwner(userEmp);
 
             //set eksterne deltagere.
 			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
             int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
+            System.out.println(meeting);
 
-//            System.out.println(meeting);
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
 
 
