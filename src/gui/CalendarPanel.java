@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import model.Attendee;
 import model.Employee;
 import model.Meeting;
 import client.ClientModelImpl;
@@ -304,7 +305,22 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 					meetingOwner = true;
 				}
 				
-				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth, colorsForMeetings.get(counter), meetingOwner);
+				boolean newChange = false;
+				if (meet.isParticipant(model.getUsername())) {
+					Date meetChanged = meet.getLastChanged();
+					List<Attendee> atts = meet.getAttendees();
+					Date lastSeen = null;
+					for (Attendee att : atts) {
+						lastSeen = att.getLastNotification();
+					}
+					if (meetChanged.after(lastSeen)) {
+						newChange = true;
+					}
+				}
+				
+				
+				
+				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth, colorsForMeetings.get(counter), meetingOwner, newChange);
 				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
 				meetPan.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				meetPan.addMouseListener(thisRef);

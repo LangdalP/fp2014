@@ -23,11 +23,13 @@ public class CalendarMeetingPanel extends JPanel {
 	private int heightPx = 0;
 	private int widthPx = 80;
 	private Color color;
+	private boolean newChange = false;
 	
-	public CalendarMeetingPanel(Meeting meeting, int panelWidth, Color colToUse, boolean meetingOwner) {
+	public CalendarMeetingPanel(Meeting meeting, int panelWidth, Color colToUse, boolean meetingOwner, boolean newChange) {
 		this.meet = meeting;
 		this.duration = meeting.getDuration();
 		this.color = colToUse;
+		this.newChange = newChange;
 		widthPx = panelWidth;
 		
 		heightPx = (duration/60)*VERT_PX_PER_HOUR;
@@ -108,5 +110,13 @@ public class CalendarMeetingPanel extends JPanel {
 		
 		g.setColor(Color.RED);
 		g.drawString(Integer.toString(numResponseNo()), 25, 10);
+		
+		if (newChange) {
+			g.setColor(Color.RED);
+			Font f = g.getFont().deriveFont(20f);
+			f = f.deriveFont(Font.BOLD);
+			g.setFont(f);
+			g.drawString("!", widthPx-12, heightPx-4);
+		}
 	}
 }
