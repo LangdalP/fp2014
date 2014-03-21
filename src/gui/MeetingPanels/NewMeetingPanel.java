@@ -61,16 +61,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected JRadioButton locationRadioButton;
     protected JComboBox<String> roomsDropdown;
     protected JTextField locationTextField;
+    protected JButton sendEmailButton;
 
     protected ClientModelImpl model;
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
  //		knapper
-    
+
 //    protected JButton lb = getLeftButton();
 //    protected JButton rb = getRightButton();
-    
+
     final String defaultText = "[Velg ett annet sted:]";
 
     public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
@@ -290,12 +291,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
         // START HØGRESIDE
 
-        DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
-
-        for (String key : model.getMapEmployees().keySet()) {
-//            if (key.equals(model.getUsername())) continue;
-            nameListModel.addElement(model.getMapEmployees().get(key));
-        }
+        DefaultListModel<Employee> nameListModel = getEmployeeDefaultListModel();
 
 
 
@@ -354,7 +350,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 			}
 		};
 		
-		JButton sendEmailButton = new JButton(openEmailBoxAction);
+		sendEmailButton = new JButton(openEmailBoxAction);
 		c.gridx = 2;
 		c.gridy = 3;
 		c.gridheight = 1;
@@ -449,7 +445,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 2;
-       
+
         rp.add(getRightButton(), c);
 
         cl.gridx = 1;
@@ -459,6 +455,14 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         cl.insets = new Insets(0, 50, 0, 0);
         add(rp, cl);
 
+    }
+
+    protected DefaultListModel<Employee> getEmployeeDefaultListModel() {
+        DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
+        for (String key : model.getMapEmployees().keySet()) {
+            nameListModel.addElement(model.getMapEmployees().get(key));
+        }
+        return nameListModel;
     }
 
     public JButton getLeftButton(){
@@ -494,8 +498,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
        });
        return saveButton;
     }
-    
 
+    public JButton getHomeButton() {
+        JButton button =  new JButton("Hjem");
+        button.setAction(new AbstractAction("Hjem") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+            }
+        });
+        return button;
+    }
 
 
 
@@ -685,14 +698,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
             Attendee att = mModel.getMapAttendees().get(emp.getUsername());
             String isGoing = "";
+            String format = "%-30s %-5s";
             String text = null;
             if (att != null){
                 if (att.getHasResponded() && att.getAttendeeStatus()) isGoing = "Ja";
                 if (att.getHasResponded() && !att.getAttendeeStatus()) isGoing = "Nei";
-                text = String.format("%-30s %-5s", emp.getName(), isGoing);
+                if (!att.getHasResponded()) isGoing = "Ikke svart";
+                text = String.format(format, emp.getName(), isGoing);
             }
             if (text == null){
-                text = emp.getName();
+                text = String.format(format, emp.getName(), "LEGG TIL");
             }
             renderer.setText(text);
             renderer.setFont(theFont);

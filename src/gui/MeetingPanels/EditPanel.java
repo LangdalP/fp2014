@@ -22,10 +22,14 @@ public class EditPanel extends NewMeetingPanel {
 
     }
 
+
+    @Override
+    public JButton getLeftButton() {
+        return getHomeButton();
+    }
+
     @Override
     public JButton getRightButton() {
-        //dont save, send edit meeting.
-
         JButton button = new JButton("UPDATE");
         button.addActionListener(new ActionListener() {
             @Override
