@@ -488,11 +488,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                System.out.println("Send Meeting to server. ");
                mModel.setDescription(descText.getText());
                mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+               
+               if (locationRadioButton.isSelected()) {
+            	   mModel.setMeetingLocation(locationTextField.getText());
+               }
                System.out.println("size: " + mModel.getMapAttendees().size());
                Meeting meeting = mModel.meeting();
                meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
                model.addMeeting(meeting);
                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+               System.out.println(meeting);
                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
            }
        });
