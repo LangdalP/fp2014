@@ -357,6 +357,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         PlainDocument doc = (PlainDocument) extraField.getDocument();
         doc.setDocumentFilter(new MyIntFilter());
         extraField.setColumns(2);
+        extraField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.setGuestAmount(Integer.parseInt(extraField.getText()));
+            }
+        });
         extraField.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 3;
@@ -526,7 +532,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     public JButton getLeftButton(){
         JButton cancelButton =  new JButton("Avbryt");
-//        cancelButton.setAction(new CancelAction("Avbryt"));
         cancelButton.setAction(new AbstractAction("Avbryt") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -636,7 +641,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     private ActionListener actionUpdateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-//                 sendRequestAvailableRooms();
+                 sendRequestAvailableRooms();
         }
     };
 
@@ -799,9 +804,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         String EV = evt.getPropertyName();
         if (EV.equals(ClientModelImpl.ROOMS)) {
             System.out.println("Rooms updated!");
-//            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
-//            roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
-//            roomsDropdown.setModel(roomsComboBoxModel);
+            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
+            if (mModel.getMeetingRoom() != null)roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
+            roomsDropdown.setModel(roomsComboBoxModel);
+
 
         }
         if (EV.equals("NR_ATT")){

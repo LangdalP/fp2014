@@ -42,7 +42,7 @@ public class EditPanel extends NewMeetingPanel {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.EDIT_MEETING, mModel.meeting()));
+//                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.EDIT_MEETING, mModel.meeting()));
                 pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
             }
         });

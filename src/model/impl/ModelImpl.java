@@ -165,18 +165,18 @@ public class ModelImpl implements CalendarModel {
     	
     }
 
-    public Map<String, MeetingRoom> getAvailableMeetingRooms(MeetingRoom mr, Date meetingStart, Integer duration, Integer minAttendees) {
+    public Map<String, MeetingRoom> getAvailableMeetingRooms(Date meetingStart, Integer duration, Integer minAttendees) {
         if (minAttendees == null) minAttendees = 0;
         Map<String, MeetingRoom> availableRooms = new HashMap<>();
         long mStart = meetingStart.getTime();
         long mEnd = meetingStart.getTime() + (duration * 60 * 1000); //end in millisecond.
         List<String> roomsNotAvailable = new ArrayList<>();
-
+        System.out.println(meetingStart + "\tduration:" + duration + " minAttendees: " + minAttendees);
         //finner alle rom som IKKE er ledige.
         for (Meeting m : mapFutureMeetings.values()){
             if (m.getMeetingTime().getTime() >= mStart && m.getMeetingTime().getTime() <= mEnd){
                  //not available
-                roomsNotAvailable.add(m.getMeetingRoom().getName());
+                if (m.getMeetingRoom() != null) roomsNotAvailable.add(m.getMeetingRoom().getName());
             }
         }
 
@@ -185,6 +185,7 @@ public class ModelImpl implements CalendarModel {
             if (roomsNotAvailable.contains(m.getName())) continue;  //not available
             else if (m.getMaxPeople() >= minAttendees) availableRooms.put(m.getName(), m);
         }
+        System.out.println("availableRooms" + availableRooms);
         return availableRooms;
     }
 

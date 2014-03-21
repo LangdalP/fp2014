@@ -36,6 +36,7 @@ public class ResponseHandler {
             case GET_AVAILABLE_MEETING_ROOMS:{
                 Map<String, MeetingRoom> availableMeetingRooms = (Map<String, MeetingRoom>) obj.getObject(0);
                 model.setMapMeetingRoomAvailable(availableMeetingRooms);
+
                 break;
             }
             case ADD_ATTENDEE_TO_MEETING:{
