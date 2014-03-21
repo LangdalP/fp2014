@@ -58,6 +58,7 @@ public class ResponseHandler {
             	break;
             }
             case EDIT_MEETING: {
+            	System.out.println("Edit meeting RECIEVED!");
             	Meeting newMeeting = (Meeting) obj.getObject(0);
             	model.editMeeting(newMeeting);
             	break;

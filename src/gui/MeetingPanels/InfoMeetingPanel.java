@@ -27,7 +27,6 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		//venstre
 		
 		descText.setEditable(false);
-		descText.setText("test");
 		datePicker.setEditable(false);
         durationDropdown.setEditable(false);
         durationDropdown.setEnabled(false);
