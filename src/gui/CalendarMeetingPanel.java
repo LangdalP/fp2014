@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import client.ClientModelImpl;
 import model.Attendee;
 import model.Meeting;
 
@@ -23,7 +24,7 @@ public class CalendarMeetingPanel extends JPanel {
 	private int widthPx = 80;
 	private Color color;
 	
-	public CalendarMeetingPanel(Meeting meeting, int panelWidth, Color colToUse) {
+	public CalendarMeetingPanel(Meeting meeting, int panelWidth, Color colToUse, boolean meetingOwner) {
 		this.meet = meeting;
 		this.duration = meeting.getDuration();
 		this.color = colToUse;
@@ -37,6 +38,10 @@ public class CalendarMeetingPanel extends JPanel {
 		setPreferredSize(new Dimension(widthPx, heightPx));
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		setToolTipText("<html><h2>" + meet.getDescription() + "</h2></html>");
+		
+		if (meetingOwner) {
+			setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+		}
 		
 	}
 	
