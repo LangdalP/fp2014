@@ -414,14 +414,15 @@ public class ModelDbService {
      * Fjerna MeetingRoom fra parameter (input), sidan det ikkje bli brukt til noko
      */
     public void updateMeeting(Meeting meeting) {
-        String sql = "update avtale set dato=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
+        String sql = "update avtale set dato=?, beskrivelse=?, varighet=?, sted=?, eier_ansatt=?, sist_endret=? where id=?";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setTimestamp(1, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
-            ps.setInt(2, meeting.getDuration());
-            ps.setString(3, meeting.getMeetngLocation()); // Skal v�re "Kontoret" om det er booka m�terom
-            ps.setString(4, meeting.getMeetingOwner().getUsername());
-            ps.setTimestamp(5, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
-            ps.setString(6, meeting.getMeetingID());
+            ps.setString(2, meeting.getDescription());
+            ps.setInt(3, meeting.getDuration());
+            ps.setString(4, meeting.getMeetngLocation()); // Skal v�re "Kontoret" om det er booka m�terom
+            ps.setString(5, meeting.getMeetingOwner().getUsername());
+            ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
+            ps.setString(7, meeting.getMeetingID());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

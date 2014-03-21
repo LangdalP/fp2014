@@ -81,8 +81,16 @@ public class ClientModelImpl extends ModelImpl {
 		super.removeMeeting(meetingid);
 		pcs.firePropertyChange(SYNC_CALENDAR, null, null);
 	}
+	
 
-    public String getUsername() {
+    @Override
+	public void editMeeting(Meeting meetingEdited) {
+		super.editMeeting(meetingEdited);
+		pcs.firePropertyChange(SYNC_CALENDAR, null, null);
+	}
+
+
+	public String getUsername() {
         return username;
     }
 

@@ -129,7 +129,15 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public void editMeeting(Meeting meetingEdited) {
-        mapFutureMeetings.put(meetingEdited.getMeetingID(), meetingEdited);
+        Meeting oldMeeting = mapFutureMeetings.get(meetingEdited.getMeetingID());
+        oldMeeting.setDescription(meetingEdited.getDescription());
+        oldMeeting.setMeetingTime(meetingEdited.getMeetingTime());
+        oldMeeting.setDuration(meetingEdited.getDuration());
+        oldMeeting.setMeetingLocation(meetingEdited.getMeetngLocation());
+        oldMeeting.setMeetingRoom(meetingEdited.getMeetingRoom());
+        oldMeeting.setGuestAmount(meetingEdited.getGuestAmount());
+        oldMeeting.setLastChanged(new Date());
+        
     }
 
 
