@@ -94,7 +94,17 @@ public class ServerModelSyncronizer implements CalendarModel{
 
     @Override
     public void removeMeeting(String meetingid) {
+    	Map<String, ObjectOutputStream> map = MultiThreadedServer.getClients();
+        for (String username : MultiThreadedServer.getClients().keySet()){
+            if (username.equals(this.username)) continue;  //skal ikke oppdatere seg selv.
+            try {
+                map.get(username).writeObject(new TransferObject(MessageType.RESPONSE, TransferType.REMOVE_MEETING, meetingid));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+
+        }
     }
 
     @Override

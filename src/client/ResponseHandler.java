@@ -51,6 +51,11 @@ public class ResponseHandler {
                 model.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
                 break;
             }
+            case REMOVE_MEETING: {
+            	String meetingID = (String) obj.getObject(0);
+            	model.removeMeeting(meetingID);
+            	break;
+            }
 
         }
 

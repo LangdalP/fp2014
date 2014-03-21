@@ -134,7 +134,11 @@ public class RequestHandler {
             }
             
             case REMOVE_MEETING: {
-            	
+            	Meeting meetToDelete = (Meeting) obj.getObject(0);
+            	model.removeMeeting(meetToDelete.getMeetingID());
+            	dbModelImpl.removeMeeting(meetToDelete.getMeetingID());
+            	objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.REMOVE_MEETING));
+            	break;
             }
 
 
