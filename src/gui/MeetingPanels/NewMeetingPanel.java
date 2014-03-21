@@ -22,6 +22,7 @@ import javax.swing.text.PlainDocument;
 
 import client.ClientModelImpl;
 import gui.EmailNotificationPanel;
+import gui.GuiMain;
 import gui.GuiTimeOfDay;
 import model.Attendee;
 import model.Employee;
@@ -78,6 +79,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         mModel.setUsername(model.getUsername());
         this.employee = model.getMapEmployees().get(model.getUsername());
 		this.model.addPropertyChangeListener(this);
+        pcs = new PropertyChangeSupport(this);
 		setLayout(layout);
         mModel.addPropertyChangeListener(this);
 		init();
@@ -462,6 +464,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     public JButton getLeftButton(){
         JButton cancelButton =  new JButton("Avbryt");
         cancelButton.setAction(new CancelAction("Avbryt"));
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+            }
+        });
         return cancelButton;
     	
     }
@@ -585,6 +593,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
             model.addMeeting(meeting);
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+            pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
         }
 
 	}
