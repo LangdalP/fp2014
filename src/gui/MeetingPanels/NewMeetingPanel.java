@@ -81,6 +81,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     final String defaultText = "[Velg ett annet sted:]";
     private DefaultListModel<Employee> nameListModel;
+    private JButton deleteButton;
 
     public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
 		this.model = model;
@@ -477,6 +478,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         cl.gridheight = 1;
         cl.insets = new Insets(0, 50, 0, 0);
         add(rp, cl);
+
+        c.gridx = 2;
+        c.gridy = 8;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        deleteButton = new JButton("Slett");
+        add(deleteButton, c);
 
     }
 
