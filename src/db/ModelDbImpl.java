@@ -23,6 +23,9 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void addMeeting(Meeting meeting) {
+    	if(meeting.getMeetngLocation() == null)
+    		dbService.addMeetingAtOffice(meeting);
+    	else
         dbService.addMeeting(meeting);
     }
 
