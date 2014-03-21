@@ -156,8 +156,8 @@ public class RequestHandler {
             	Attendee attendee = (Attendee) obj.getObject(1);
             	Date lastNotified = (Date) obj.getObject(2);
             	
-            	model.setAttendeeLastNotification(meeting, attendee, lastNotified);
-            	dbModelImpl.updateAttendee(attendee, meeting);
+//            	model.setAttendeeLastNotification(meeting, attendee, lastNotified);
+//            	dbModelImpl.updateAttendee(attendee, meeting);
             	
             	System.out.println("Tried to update attendee last not");
             }
