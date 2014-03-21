@@ -64,6 +64,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected JRadioButton roomRadioButton;
     protected JRadioButton locationRadioButton;
     protected JComboBox<String> roomsDropdown;
+    protected JLabel roomLabel;
     protected JTextField locationTextField;
     protected JButton sendEmailButton;
     protected JButton deleteButton;
@@ -401,7 +402,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridx = 1;
         c.gridy = 5;
         c.gridheight = 1;
-        c.gridwidth = 2;
+        c.gridwidth = 1;
         Dimension dim = new Dimension(175, 20);
         roomsDropdown.setPreferredSize(dim);
         roomsDropdown.setMaximumSize(dim);
@@ -420,7 +421,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             }
         });
         rp.add(roomsDropdown, c);
-
+        
+        roomLabel = new JLabel("Eksempeltekst");
+        c.gridx = 2;
+        c.gridy = 5;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        rp.add(roomLabel, c);
 
         locationRadioButton = new JRadioButton();
         locationRadioButton.addActionListener(roomOrLocationListener);

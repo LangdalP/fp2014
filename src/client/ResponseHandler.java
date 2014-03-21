@@ -56,6 +56,11 @@ public class ResponseHandler {
             	model.removeMeeting(meetingID);
             	break;
             }
+            case EDIT_MEETING: {
+            	Meeting newMeeting = (Meeting) obj.getObject(0);
+            	model.editMeeting(newMeeting);
+            	break;
+            }
 
         }
 
