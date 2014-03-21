@@ -1,12 +1,8 @@
 package client;
 
-import model.Employee;
-import model.Group;
-import model.Meeting;
-import model.MeetingRoom;
+import model.*;
 import model.impl.ModelImpl;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
@@ -21,7 +17,7 @@ public class ClientModelImpl extends ModelImpl {
     private PropertyChangeSupport pcs;
 
     public static String ROOMS = "availableRooms";
-    public static String SYNC_ADD_MEETING = "SYNC_ADD_MEETING";
+    public static String SYNC_CALENDAR = "SYNC_CALENDAR";
 
     public ClientModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, Group> mapGroups) {
         super(mapFutureMeetings, mapEmployees, mapMeetingRooms, mapGroups);
@@ -38,7 +34,14 @@ public class ClientModelImpl extends ModelImpl {
     public void addMeeting(Meeting meeting) {
         super.addMeeting(meeting);
         System.out.println("fire sync model");
-        pcs.firePropertyChange(SYNC_ADD_MEETING, null, null);
+        pcs.firePropertyChange(SYNC_CALENDAR, null, null);
+    }
+
+    @Override
+    public void removeAttendeeFromMeeting(Meeting meeting, Attendee attendee) {
+        super.removeAttendeeFromMeeting(meeting, attendee);
+        System.out.println("should be null. " + getMapFutureMeetings().get(meeting.getMeetingID()));
+        pcs.firePropertyChange(SYNC_CALENDAR, null, null);
     }
 
     public void setMapMeetingRoomAvailable(Map<String, MeetingRoom> mapMeetingRoomAvailable) {
