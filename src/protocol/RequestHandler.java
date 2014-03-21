@@ -27,7 +27,7 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-//        dbModelImpl = new ModelDbImpl();
+        dbModelImpl = new ModelDbImpl();
         instance = this;
     }
 
@@ -72,7 +72,7 @@ public class RequestHandler {
                 model.addMeeting(meeting);
 //                System.out.println("SERVER MODEL: \n"+ model + "\n\n");
 //                System.out.println("REQUEST HANDLER: ADD MEETING: \n" + meeting);
-//                dbModelImpl.addMeeting(meeting);
+                dbModelImpl.addMeeting(meeting);
                 sync.addMeeting(meeting);
                 break;
             }
@@ -138,6 +138,7 @@ public class RequestHandler {
             	model.removeMeeting(meetToDelete.getMeetingID());
             	dbModelImpl.removeMeeting(meetToDelete.getMeetingID());
             	objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.REMOVE_MEETING));
+            	sync.removeMeeting(meetToDelete.getMeetingID());
             	break;
             }
 

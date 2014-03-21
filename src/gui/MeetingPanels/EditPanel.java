@@ -15,20 +15,11 @@ public class EditPanel extends NewMeetingPanel {
 
 	public EditPanel(ClientModelImpl model, MeetingModel meeting) {
 		super(model, meeting);
-		// TODO Auto-generated constructor stub
 		init();
 	
 	}
 	
 	public void init(){
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = 8;
-		c.gridheight = 1;
-		c.gridwidth = 1;
-		JButton deleteButton = new JButton("Slett");
-		rp.add(deleteButton, c);
-		
     }
 
 

@@ -58,7 +58,7 @@ public class HomePanel extends JPanel {
 		setLayout(new GridBagLayout());
 
 
-		JButton opprett = new JButton("Oppret avtale");
+		JButton opprett = new JButton("Opprett avtale");
         opprett.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
