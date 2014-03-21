@@ -23,7 +23,7 @@ import java.util.Map;
 public class RequestHandler {
     private static RequestHandler instance;
     private static ModelImpl model;
-    private static CalendarModel dbModelImpl;
+    private static ModelDbImpl dbModelImpl;
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
@@ -140,6 +140,17 @@ public class RequestHandler {
             	objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.REMOVE_MEETING));
             	sync.removeMeeting(meetToDelete.getMeetingID());
             	break;
+            }
+            
+            case SET_ATTENDEE_LAST_NOTIFICATION: {
+            	Meeting meeting = (Meeting) obj.getObject(0);
+            	Attendee attendee = (Attendee) obj.getObject(1);
+            	Date lastNotified = (Date) obj.getObject(2);
+            	
+            	model.setAttendeeLastNotification(meeting, attendee, lastNotified);
+            	dbModelImpl.updateAttendee(attendee, meeting);
+            	
+            	System.out.println("Tried to update attendee last not");
             }
 
 

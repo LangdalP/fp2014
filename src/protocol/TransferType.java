@@ -48,8 +48,11 @@ public enum TransferType {
     /** REQUEST Obj0=Meeting, Ojb1=Attendee, Obj2=boolean attendeeStatus, RESPOSE obj0=Meeting, obj1=Attendee, Obj2=boolean attendeeStatus  */
     SET_ATTENDEE_STATUS,
 
-    /**REQUEST obj0=Meeting, RESPONSE obj0 = meetingID */
-    REMOVE_MEETING
-
+    /**REQUEST Obj0=Meeting, RESPONSE Obj0 = meetingID */
+    REMOVE_MEETING,
+    
+    /** REQUEST Obj0=Meeting, Obj1=Attendee, Obj2=Date, RESPONSE no response at this time */
+    SET_ATTENDEE_LAST_NOTIFICATION
+    
     ;
 }
