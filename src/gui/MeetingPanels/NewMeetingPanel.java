@@ -66,7 +66,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected JComboBox<String> roomsDropdown;
     protected JTextField locationTextField;
     protected JButton sendEmailButton;
-    
+    protected JButton deleteButton;
+
     protected JPanel lp;
     protected JPanel rp;
 
@@ -81,7 +82,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     final String defaultText = "[Velg ett annet sted:]";
     private DefaultListModel<Employee> nameListModel;
-    private JButton deleteButton;
 
     public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
 		this.model = model;
@@ -484,6 +484,21 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
         deleteButton = new JButton("Slett");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (model.getUsername().equals(mModel.getMeetingOwner().getUsername())){
+                    ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.REMOVE_MEETING, mModel.meeting()));
+                    pcs.firePropertyChange(GuiMain.SHOW_HOME, null,null);
+                    model.getMapFutureMeetings().remove(mModel.getMeetingID());
+                }
+                else {
+                    ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.REMOVE_ATTENDEE_FROM_MEETING, mModel.meeting(), mModel.getUserAttende()));
+                    pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+                    model.getMapFutureMeetings().remove(mModel.getMeetingID());
+                } 
+            }
+        });
         add(deleteButton, c);
 
     }
