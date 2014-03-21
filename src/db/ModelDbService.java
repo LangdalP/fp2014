@@ -443,8 +443,9 @@ public class ModelDbService {
             		ps.setInt(1, 1);
             	}
             }
-            ps.setTimestamp(2, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
-            ps.setTimestamp(3, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setTimestamp(2, new java.sql.Timestamp(attendee.getLastNotification().getTime()));
+            if (attendee.getHasAlarm()) ps.setTimestamp(3, new java.sql.Timestamp(attendee.getAlarmTime().getTime()));
+            else ps.setNull(3, Types.TIMESTAMP);
             ps.setBoolean(4, attendee.getHasAlarm());
             ps.setString(5, meeting.getMeetingID());
             ps.setString(6, attendee.getEmployee().getUsername());
