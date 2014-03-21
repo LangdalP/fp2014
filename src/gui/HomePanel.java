@@ -2,12 +2,7 @@ package gui;
 
 import gui.MeetingPanels.NewMeetingPanel.EmployeeCellRenderer;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -39,7 +34,7 @@ public class HomePanel extends JPanel implements PropertyChangeListener{
 	private JList<Employee> addEmpList;
     private PropertyChangeSupport pcs;
 
-
+    public static Dimension dim = new Dimension(1000, 250);
 
 
 	public HomePanel(ClientModelImpl model){
@@ -47,6 +42,8 @@ public class HomePanel extends JPanel implements PropertyChangeListener{
 		this.model = model;
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
+        setPreferredSize(dim);
+
 		init();
 	}
 
