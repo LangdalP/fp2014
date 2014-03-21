@@ -35,12 +35,35 @@ public class ServerModelSyncronizer implements CalendarModel{
 
     @Override
     public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
+        Map<String, ObjectOutputStream> map = MultiThreadedServer.getClients();
+        for (String username : MultiThreadedServer.getClients().keySet()){
+            if (username.equals(this.username)) continue;  //skal ikke oppdatere seg selv.
+            if (!meeting.getMapAttendees().keySet().contains(username))  continue;
+            try {
+                map.get(username).writeObject(new TransferObject(MessageType.RESPONSE, TransferType.ADD_ATTENDEE_TO_MEETING, meeting, attendee));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
 
     }
 
     @Override
     public void removeAttendeeFromMeeting(Meeting meeting, Attendee attendee) {
+        Map<String, ObjectOutputStream> map = MultiThreadedServer.getClients();
+        for (String username : MultiThreadedServer.getClients().keySet()){
+            if (username.equals(this.username)) continue;  //skal ikke oppdatere seg selv.
+            if (!meeting.getMapAttendees().keySet().contains(username))  continue;
+            try {
+                map.get(username).writeObject(new TransferObject(MessageType.RESPONSE, TransferType.REMOVE_ATTENDEE_FROM_MEETING, meeting, attendee));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+
+        }
     }
 
     @Override
@@ -50,7 +73,18 @@ public class ServerModelSyncronizer implements CalendarModel{
 
     @Override
     public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        Map<String, ObjectOutputStream> map = MultiThreadedServer.getClients();
+        for (String username : MultiThreadedServer.getClients().keySet()){
+            if (username.equals(this.username)) continue;  //skal ikke oppdatere seg selv.
+            if (!meeting.getMapAttendees().keySet().contains(username))  continue;
+            try {
+                map.get(username).writeObject(new TransferObject(MessageType.RESPONSE, TransferType.SET_ATTENDEE_STATUS, meeting, attendee, attendeeStatus));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
+
+        }
     }
 
     @Override

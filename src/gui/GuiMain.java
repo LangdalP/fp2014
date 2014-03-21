@@ -122,10 +122,10 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	private void showAlarm(Meeting meeting){
 		Toolkit.getDefaultToolkit().beep();
 //		if(meeting.getMeetngLocation() == null) {
-//			JOptionPane.showMessageDialog(null, "Alarm for møte: " + meeting.getDescription() + ", møterom: " + meeting.getMeetingRoom().getName() + " kl: " + meeting.getMeetingTime().toString());		
+//			JOptionPane.showMessageDialog(null, "Alarm for mï¿½te: " + meeting.getDescription() + ", mï¿½terom: " + meeting.getMeetingRoom().getName() + " kl: " + meeting.getMeetingTime().toString());		
 //		}
 //		else{
-			JOptionPane.showMessageDialog(null, "Alarm for møte: " + meeting.getDescription() + ", sted: " + meeting.getMeetngLocation() + " kl: " + meeting.getMeetingTime().toString());
+			JOptionPane.showMessageDialog(null, "Alarm for mï¿½te: " + meeting.getDescription() + ", sted: " + meeting.getMeetngLocation() + " kl: " + meeting.getMeetingTime().toString());
 //		}
 	}
 	

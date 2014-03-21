@@ -1,16 +1,17 @@
 package gui.MeetingPanels;
 
 
+import client.ClientMain;
 import client.ClientModelImpl;
-import gui.GuiMain;
-import gui.GuiTimeOfDay;
-import gui.MeetingPanels.NewMeetingPanel;
 import model.Attendee;
 import model.Employee;
-import model.Meeting;
+import protocol.MessageType;
+import protocol.TransferObject;
+import protocol.TransferType;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class InfoMeetingPanel extends NewMeetingPanel {
 
@@ -40,6 +41,20 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		locationTextField.setFocusable(false);
         sendEmailButton.setVisible(false);
 
+        participateYesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.SET_ATTENDEE_STATUS, mModel.meeting(), mModel.getUserAttende(), true));
+            }
+        });
+
+        participateNoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.SET_ATTENDEE_STATUS, mModel.meeting(), mModel.getUserAttende(), false));
+            }
+        });
+
 		//knapper
 		
 //		rb.setVisible(false);
@@ -53,9 +68,7 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 
     @Override
     public JButton getRightButton() {
-        JButton button = new JButton("");
-        button.setVisible(false);
-        return button;
+        return getDeleteMeetingButton();
     }
 
     @Override

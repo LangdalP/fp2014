@@ -122,6 +122,7 @@ public class ModelImpl implements CalendarModel {
 
     @Override
     public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        mapFutureMeetings.get(meeting.getMeetingID()).getMapAttendees().get(attendee.getEmployee().getUsername()).setHasResponded(true);
         mapFutureMeetings.get(meeting.getMeetingID()).getMapAttendees().get(attendee.getEmployee().getUsername()).setAttendeeStatus(attendeeStatus);
     }
 

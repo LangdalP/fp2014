@@ -97,11 +97,7 @@ public class Meeting implements Serializable{
 
 	public void setMeetingRoom(MeetingRoom meetingRoom) {
 		this.meetingRoom = meetingRoom;
-		if (meetingRoom != null) {
-			meetingRoomBooked = true;
-		} else {
-			meetingRoomBooked = false;
-		}
+		meetingRoomBooked = true;
 	}
 
 	public boolean getMeetingRoomBooked(){
