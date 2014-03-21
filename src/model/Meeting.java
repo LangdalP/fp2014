@@ -44,6 +44,10 @@ public class Meeting implements Serializable{
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
         this.mapAttendees = attendees;
+        
+        if (meetingRoom != null) {
+        	meetingRoomBooked = true;
+        }
 
 	}
 
