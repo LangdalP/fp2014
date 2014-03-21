@@ -9,8 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.UUID;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import gui.MeetingPanels.InfoMeetingPanel;
 import gui.MeetingPanels.MeetingModel;
@@ -23,7 +22,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	
 	private boolean loggedIn = false;
 	private JPanel contentPanel = new JPanel();
-	private JPanel upperPanel;
+	private HomePanel hPanel;
 	private JPanel calendarPanel;
 	private GridBagLayout layout = new GridBagLayout();
 	private GridBagConstraints topConstraint;
@@ -73,18 +72,17 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		setContentPane(contentPanel);
 		//contentPanel.setLayout(layout);
 		
-		upperPanel = new JPanel();		// Skal vere "Hjem"
+		hPanel = new HomePanel(model);		// Skal vere "Hjem"
 		calendarPanel = new CalendarPanel(model);
 		calendarPanel.addPropertyChangeListener(this);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		
 //        Meeting meeting = model.getMapFutureMeetings().get("mote3");
-        Meeting meeting = new Meeting(UUID.randomUUID().toString());
-		NewMeetingPanel panel = new NewMeetingPanel(this.model, new MeetingModel(meeting));
+//		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
 
 		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(panel);
+		contentPanel.add(hPanel);
 		//c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel);
 		
@@ -93,7 +91,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		setLocationByPlatform(true);
-		setTitle("CalendarPro 2.3 " + model.getUsername());
+		setTitle("CalendarPro 2.3");
 		setVisible(true);
 		
 	}
@@ -101,6 +99,9 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	public void loginDataEntered(String username, String password) {
 		System.out.println("Entered username: " + username + " and password: " + password);
 		boolean success = ClientMain.validateLogin(username, password);
+		if (!success) {
+			JOptionPane.showMessageDialog(null, "Innloggingen var feil");
+		}
 		setLoggedIn(success);
 	}
 	
@@ -127,13 +128,11 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-            System.out.println("client closed");
 			if (ClientMain.getLoggedin() == true) {
 				ClientMain.sendLogout();
 			}
 			ClientMain.closeConnection();
-            ClientMain.shutdownClient();
-
+			ClientMain.shutdownClient();
 		}
 
 		@Override

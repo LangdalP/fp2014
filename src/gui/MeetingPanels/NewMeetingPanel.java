@@ -337,8 +337,24 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridx = 1;
         c.gridy = 3;
         c.gridheight = 1;
-        c.gridwidth = 2;
+        c.gridwidth = 1;
         rp.add(extraField, c);
+        
+        AbstractAction openEmailBoxAction = new AbstractAction("Send epost") {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				EmailNotificationPanel emailPanel = new EmailNotificationPanel();
+				emailPanel.setVisible(true);
+			}
+		};
+		
+		JButton sendEmailButton = new JButton(openEmailBoxAction);
+		c.gridx = 2;
+		c.gridy = 3;
+		c.gridheight = 1;
+		c.gridwidth = 1;
+		rp.add(sendEmailButton, c);
 
         // Velg rom/sted
         LocationRadioButtonListener roomOrLocationListener = new LocationRadioButtonListener();
