@@ -75,10 +75,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
- //		knapper
-
-//    protected JButton lb = getLeftButton();
-//    protected JButton rb = getRightButton();
 
     final String defaultText = "[Velg ett annet sted:]";
     private DefaultListModel<Employee> nameListModel;
@@ -178,7 +174,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridy = 2;
         c.gridheight = 1;
         c.gridwidth = 4;
-//        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
         lp.add(startTimeDropdown, c);
 
         // Varigheit
@@ -396,20 +391,25 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         rp.add(roomRadioButton, c);
         roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(true));
+//        if (mModel.getMeetingRoom() != null)  roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
+
+
         roomsDropdown = new JComboBox<>(roomsComboBoxModel);
+//        if (mModel.getMeetingRoom() != null)roomsDropdown.setSelectedItem(mModel.getMeetingRoom().getName());
+
+
         c.gridx = 1;
         c.gridy = 5;
         c.gridheight = 1;
         c.gridwidth = 2;
         Dimension dim = new Dimension(175, 20);
-        roomsDropdown.setEditable(true);
-        if (mModel.getMeetingRoom() != null) roomsDropdown.setSelectedItem(mModel.getMeetingRoom().getName());
         roomsDropdown.setPreferredSize(dim);
         roomsDropdown.setMaximumSize(dim);
         roomsDropdown.setMinimumSize(dim);
         roomsDropdown.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
+
                 roomRadioButton.setSelected(true);
                 locationRadioButton.setSelected(false);
             }
@@ -506,6 +506,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         });
         add(deleteButton, c);
 
+
     }
 
     protected DefaultListModel<Employee> getEmployeeDefaultListModel() {
@@ -546,16 +547,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                
                if (roomRadioButton.isSelected()) {
             	   String roomName = (String) roomsComboBoxModel.getSelectedItem();
-            	   System.out.println(roomName);
+//            	   System.out.println(roomName);
             	   mModel.setMeetingRoom(model.getMapMeetingRoom().get(roomName));
                }
                
-               System.out.println("size: " + mModel.getMapAttendees().size());
+//               System.out.println("size: " + mModel.getMapAttendees().size());
                Meeting meeting = mModel.meeting();
                meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
                model.addMeeting(meeting);
                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
-               System.out.println(meeting);
+//               System.out.println(meeting);
                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
            }
        });
@@ -603,7 +604,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                         if (!emp.getUsername().equals(model.getUsername())) mModel.getMapAttendees().remove(emp.getUsername());
                     }
                 }
-                sendRequestAvailableRooms();
+//                sendRequestAvailableRooms();
 
             }
         };
@@ -613,19 +614,22 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     private void sendRequestAvailableRooms(){
         int antAttendees = mModel.getNrAttendees();
         System.out.println("ant attendees to meeting: " + antAttendees);
-        String meetingRoomName = roomsDropdown.getSelectedItem().toString();
         Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
-        GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
-        int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
-        MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime, duration, antAttendees));
+
+        int duration = 30;
+        if (durationDropdown != null){
+            GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+            duration = guiTime.getHours() * 60 + guiTime.getMinutes();
+
+        }
+        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, meetingtime, duration, antAttendees));
 
     }
 
     private ActionListener actionUpdateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-                 sendRequestAvailableRooms();
+//                 sendRequestAvailableRooms();
         }
     };
 
@@ -778,7 +782,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             }
             renderer.setText(text);
             renderer.setFont(theFont);
-            System.out.println(mModel.getUserAttende());
             return renderer;
         }
     }
@@ -789,8 +792,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         String EV = evt.getPropertyName();
         if (EV.equals(ClientModelImpl.ROOMS)) {
             System.out.println("Rooms updated!");
-            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
-            roomsDropdown.setModel(roomsComboBoxModel);
+//            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
+//            roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
+//            roomsDropdown.setModel(roomsComboBoxModel);
 
         }
         if (EV.equals("NR_ATT")){
