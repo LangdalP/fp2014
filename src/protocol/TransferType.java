@@ -47,6 +47,7 @@ public enum TransferType {
 
     /**   */
     UPDATE_ATTENDEE_STATUS,
+    REMOVE_MEETING
 
     ;
 }
