@@ -9,7 +9,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.UUID;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import gui.MeetingPanels.InfoMeetingPanel;
 import gui.MeetingPanels.MeetingModel;
@@ -73,13 +75,14 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		//contentPanel.setLayout(layout);
 		
 		hPanel = new HomePanel(model);		// Skal vere "Hjem"
+		hPanel = new HomePanel(model);		// Skal vere "Hjem"
 		calendarPanel = new CalendarPanel(model);
 		calendarPanel.addPropertyChangeListener(this);
 		
 		GridBagConstraints c = new GridBagConstraints();
 		
-//        Meeting meeting = model.getMapFutureMeetings().get("mote3");
-//		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
+        Meeting meeting = model.getMapFutureMeetings().get("mote3");
+		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
 
 		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(hPanel);
@@ -169,7 +172,11 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 			
 		}
 	}
-
+	
+	public void drawHomePanel() {
+		contentPanel.add(hPanel, 0);
+		contentPanel.remove(1);
+	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {

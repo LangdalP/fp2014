@@ -88,6 +88,7 @@ public class ModelDbService {
 
     public Employee getEmployeeWithPassword(String username) {return getEmployee(username, true);}
     public Employee getEmployee(String username) { return getEmployee(username, false);}
+    
     private Employee getEmployee(String username, boolean withPassword) {
         String sql = "select * from ansatt where epost = ?";
         Employee employee = null;
@@ -258,8 +259,14 @@ public class ModelDbService {
     }
     
     public void removeMeetingById(String meetingID) {
-
-    }
+    	  String sql = "DELETE FROM avtale where id = ?";
+    	  try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    	        ps.setString(1, meetingID);
+    	        ps.executeUpdate();
+    	      } catch (SQLException e) {
+    	            e.printStackTrace();
+    	        }
+    	    }
 
     public List<Employee> getEmployeesInGroup(Group group) {
         String sql = "select a.epost, a.navn, a.passord from ansatt a join gruppe_person gp on a.epost = gp.epost  where gp.navn = ?";
