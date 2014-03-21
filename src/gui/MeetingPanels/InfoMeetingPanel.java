@@ -13,9 +13,10 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		
 	
 	
-	public InfoMeetingPanel(ClientModelImpl model, Meeting meeting) {
+	public InfoMeetingPanel(ClientModelImpl model, MeetingModel meeting) {
 		super(model, meeting);
-		init();
+        System.out.println("MEETING: " + meeting.getMeetingID());
+        init();
 	}
 	
 	public void init(){

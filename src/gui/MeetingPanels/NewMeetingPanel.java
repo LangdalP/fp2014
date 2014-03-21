@@ -35,7 +35,7 @@ import client.ClientMain;
 
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     private final Employee employee;
-    protected Meeting meeting; //møte for panelet.
+    protected MeetingModel mModel; //møte for panelet.
 	
 	private GridBagLayout layout = new GridBagLayout();
 	
@@ -69,12 +69,14 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     
     final String defaultText = "[Velg ett annet sted:]";
 
-    public NewMeetingPanel(ClientModelImpl model, Meeting meeting) {
+    public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
 		this.model = model;
-        this.meeting = meeting;
+        this.mModel = mModel;
+        mModel.setUsername(model.getUsername());
         this.employee = model.getMapEmployees().get(model.getUsername());
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
+        mModel.addPropertyChangeListener(this);
 		init();
 	}
 
@@ -107,7 +109,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(descLabel, c);
         descText = new JTextArea(3, 14);
         descText.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        descText.setText(meeting.getDescription());
+        descText.setText(mModel.getDescription());
+        ;
         c.gridx = 1;
         c.gridy = 0;
         c.gridheight = 1;
@@ -121,7 +124,15 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
         lp.add(dateLabel, c);
-        datePicker = new JXDatePicker(meeting.getMeetingTime());
+        datePicker = new JXDatePicker(mModel.getMeetingTime());
+        datePicker.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date date = GuiTimeOfDay.getDate(datePicker.getDate(), startTimeDropdown);
+                mModel.setMeetingTime(date);
+
+            }
+        });
         c.gridx = 1;
         c.gridy = 1;
         c.gridheight = 1;
@@ -136,16 +147,18 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(startLabel, c);
         startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
-        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
+        startTimeDropdown.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+            }
+        });
 
-        GuiTimeOfDay t = GuiTimeOfDay.getGuiTimeOfDayFromDate(meeting.getMeetingTime());
-        System.out.println(t.getHours() + "\t" + t.getMinutes());
-//        startTimeDropdown.setSelectedIndex(5);
         c.gridx = 1;
         c.gridy = 2;
         c.gridheight = 1;
         c.gridwidth = 4;
-        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
+//        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
         lp.add(startTimeDropdown, c);
 
         // Varigheit
@@ -156,7 +169,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(durationLabel, c);
         durationDropdown = new JComboBox<>(durationComboBoxModel);
-        durationDropdown.addActionListener(actionUpdateAvailableRooms);
+        durationDropdown.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GuiTimeOfDay t = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+                mModel.setDuration(t.getHours() * 60 + t.getMinutes());
+            }
+        });
         c.gridx = 1;
         c.gridy = 3;
         c.gridheight = 1;
@@ -171,8 +190,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(participateLabel, c);
         participateYesButton = new JRadioButton("Ja");
-        participateYesButton.addActionListener(actionUpdateAvailableRooms);
-        if (!meeting.getMapAttendees().containsKey(model.getUsername())) participateYesButton.setEnabled(false);
+        participateYesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.getUserAttende().setAttendeeStatus(true);
+            }
+        });
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
@@ -180,6 +203,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         lp.add(participateYesButton, c);
         participateNoButton = new JRadioButton("Nei");
         participateNoButton.setEnabled(false);
+        participateNoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.getUserAttende().setAttendeeStatus(false);
+            }
+        });
         c.gridx = 3;
         c.gridy = 4;
         c.gridheight = 1;
@@ -190,15 +219,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         participateGroup.add(participateYesButton);
         participateGroup.add(participateNoButton);
 
-        Attendee userAttendee = meeting.getMapAttendees().get(model.getUsername());
-        if (userAttendee.getHasResponded()){
-            if (userAttendee.getAttendeeStatus()) participateYesButton.setSelected(true);
-            if (!userAttendee.getAttendeeStatus()) participateNoButton.setSelected(true);
-        }
-        else{
-            participateYesButton.setSelected(false);
-            participateNoButton.setSelected(false);
-        }
 
         // Alarm
         JLabel alarmLabel = new JLabel("Alarm før møte: ");
@@ -208,16 +228,27 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(alarmLabel, c);
         alarmYesButton = new JRadioButton("På");
-        alarmYesButton.addActionListener(actionSetAlarm());
-        alarmYesButton.setEnabled(false);
+
+        alarmYesButton.setEnabled(mModel.hasAlarm());
+        alarmYesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.getUserAttende().setHasAlarm(true);
+            }
+        });
         c.gridx = 1;
         c.gridy = 5;
         c.gridheight = 1;
         c.gridwidth = 1;
         lp.add(alarmYesButton, c);
         alarmNoButton = new JRadioButton("Av");
-        alarmNoButton.addActionListener(actionSetAlarm());
-        alarmNoButton.setEnabled(false);
+        alarmNoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mModel.getUserAttende().setHasAlarm(false);
+            }
+        });
+        alarmNoButton.setEnabled(mModel.hasAlarm());
         c.gridx = 2;
         c.gridy = 5;
         c.gridheight = 1;
@@ -228,16 +259,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         alarmGroup.add(alarmYesButton);
         alarmGroup.add(alarmNoButton);
 
-        if (userAttendee.getHasAlarm()){
-            alarmYesButton.setSelected(true);
-            GuiTimeOfDay guiTime = GuiTimeOfDay.getGuiTimeOfDayFromDate(userAttendee.getAlarmTime());
-
-            //@todo userAttendee.getAlarmTime();
-        }
 
         alarmTimeDropdown = new JComboBox<>(alarmTimeComboBoxModel);
-        alarmTimeDropdown.addActionListener(actionSetAlarm());
         alarmTimeDropdown.setEnabled(false);
+        alarmTimeDropdown.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date alarmTime = GuiTimeOfDay.getAlarmTime(mModel.getMeetingTime(), alarmTimeDropdown);
+                mModel.getUserAttende().setAlarmTime(alarmTime);
+            }
+        });
         c.gridx = 3;
         c.gridy = 5;
         c.gridheight = 1;
@@ -424,32 +455,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     }
     
 
-    public ActionListener actionUpdateAttendeeStatus(){
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                TransferObject o = new TransferObject(MessageType.REQUEST, TransferType.UPDATE_ATTENDEE_STATUS);
-                ClientMain.sendTransferObject(o);
 
-            }
-        };
-    }
 
-    public ActionListener actionSetAlarm(){
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Attendee att = meeting.getMapAttendees().get(model.getUsername());
-                //sender kun alarmtid hvis
-                if (att != null){
-                    TransferObject o = new TransferObject(MessageType.REQUEST, TransferType.UPDATE_ALARM);
-//                    ClientMain.sendTransferObject(o);
 
-                }
-
-            }
-        };
-    }
 
     public ListSelectionListener listEmployeeSelectionListener(){
         return new ListSelectionListener() {
@@ -457,7 +465,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             public void valueChanged(ListSelectionEvent e) {
                 boolean userAttending = false;
                 for (Employee emp : addEmpList.getSelectedValuesList()){
-                    meeting.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
+                    mModel.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
                     if (emp.getUsername().equals(model.getUsername())){
                         userAttending = true;
                     }
@@ -468,20 +476,22 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                 alarmNoButton.setEnabled(userAttending);
                 participateYesButton.setEnabled(userAttending);
                 participateNoButton.setEnabled(userAttending);
-//                if (participateYesButton.isSelected()){
-//                    boolean hasReponded = false;
+                if (participateYesButton.isSelected()){
+                    boolean hasReponded = false;
 //                    participateYesButton.isSelected() hasReponded = true;
-//
-//                    boolean attendeeStatus = participateYesButton.isSelected() ? true: false;
-//                    boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
-//                    GuiTimeOfDay alarmTime = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
-//                    Calendar alarmCal = new GregorianCalendar(meeting.getMeetingTime().getYear(), alarmTime.getHours(), alarmTime.getMinutes());
-//                    meeting.addAttendee(new Attendee(employee, hasReponded, attendeeStatus, new Date(), hasAlarm, alarmCal.getTime()));
-//
+
+                    boolean attendeeStatus = participateYesButton.isSelected() ? true: false;
+                    boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
+                    GuiTimeOfDay alarmTime = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
+                    Calendar alarmCal = new GregorianCalendar(mModel.getMeetingTime().getYear(), alarmTime.getHours(), alarmTime.getMinutes());
+                    mModel.addAttendee(new Attendee(employee, hasReponded, attendeeStatus, new Date(), hasAlarm, alarmCal.getTime()));
+
 
                 }
+        }
         };
     }
+
 
 
     private ActionListener actionUpdateAvailableRooms = new ActionListener() {
@@ -511,16 +521,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		return returnDate;
 	}
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("Fire RECEIVED");
-        if (evt.getPropertyName().equals(ClientModelImpl.ROOMS)) {
-            System.out.println("Rooms updated!");
-            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
-            roomsDropdown.setModel(roomsComboBoxModel);
-
-        }
-    }
 
     public String[] getRooms(boolean init) {
         List<MeetingRoom> rooms = null;
@@ -550,7 +550,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     //SAVE BUTTON
     private class NewMeetingAction extends AbstractAction {
-		
+
 		public NewMeetingAction(String tittel) {
 			putValue(AbstractAction.NAME, tittel);
 
@@ -558,67 +558,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-            Meeting meeting = new Meeting(UUID.randomUUID().toString());
-
-            String selectedRoom = (String) roomsDropdown.getSelectedItem();
-            if (locationRadioButton.isSelected())  {
-                String meetingLocation = locationTextField.getText();
-                if (meetingLocation.isEmpty() || meetingLocation.equals(defaultText)){
-                    //@todo varsle bruker, må sette navn på eksternt møterom.
-                }
-                else meeting.setMeetingLocation(meetingLocation);
-            }
-            if (roomRadioButton.isSelected()) {
-                //antar at validering av ledig moterom er gjort.
-                meeting.setMeetingRoom(model.getMapMeetingRoomAvailable().get(roomsDropdown.getSelectedItem()));
-            }
-			meeting.setDescription(descText.getText());
-
-            GuiTimeOfDay meetingStart = (GuiTimeOfDay) startTimeDropdown.getSelectedItem();
-			meeting.setMeetingTime(computeDateFromDateAndTimeOfDay(meetingStart));
-			GuiTimeOfDay time = (GuiTimeOfDay) durationDropdown.getSelectedItem();
-            meeting.setDuration(time.getHours() * 60 + time.getMinutes());
-
-            List<Employee> emps = addEmpList.getSelectedValuesList();
-            for (Employee emp : emps){
-                System.out.println(model.getMapEmployees());
-                meeting.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
-            }
-
-            //LEGG TIL BRUKER.
-            boolean hasResponded = (participateYesButton.isSelected() || participateNoButton.isSelected()) ? true : false;
-            Boolean attendeeStatus = false;
-            if (participateYesButton.isSelected()) attendeeStatus = true;
-            if (participateNoButton.isSelected()) attendeeStatus = false;
-            boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
-            GuiTimeOfDay timeAlarm  = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
-
-            Long minusAlarmTime = meeting.getMeetingTime().getTime() - new Long(timeAlarm.getHours() * 60 + timeAlarm.getMinutes()) * 60 * 1000;
-            Calendar cal = new GregorianCalendar();
-            cal.setTimeInMillis(minusAlarmTime);
-
-            Employee userEmp = model.getMapEmployees().get(model.getUsername());
-            Attendee userAttendee = new Attendee(userEmp, hasResponded, attendeeStatus, new Date(), hasAlarm, cal.getTime());
-            meeting.addAttendee(userAttendee);
-            meeting.setMeetingOwner(userEmp);
-
-            //set eksterne deltagere.
-			meeting.setGuestAmount(Integer.parseInt(extraField.getText()));
-            int antAttendee = meeting.getGuestAmount() + meeting.getAttendees().size();
-            System.out.println(meeting);
-
+            System.out.println("Send Meeting to server. ");
+            mModel.setDescription(descText.getText());
+            mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+            System.out.println("size: " + mModel.getMapAttendees().size());
+            Meeting meeting = mModel.meeting();
+            model.addMeeting(meeting);
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
-
-
-//            System.out.println("nr futureMeetings: " + model.getMapFutureMeetings().size());
-//            for (Meeting m : model.getMapFutureMeetings().values()){
-//                System.out.println(m.getMeetingOwner().getUsername() + "\t"+ m.getMeetingTime());
-//            }
-
         }
-		
+
 	}
-	
+
 	private class LocationRadioButtonListener implements ActionListener {
 		public LocationRadioButtonListener() {
 		}
@@ -636,7 +586,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	}
 
 	public static void main(String[] args) {
-		
+
 //		JFrame frame = new JFrame("Test av opprett avtale");
 //		NewMeetingPanel panel = new NewMeetingPanel(null);
 //		frame.setContentPane(panel);
@@ -645,9 +595,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 //		frame.setLocationByPlatform(true);
 //		frame.pack();
 //		frame.setVisible(true);
-		
+
 	}
-	
+
 	private class MyIntFilter extends DocumentFilter {
 		   @Override
 		   public void insertString(FilterBypass fb, int offset, String string,
@@ -727,7 +677,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
             Employee emp = (Employee) value;
 
-            Attendee att = meeting.getMapAttendees().get(emp.getUsername());
+            Attendee att = mModel.getMapAttendees().get(emp.getUsername());
             String isGoing = "";
             String text = null;
             if (att != null){
@@ -742,6 +692,23 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             renderer.setFont(theFont);
             return renderer;
         }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.out.println("Fire RECEIVED");
+        String EV = evt.getPropertyName();
+        if (EV.equals(ClientModelImpl.ROOMS)) {
+            System.out.println("Rooms updated!");
+            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
+            roomsDropdown.setModel(roomsComboBoxModel);
+
+        }
+        if (EV.equals("NR_ATT")){
+//            System.out.println(mModel.getn);
+        }
+
+
     }
 
 }

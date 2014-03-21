@@ -7,11 +7,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.UUID;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import gui.MeetingPanels.InfoMeetingPanel;
+import gui.MeetingPanels.MeetingModel;
 import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 import client.ClientMain;
@@ -77,8 +79,9 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		
 		GridBagConstraints c = new GridBagConstraints();
 		
-        Meeting meeting = model.getMapFutureMeetings().get("mote3");
-		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
+//        Meeting meeting = model.getMapFutureMeetings().get("mote3");
+        Meeting meeting = new Meeting(UUID.randomUUID().toString());
+		NewMeetingPanel panel = new NewMeetingPanel(this.model, new MeetingModel(meeting));
 
 		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(panel);
@@ -90,7 +93,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		setLocationByPlatform(true);
-		setTitle("CalendarPro 2.3");
+		setTitle("CalendarPro 2.3 " + model.getUsername());
 		setVisible(true);
 		
 	}
@@ -124,18 +127,24 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 
 		@Override
 		public void windowClosed(WindowEvent e) {
+            System.out.println("client closed");
 			if (ClientMain.getLoggedin() == true) {
 				ClientMain.sendLogout();
 			}
 			ClientMain.closeConnection();
-			ClientMain.shutdownClient();
+            ClientMain.shutdownClient();
+
 		}
 
 		@Override
 		public void windowClosing(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+            System.out.println("window closing");
+            if (ClientMain.getLoggedin() == true) {
+                ClientMain.sendLogout();
+            }
+            ClientMain.closeConnection();
+            ClientMain.shutdownClient();
+        }
 
 		@Override
 		public void windowDeactivated(WindowEvent e) {
@@ -168,11 +177,11 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		Meeting meet = (Meeting) evt.getNewValue();
 		System.out.println(evt.getPropertyName());
 		if (evt.getPropertyName().equals("EDIT_MEETING")) {
-			NewMeetingPanel editPanel = new NewMeetingPanel(model, meet);
+			NewMeetingPanel editPanel = new NewMeetingPanel(model, new MeetingModel(meet));
 			contentPanel.add(editPanel, 0);
 			contentPanel.remove(1);
 		} else if (evt.getPropertyName().equals("SHOW_MEETING")) {
-			InfoMeetingPanel infoPanel = new InfoMeetingPanel(model, meet);
+			InfoMeetingPanel infoPanel = new InfoMeetingPanel(model, new MeetingModel(meet));
 			contentPanel.add(infoPanel, 0);
 			contentPanel.remove(1);
 		}
