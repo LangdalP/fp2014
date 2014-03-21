@@ -217,13 +217,17 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			c.anchor = GridBagConstraints.NORTHWEST;
 			add(mCont, c);
 			
-			// TODO: Finne forskjellige fargar
+			int numColors = meetingsThisDay.keySet().size();
+			List<Color> colorsForEmps = getColors(numColors);
 			
+			int counter = 0;
 			for (Employee emp : meetingsThisDay.keySet()) {
-				// Noke koder for farge her
+				Color empColor = colorsForEmps.get(counter);
+				counter++;
+				
 				List<Meeting> empMeets = meetingsThisDay.get(emp);
 				for (Meeting empMeeting : empMeets) {
-					mCont.addMeeting(empMeeting);
+					mCont.addMeeting(empMeeting, empColor);
 				}
 				
 			}
@@ -236,6 +240,7 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		int numColumns = 1;
 		int colWidth = 80;
 		List<Meeting> meetings = new ArrayList<>();
+		List<Color> colorsForMeetings = new ArrayList<>();
 		List<Meeting> addedMeetings = new ArrayList<>();
 		
 		public MeetingContainerPanel() {
@@ -245,8 +250,9 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			setLayout(null);
 		}
 		
-		public void addMeeting(Meeting meeting) {
+		public void addMeeting(Meeting meeting, Color colToUse) {
 			meetings.add(meeting);
+			colorsForMeetings.add(colToUse);
 			
 			int startHour = meeting.getMeetingTime().getHours();
 			int startMinute = meeting.getMeetingTime().getMinutes();
@@ -262,6 +268,7 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			removeAll();
 			addedMeetings.clear();
 			
+			int counter = 0;
 			for (Meeting meet: meetings) {
 				float startH = hourAndMinutesToFloat(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
 				float endH = startH + (float) (meet.getDuration()/60);
@@ -292,12 +299,13 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 				int xPos = colWidth*colPos;
 				int yPos = calculateVertPosFromTime(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
 				
-				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth);
+				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth, colorsForMeetings.get(counter));
 				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
 				meetPan.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				meetPan.addMouseListener(thisRef);
 				add(meetPan);
 				addedMeetings.add(meet);
+				counter++;
 			}
 			
 			repaint();
@@ -534,6 +542,22 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		String eventName = owner ? "EDIT_MEETING" : "SHOW_MEETING"; 
 		System.out.println("Clicked on " + clickedMeet.getMeetingID());
 		pcs.firePropertyChange(eventName, null, clickedMeet);
+	}
+	
+	private static List<Color> getColors(int numColors) {
+		List<Color> colors = new ArrayList<>();
+		
+		for (int i=0; i<numColors; i++) {
+			switch (i) {
+			case 0: colors.add(Color.decode("#6495ED")); break;
+			case 1: colors.add(Color.decode("#7FFF00")); break;
+			case 2: colors.add(Color.decode("#FFA500")); break;
+			case 3: colors.add(Color.decode("#FA8072")); break;
+			default: colors.add(Color.decode("#FF00FF")); break;
+			}
+		}
+		
+		return colors;
 	}
 
 	@Override

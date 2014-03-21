@@ -21,10 +21,12 @@ public class CalendarMeetingPanel extends JPanel {
 	private int duration = 0;
 	private int heightPx = 0;
 	private int widthPx = 80;
+	private Color color;
 	
-	public CalendarMeetingPanel(Meeting meeting, int panelWidth) {
+	public CalendarMeetingPanel(Meeting meeting, int panelWidth, Color colToUse) {
 		this.meet = meeting;
 		this.duration = meeting.getDuration();
+		this.color = colToUse;
 		widthPx = panelWidth;
 		
 		heightPx = (duration/60)*VERT_PX_PER_HOUR;
@@ -87,7 +89,7 @@ public class CalendarMeetingPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
-		g.setColor(Color.decode("#6495ED"));
+		g.setColor(color);
 		g.fillRect(0, 0, widthPx, heightPx);
 		
 		g.setColor(Color.BLACK);
