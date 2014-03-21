@@ -53,9 +53,7 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 
     @Override
     public JButton getRightButton() {
-        JButton button = new JButton("");
-        button.setVisible(false);
-        return button;
+        return getDeleteMeetingButton();
     }
 
     @Override

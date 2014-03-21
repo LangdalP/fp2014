@@ -24,6 +24,7 @@ import client.ClientModelImpl;
 import gui.EmailNotificationPanel;
 import gui.GuiMain;
 import gui.GuiTimeOfDay;
+import gui.HomePanel;
 import model.Attendee;
 import model.Employee;
 import model.Meeting;
@@ -37,6 +38,9 @@ import protocol.TransferType;
 import client.ClientMain;
 
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
+    private static final String UPDATE_EMP_LIST = "UPDATE_EMP_LIST";
+
+
     private final Employee employee;
     protected MeetingModel mModel; //møte for panelet.
 
@@ -76,6 +80,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 //    protected JButton rb = getRightButton();
 
     final String defaultText = "[Velg ett annet sted:]";
+    private DefaultListModel<Employee> nameListModel;
 
     public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
 		this.model = model;
@@ -207,10 +212,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(participateLabel, c);
         participateYesButton = new JRadioButton("Ja");
+        if (mModel.isAttending() != null) participateYesButton.setSelected(mModel.isAttending());
         participateYesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mModel.getUserAttende().setAttendeeStatus(true);
+                mModel.getUserAttende().setHasResponded(true);
+                pcs.firePropertyChange(UPDATE_EMP_LIST, null,null);
             }
         });
         c.gridx = 1;
@@ -218,12 +226,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 2;
         lp.add(participateYesButton, c);
+
+
         participateNoButton = new JRadioButton("Nei");
-        participateNoButton.setEnabled(false);
+        if (mModel.isAttending() != null) participateNoButton.setSelected(!mModel.isAttending());
         participateNoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mModel.getUserAttende().setAttendeeStatus(false);
+                mModel.getUserAttende().setHasResponded(true);
+                pcs.firePropertyChange(UPDATE_EMP_LIST, null,null);
             }
         });
         c.gridx = 3;
@@ -302,7 +314,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
         // START HØGRESIDE
 
-        DefaultListModel<Employee> nameListModel = getEmployeeDefaultListModel();
+        nameListModel = getEmployeeDefaultListModel();
 
 
 
@@ -326,7 +338,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         JScrollPane addEmpListScroller = new JScrollPane(addEmpList);
         addEmpList.setCellRenderer(new EmployeeCellRenderer());
         addEmpList.addListSelectionListener(listEmployeeSelectionListener());
-
+        addEmpList.addPropertyChangeListener(UPDATE_EMP_LIST, this);
 
         c.gridx = 0;
         c.gridy = 1;
@@ -533,39 +545,36 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         return button;
     }
 
-
+    public JButton getDeleteMeetingButton() {
+        JButton button = new JButton("Slett avtale");
+        button.setAction(new AbstractAction("Slett avtale") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model.removeAttendeeFromMeeting(mModel.meeting(), mModel.getUserAttende());
+                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+//                model.getMapFutureMeetings().get(mModel.getMeetingID()).d
+//                System.out.println("varsle server og fjern fra model. ");
+            }
+        });
+        return button;
+    }
 
 
     public ListSelectionListener listEmployeeSelectionListener(){
         return new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                boolean userAttending = false;
-                for (Employee emp : addEmpList.getSelectedValuesList()){
-                    mModel.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
-                    if (emp.getUsername().equals(model.getUsername())){
-                        userAttending = true;
-                    }
+                for (int i=0; i < addEmpList.getModel().getSize(); i++){
+                    Employee emp = addEmpList.getModel().getElementAt(i);
+                    Attendee att = mModel.getMapAttendees().get(emp.getUsername());
+                        if (addEmpList.isSelectedIndex(i)){
+                            if (att == null) mModel.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
+                        }
+                        else  {
+                            if (!emp.getUsername().equals(model.getUsername())) mModel.getMapAttendees().remove(emp.getUsername());
+                        }
                 }
-                //enable deltager related ting.
-                alarmTimeDropdown.setEnabled(userAttending);
-                alarmYesButton.setEnabled(userAttending);
-                alarmNoButton.setEnabled(userAttending);
-                participateYesButton.setEnabled(userAttending);
-                participateNoButton.setEnabled(userAttending);
-                if (participateYesButton.isSelected()){
-                    boolean hasReponded = false;
-//                    participateYesButton.isSelected() hasReponded = true;
-
-                    boolean attendeeStatus = participateYesButton.isSelected() ? true: false;
-                    boolean hasAlarm = alarmYesButton.isSelected() ? true : false;
-                    GuiTimeOfDay alarmTime = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
-                    Calendar alarmCal = new GregorianCalendar(mModel.getMeetingTime().getYear(), alarmTime.getHours(), alarmTime.getMinutes());
-                    mModel.addAttendee(new Attendee(employee, hasReponded, attendeeStatus, new Date(), hasAlarm, alarmCal.getTime()));
-
-
-                }
-        }
+            }
         };
     }
 
@@ -712,7 +721,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                                                       boolean isSelected, boolean cellHasFocus) {
             Font theFont = null;
             Color theForeground = null;
-            String theText = null;
+            String text = null;
 
             JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, index,
                     isSelected, cellHasFocus);
@@ -722,18 +731,20 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             Attendee att = mModel.getMapAttendees().get(emp.getUsername());
             String isGoing = "";
             String format = "%-30s %-5s";
-            String text = null;
-            if (att != null){
+            boolean isUser = emp.getUsername().equals(model.getUsername());
+
+            if (att == null){
+                text = String.format(format, emp.getName(), "LEGG TIL");
+            }
+            else {
                 if (att.getHasResponded() && att.getAttendeeStatus()) isGoing = "Ja";
                 if (att.getHasResponded() && !att.getAttendeeStatus()) isGoing = "Nei";
                 if (!att.getHasResponded()) isGoing = "Ikke svart";
                 text = String.format(format, emp.getName(), isGoing);
             }
-            if (text == null){
-                text = String.format(format, emp.getName(), "LEGG TIL");
-            }
             renderer.setText(text);
             renderer.setFont(theFont);
+            System.out.println(mModel.getUserAttende());
             return renderer;
         }
     }
@@ -751,7 +762,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         if (EV.equals("NR_ATT")){
 //            System.out.println(mModel.getn);
         }
-
 
     }
 

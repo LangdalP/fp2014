@@ -211,7 +211,10 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
             System.out.println("SHOW HOME");
         }
         else if (evt.getPropertyName().equals(NEW_MEETING)){
-            NewMeetingPanel panel = new NewMeetingPanel(model, new MeetingModel(meet));
+            MeetingModel mModel = new MeetingModel(meet);
+            mModel.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
+            mModel.addOwnerToAttendees();
+            NewMeetingPanel panel = new NewMeetingPanel(model, mModel);
             panel.addPropertyChangeListener(this);
             contentPanel.add(panel, 0);
             contentPanel.remove(1);

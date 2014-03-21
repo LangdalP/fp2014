@@ -5,6 +5,7 @@ import model.Meeting;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Date;
 
 /**
  * Created by Christoffer on 20.03.14.
@@ -16,6 +17,7 @@ public class MeetingModel extends Meeting  {
     private PropertyChangeSupport pcs;
     private String username;
     private int nrAttendees = 0;
+    private boolean attending;
 
 
     public MeetingModel(Meeting m) {
@@ -59,4 +61,14 @@ public class MeetingModel extends Meeting  {
         pcs.addPropertyChangeListener(listener);
     }
 
+    public Boolean isAttending() {
+        if (getUserAttende() == null || !getUserAttende().getHasResponded()) return null;
+        if (getUserAttende().getHasResponded() && getUserAttende().getAttendeeStatus()) return true;
+        if (getUserAttende().getHasResponded() && !getUserAttende().getAttendeeStatus()) return false;
+        return false;
+    }
+
+    public void addOwnerToAttendees(){
+        addAttendee(new Attendee(getMeetingOwner(), false, false, new Date(), false, new Date()));
+    }
 }
