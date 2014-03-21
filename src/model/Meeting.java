@@ -44,6 +44,10 @@ public class Meeting implements Serializable{
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
         this.mapAttendees = attendees;
+        
+        if (meetingRoom != null) {
+        	meetingRoomBooked = true;
+        }
 
 	}
 
@@ -93,7 +97,11 @@ public class Meeting implements Serializable{
 
 	public void setMeetingRoom(MeetingRoom meetingRoom) {
 		this.meetingRoom = meetingRoom;
-		meetingRoomBooked = true;
+		if (meetingRoom != null) {
+			meetingRoomBooked = true;
+		} else {
+			meetingRoomBooked = false;
+		}
 	}
 
 	public boolean getMeetingRoomBooked(){

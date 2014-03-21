@@ -23,6 +23,9 @@ public class ModelDbImpl implements CalendarModel {
 
     @Override
     public void addMeeting(Meeting meeting) {
+    	if(meeting.getMeetngLocation() == null)
+    		dbService.addMeetingAtOffice(meeting);
+    	else
         dbService.addMeeting(meeting);
     }
 
@@ -100,7 +103,7 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getMapFutureMeetings() {
-        Map<String, Meeting> map = dbService.getMapMeetings(false);
+        Map<String, Meeting> map = dbService.getMapMeetings(null); // Hentar eigentlig alle møte no
         return map;
 	}
 

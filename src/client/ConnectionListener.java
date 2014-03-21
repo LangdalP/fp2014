@@ -58,7 +58,6 @@ public class ConnectionListener implements Runnable {
                 } else responseHandler.handleResponse(incomingObj);
 
 			} catch (IOException e) {
-                e.printStackTrace();
 				if(isStopped()) {
                     System.out.println("ClientListener stopped!") ;
                     return;

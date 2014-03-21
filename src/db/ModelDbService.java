@@ -244,7 +244,7 @@ public class ModelDbService {
      * @param meeting
      */
     public void addMeeting(Meeting meeting) {
-        String sql = "insert into avtale(id, dato, varighet, sted, eier_ansatt, sist_endret) values(?, ?, ?, ?, ?, ?)";
+        String sql = "insert into avtale(id, dato, varighet, sted, eier_ansatt, sist_endret, beskrivelse) values(?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
@@ -252,6 +252,7 @@ public class ModelDbService {
             ps.setString(4, meeting.getMeetngLocation()); // Skal vere "Kontoret" om det er booka m�terom
             ps.setString(5, meeting.getMeetingOwner().getUsername());
             ps.setTimestamp(6, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
+            ps.setString(7, meeting.getDescription());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -260,6 +261,22 @@ public class ModelDbService {
         if (meeting.getMeetingRoomBooked()) addMeetingRoomBooking(meeting, meeting.getMeetingRoom());
     }
     
+    public void addMeetingAtOffice(Meeting meeting) { // Skal vere "Kontoret" om det er booka m�terom
+        String sql = "insert into avtale(id, dato, varighet, eier_ansatt, sist_endret, beskrivelse) values(?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+            ps.setString(1, meeting.getMeetingID());
+            ps.setTimestamp(2, new java.sql.Timestamp(meeting.getMeetingTime().getTime()));
+            ps.setInt(3, meeting.getDuration()); 
+            ps.setString(4, meeting.getMeetingOwner().getUsername());
+            ps.setTimestamp(5, new java.sql.Timestamp(meeting.getLastChanged().getTime()));
+            ps.setString(6, meeting.getDescription());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        for (Attendee att : meeting.getAttendees())  addAttendee(meeting, att);
+        if (meeting.getMeetingRoomBooked()) addMeetingRoomBooking(meeting, meeting.getMeetingRoom());
+    }
     public void removeMeetingById(String meetingID) {
     	new ModelDbService().removeAttendee(meetingID);
     	new ModelDbService().removeMeetingRoom(meetingID);
