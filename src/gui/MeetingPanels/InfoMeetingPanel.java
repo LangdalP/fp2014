@@ -41,6 +41,7 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		locationTextField.setFocusable(false);
         sendEmailButton.setVisible(false);
 
+
         participateYesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
