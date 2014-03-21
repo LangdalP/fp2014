@@ -1,11 +1,12 @@
-package gui;
+package gui.MeetingPanels;
 
 import client.ClientModelImpl;
+import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 
 public class EditPanel extends NewMeetingPanel {
 
-	public EditPanel(ClientModelImpl model, Meeting meeting) {
+	public EditPanel(ClientModelImpl model, MeetingModel meeting) {
 		super(model, meeting);
 		// TODO Auto-generated constructor stub
 		init();

@@ -70,8 +70,9 @@ public class RequestHandler {
             case ADD_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 model.addMeeting(meeting);
-                System.out.println("ADD MEETING: \n" + meeting);
-                dbModelImpl.addMeeting(meeting);
+//                System.out.println("SERVER MODEL: \n"+ model + "\n\n");
+//                System.out.println("REQUEST HANDLER: ADD MEETING: \n" + meeting);
+//                dbModelImpl.addMeeting(meeting);
                 sync.addMeeting(meeting);
                 break;
             }

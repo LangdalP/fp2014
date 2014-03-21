@@ -61,6 +61,7 @@ public class LoginPanel extends JPanel {
 		c.gridx = 0; c.gridy = 4; c.gridwidth = 1; c.gridheight = 1;
 		add(loginButton, c);
 
+
         passwordField.setText("pass2");
 		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		
@@ -80,7 +81,10 @@ public class LoginPanel extends JPanel {
 		public void actionPerformed(ActionEvent arg0) {
 			String username = usernameField.getText();
 			String password = new String(passwordField.getPassword());
-			
+			if (username.isEmpty()) {
+                username = "christofferbuvik@gmail.com";
+                password = "pass1";
+            }
 			gui.loginDataEntered(username, password);
 		}
 		

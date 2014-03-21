@@ -1,5 +1,6 @@
 package gui;
 
+import javax.swing.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -107,4 +108,27 @@ public class GuiTimeOfDay {
 		return new GuiTimeOfDay(dateHours, dateMinutes);
 	}
 
+    public static Date getDate(Date date, JComboBox<GuiTimeOfDay> dropDownTime){
+        if (dropDownTime == null) return date;
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        GuiTimeOfDay t = (GuiTimeOfDay) dropDownTime.getSelectedItem();
+        cal = new GregorianCalendar(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), t.getHours(), t.getMinutes());
+        return cal.getTime();
+    }
+
+    public static Date getAlarmTime(Date meetingTime, JComboBox<GuiTimeOfDay> alarmTimeDropdown) {
+        int hours = 0, minutes = 30;
+        if (alarmTimeDropdown != null){
+             GuiTimeOfDay t = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
+            hours = t.getHours();
+             minutes = t.getMinutes();
+        }
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(meetingTime);
+        Calendar ret = cal;
+        ret.set(Calendar.HOUR, cal.get(Calendar.HOUR - hours));
+        ret.set(Calendar.MINUTE, cal.get(Calendar.MINUTE - minutes));
+        return ret.getTime();
+    }
 }

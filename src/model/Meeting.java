@@ -8,7 +8,7 @@ public class Meeting implements Serializable{
 	private static final long serialVersionUID = 5308232820435917628L;
 	
 	private String meetingID;
-	private Date meetingTime = new Date();
+	private Date meetingTime;
 	private int duration; //#minute
 	private String description = "";
 	private String meetingLocation;
@@ -16,13 +16,16 @@ public class Meeting implements Serializable{
 	private Map<String, Attendee> mapAttendees;
 	private int guestAmount = 0;
 	private MeetingRoom meetingRoom;
-	private String meetingRoomName;
 	private boolean meetingRoomBooked = false;
 	private Date lastChanged = new Date();
 
     public Meeting(String meetingID) {
         this.meetingID = meetingID;
         mapAttendees = new HashMap<>();
+        Calendar cal = new GregorianCalendar();
+        meetingTime = new GregorianCalendar(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 8, 0).getTime();
+        System.out.println("new Meeting:" + meetingTime);
+
     }
 
     public Meeting(String meetingID, Date meetingTime, int duration,
@@ -37,8 +40,7 @@ public class Meeting implements Serializable{
 		this.mapAttendees = attendees;
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
-		this.meetingRoomName = meetingRoom.getName();
-        mapAttendees = new HashMap<>();
+        this.mapAttendees = attendees;
 
 	}
 
@@ -117,7 +119,7 @@ public class Meeting implements Serializable{
     }
 	
 	public void addAttendee(Attendee attendee){
-        System.out.println(attendee.getEmployee());
+        System.out.println("adding: " + attendee.getEmployee());
         mapAttendees.put(attendee.getEmployee().getUsername(), attendee);
 	}
 	
@@ -133,6 +135,9 @@ public class Meeting implements Serializable{
 		this.lastChanged = lastChanged;
 	}
 
+    public boolean isParticipant(String username){
+        return mapAttendees.containsKey(username);
+    }
 
 
     @Override
@@ -144,11 +149,10 @@ public class Meeting implements Serializable{
                 ", description='" + description + '\'' +
                 ", meetingLocation='" + meetingLocation + '\'' +
                 ", guestAmount=" + guestAmount +
-                ", meetingRoomName =" + meetingRoomName +
                 ", meetingRoom=" + meetingRoom +
                 ", meetingRoomBooked=" + meetingRoomBooked +
                 ", lastChanged=" + lastChanged + "\n" +
-                ", attendees=" + getMapAttendees() +
+                ", attendees=" + mapAttendees.size() +
                 '}';
     }
 }

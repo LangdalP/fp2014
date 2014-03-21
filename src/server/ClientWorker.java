@@ -70,6 +70,9 @@ public class ClientWorker implements Runnable {
                     MultiThreadedServer.getClients();  //printer alle som er logget inn hver gang en ny logger inn.
                     objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.LOGIN, loggedIn));
                 }
+                if (messageType == MessageType.REQUEST && transferType == TransferType.LOGOUT){
+                    MultiThreadedServer.removeClient(username);
+                }
 
                 boolean success = false;
                 try {
