@@ -1,6 +1,7 @@
 package gui.MeetingPanels;
 
 import model.Attendee;
+import model.Employee;
 import model.Meeting;
 
 import java.beans.PropertyChangeListener;
@@ -39,6 +40,7 @@ public class MeetingModel extends Meeting  {
 
 
     public int getNrAttendees() {
+        int nrAttendees = getMapAttendees().size() + getGuestAmount() +1;
         return nrAttendees;
     }
 
@@ -48,12 +50,8 @@ public class MeetingModel extends Meeting  {
     }
 
     public Meeting meeting(){
-        System.out.println("atts: " + getMapAttendees().size());
         for (Attendee att : getMapAttendees().values()) addAttendee(att);
-        System.out.println("MEETING ATTS:\n " + getMapAttendees().values());
-//        System.out.println("desc: " + getDescription());
         Meeting m = new Meeting(getMeetingID(), getMeetingTime(), getDuration(), getDescription(),getMeetngLocation(),getMeetingOwner(),getMapAttendees(),getGuestAmount(),getMeetingRoom());
-        System.out.println("SENDING MEETING: " + m);
         return m;
     }
 
@@ -68,7 +66,11 @@ public class MeetingModel extends Meeting  {
         return false;
     }
 
-    public void addOwnerToAttendees(){
-        addAttendee(new Attendee(getMeetingOwner(), false, false, new Date(), false, new Date()));
+    /**
+     * init model riktig på client.
+     */
+    public void addOwnerToAttendees(Employee owner){
+        setMeetingOwner(owner);
+        addAttendee(new Attendee(owner, false, false, new Date(), false, new Date()));
     }
 }
