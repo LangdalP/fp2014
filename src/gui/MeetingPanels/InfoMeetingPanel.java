@@ -40,7 +40,7 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		roomsDropdown.setEnabled(false);
 		locationTextField.setFocusable(false);
         sendEmailButton.setVisible(false);
-
+        deleteButton.setVisible(false);
 
         participateYesButton.addActionListener(new ActionListener() {
             @Override
