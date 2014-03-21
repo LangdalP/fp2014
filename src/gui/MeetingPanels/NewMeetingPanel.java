@@ -20,6 +20,7 @@ import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
 import client.ClientModelImpl;
+import gui.EmailNotificationPanel;
 import gui.GuiTimeOfDay;
 import model.Attendee;
 import model.Employee;

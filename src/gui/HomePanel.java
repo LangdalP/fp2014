@@ -1,6 +1,6 @@
 package gui;
 
-import gui.NewMeetingPanel.EmployeeCellRenderer;
+import gui.MeetingPanels.NewMeetingPanel.EmployeeCellRenderer;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -8,8 +8,12 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.UUID;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -26,21 +30,20 @@ import javax.swing.ListCellRenderer;
 import model.Employee;
 
 import client.ClientModelImpl;
+import model.Meeting;
 
 public class HomePanel extends JPanel implements PropertyChangeListener{
 
 	private GridBagLayout layout = new GridBagLayout();
 	private ClientModelImpl model;
 	private JList<Employee> addEmpList;
+    private PropertyChangeSupport pcs;
 
 
 
-	/**
-	 * @param args
-	 */
 
 	public HomePanel(ClientModelImpl model){
-
+        pcs = new PropertyChangeSupport(this);
 		this.model = model;
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
@@ -53,20 +56,26 @@ public class HomePanel extends JPanel implements PropertyChangeListener{
 		setLayout(new GridBagLayout());
 
 
-		JButton opprett = new JButton("Oppret avtale");  
+		JButton opprett = new JButton("Oppret avtale");
+        opprett.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pcs.firePropertyChange(GuiMain.NEW_MEETING, null, new Meeting(UUID.randomUUID().toString()));
+            }
+        });
 		c.gridheight = 1;
 		c.gridwidth = 1; 
 		c.gridx = 0;
 		c.gridy = 0;
 		add(opprett,c);
 
-		JToggleButton avslåtte = new JToggleButton("Avslåtte avtaler");
+		JToggleButton avslaatte = new JToggleButton("Avslåtte avtaler");
 		c.gridheight = 1;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy=1;
 
-		add(avslåtte,c);
+		add(avslaatte,c);
 
 		JLabel addEmpLabel = new JLabel("Legg til deltakere");
 		c.gridx = 0;
@@ -119,6 +128,10 @@ public class HomePanel extends JPanel implements PropertyChangeListener{
 
 	}
 
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        pcs.addPropertyChangeListener(listener);
+    }
 
 
 public class EmployeeCellHome implements ListCellRenderer {

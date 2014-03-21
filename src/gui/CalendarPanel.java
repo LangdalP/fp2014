@@ -147,7 +147,8 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
 			for (Employee emp : meetingsByEmployee.keySet()) {
 				List<Meeting> empMeetingsThisDay = getMeetingsOnDate(model.getMeetingsByEmployee(emp), day);
-				mapEmpMeets.put(emp, empMeetingsThisDay);
+                System.out.println(day + "\n " + empMeetingsThisDay);
+                mapEmpMeets.put(emp, empMeetingsThisDay);
 			}
 			
 			System.out.println(counter);
@@ -229,7 +230,7 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		}
 	}
 	
-	// Inneheld alle møte, og teiknar horisontale strekar bort til tidspunkta
+	// Inneheld alle mï¿½te, og teiknar horisontale strekar bort til tidspunkta
 	private class MeetingContainerPanel extends JPanel {
 		
 		int numColumns = 1;
@@ -251,13 +252,13 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			int startMinute = meeting.getMeetingTime().getMinutes();
 			int duration = meeting.getDuration();
 			
-			// Sjekkar at møtet er mellom 8 og 20:
+			// Sjekkar at mï¿½tet er mellom 8 og 20:
 			if (startHour<8 || startHour>20) return;
 			
-			// Kjører sjekk om det blir overlapp
+			// Kjï¿½rer sjekk om det blir overlapp
 			numColumns = calculateMaxOverlap();
 			colWidth = DAY_COLUMN_MAX_WIDTH/numColumns;
-			// Fjernar alle avtalePanel frå hovudpanelet
+			// Fjernar alle avtalePanel frï¿½ hovudpanelet
 			removeAll();
 			addedMeetings.clear();
 			
@@ -519,7 +520,8 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 	@Override
 	public void propertyChange(PropertyChangeEvent arg0) {
 		// Modellen har endra seg
-		refreshDays();
+        System.out.println("SYNC RECEIVED");
+        refreshDays();
 	}
 
 	@Override
