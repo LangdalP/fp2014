@@ -90,12 +90,6 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		//c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(calendarPanel);
 		
-		// Teste fleire ansatte
-		List<Employee> empsShow = new ArrayList<>();
-		empsShow.add(model.getMapEmployees().get("peder.langdal@gmail.com"));
-		empsShow.add(model.getMapEmployees().get("hegelborge@gmail.com"));
-		
-		calendarPanel.setEmployeesToShow(empsShow);
 		
 		setLocation(0,0);
 		pack();
