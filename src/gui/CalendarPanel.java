@@ -57,6 +57,7 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		this.model = model;
 		this.thisRef = this;
 		this.pcs = new PropertyChangeSupport(this);
+		model.addPropertyChangeListener(this);
 		
 		init();
 	}
