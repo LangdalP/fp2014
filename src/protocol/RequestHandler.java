@@ -27,7 +27,7 @@ public class RequestHandler {
 
     public RequestHandler(ModelImpl model) {
         this.model = model;
-        dbModelImpl = new ModelDbImpl();
+//        dbModelImpl = new ModelDbImpl();
         instance = this;
     }
 
@@ -84,7 +84,9 @@ public class RequestHandler {
             }
 
             case SET_ATTENDEE_STATUS:{
+                System.out.println("SET_ATTENDEE_STATUS ON SERVER: ");
                 model.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
+                sync.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
                 break;
             }
 
@@ -129,6 +131,10 @@ public class RequestHandler {
                 }
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_MEETINGS_BY_EMPLOYEES, meetings));
                 break;
+            }
+            
+            case REMOVE_MEETING: {
+            	
             }
 
 
