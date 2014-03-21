@@ -208,7 +208,17 @@ public class ModelDbService {
         try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
             ps.setString(1, meeting.getMeetingID());
             ps.setString(2, attendee.getEmployee().getUsername());
-            ps.setBoolean(3, attendee.getAttendeeStatus());
+            if(attendee.getHasResponded() == false){ //0 betyr ikke svart
+                ps.setInt(3, 0);
+            }
+            else{
+            	if(attendee.getAttendeeStatus() == true){ //2 betyr deltar
+            		ps.setInt(3, 2);
+            	}
+            	else{ //1 betyr ikke deltar
+            		ps.setInt(3, 1);
+            	}
+            }
             ps.setTimestamp(4, new java.sql.Timestamp(attendee.getLastNotification().getTime()));
             if (attendee.getHasAlarm()) ps.setTimestamp(5, new java.sql.Timestamp(attendee.getAlarmTime().getTime()));
             else ps.setNull(5, Types.TIMESTAMP);
@@ -421,7 +431,17 @@ public class ModelDbService {
     public void updateAttendee(Attendee attendee, Meeting meeting) {
     	String sql = "update deltager_ansatt set deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=? and epost=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-            ps.setBoolean(1, attendee.getAttendeeStatus());
+    		if(attendee.getHasResponded() == false){ //0 betyr ikke svart
+                ps.setInt(1, 0);
+            }
+            else{
+            	if(attendee.getAttendeeStatus() == true){ //2 betyr deltar
+            		ps.setInt(1, 2);
+            	}
+            	else{ //1 betyr ikke deltar
+            		ps.setInt(1, 1);
+            	}
+            }
             ps.setTimestamp(2, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
             ps.setTimestamp(3, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
             ps.setBoolean(4, attendee.getHasAlarm());
