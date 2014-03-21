@@ -299,7 +299,12 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 				int xPos = colWidth*colPos;
 				int yPos = calculateVertPosFromTime(meet.getMeetingTime().getHours(), meet.getMeetingTime().getMinutes());
 				
-				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth, colorsForMeetings.get(counter));
+				boolean meetingOwner = false;
+				if (meet.getMeetingOwner().getUsername().equals(model.getUsername())) {
+					meetingOwner = true;
+				}
+				
+				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth, colorsForMeetings.get(counter), meetingOwner);
 				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
 				meetPan.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				meetPan.addMouseListener(thisRef);
