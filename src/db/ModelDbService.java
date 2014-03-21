@@ -419,14 +419,14 @@ public class ModelDbService {
     }
     
     public void updateAttendee(Attendee attendee, Meeting meeting) {
-    	String sql = "update deltager_ansatt set epost=?, deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=?";
+    	String sql = "update deltager_ansatt set deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=? and epost=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
-    		ps.setString(1, attendee.getEmployee().getUsername());
-            ps.setBoolean(2, attendee.getAttendeeStatus());
-            ps.setTimestamp(3, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
-            ps.setTimestamp(4, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
-            ps.setBoolean(5, attendee.getHasAlarm());
-            ps.setString(6, meeting.getMeetingID());
+            ps.setBoolean(1, attendee.getAttendeeStatus());
+            ps.setTimestamp(2, new java.sql.Timestamp(attendee.getLastNotification().getTime())); 
+            ps.setTimestamp(3, new java.sql.Timestamp(attendee.getAlarmTime().getTime())); 
+            ps.setBoolean(4, attendee.getHasAlarm());
+            ps.setString(5, meeting.getMeetingID());
+            ps.setString(6, attendee.getEmployee().getUsername());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

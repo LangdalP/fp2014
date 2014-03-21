@@ -13,13 +13,17 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import protocol.MessageType;
+import protocol.TransferObject;
+import protocol.TransferType;
+import model.Attendee;
 import model.Employee;
 import model.Meeting;
 import client.ClientMain;
@@ -196,17 +200,19 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		System.out.println(evt.getPropertyName());
 		if (evt.getPropertyName().equals(EDIT_MEETING)) {
 			Meeting meet = (Meeting) evt.getNewValue();
-			showAlarm(meet);
 			EditPanel editPanel = new EditPanel(model, new MeetingModel(meet));
             editPanel.addPropertyChangeListener(this);
 			contentPanel.add(editPanel, 0);
 			contentPanel.remove(1);
+			
 		} else if (evt.getPropertyName().equals(SHOW_MEETING)) {
 			Meeting meet = (Meeting) evt.getNewValue();
 			InfoMeetingPanel infoPanel = new InfoMeetingPanel(model, new MeetingModel(meet));
             infoPanel.addPropertyChangeListener(this);
 			contentPanel.add(infoPanel, 0);
 			contentPanel.remove(1);
+			
+			updateMeetingLastSeen(meet);
 		} else if (evt.getPropertyName().equals(SHOW_HOME)){
             HomePanel hp = new HomePanel(model);
             hp.addPropertyChangeListener(this);
@@ -229,6 +235,22 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 
 		contentPanel.revalidate();
 		contentPanel.repaint();
+	}
+	
+	private void updateMeetingLastSeen(Meeting meet) {
+		Attendee myAttendee = null;
+		List<Attendee> atts = meet.getAttendees();
+		for (Attendee att : atts) {
+			if (att.getEmployee().getUsername().equals(model.getUsername())) {
+				myAttendee = att;
+			}
+		}
+		if (myAttendee != null) {
+			model.setAttendeeLastNotification(meet, myAttendee, new Date());
+			TransferObject updateAttLastNot = new TransferObject(MessageType.REQUEST,
+					TransferType.SET_ATTENDEE_LAST_NOTIFICATION, meet, myAttendee, new Date());
+			ClientMain.sendTransferObject(updateAttLastNot);
+		}
 	}
 	
 }

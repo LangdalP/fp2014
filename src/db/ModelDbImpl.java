@@ -111,6 +111,10 @@ public class ModelDbImpl implements CalendarModel {
     public Map<String, MeetingRoom> getMapMeetingRoom() {
         return dbService.getMeetingRooms();
     }
+    
+    public void updateAttendee(Attendee att, Meeting meeting) {
+    	dbService.updateAttendee(att, meeting);
+    }
 
 
 }
