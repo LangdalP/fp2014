@@ -92,12 +92,18 @@ public class MultiThreadedServer implements Runnable {
     }
 
     public static synchronized void addClient(String username, ObjectOutputStream outStream){
-        usersLoggedIn.put(username, outStream);
+        if (!usersLoggedIn.containsKey(username)) usersLoggedIn.put(username, outStream);
+        else System.out.println("USER ALREADY LOGGED IN!");
+        for (String user : usersLoggedIn.keySet()) System.out.println("loggedin: " + username);
+        System.out.println("");
     };
 
     public static synchronized Map<String, ObjectOutputStream> getClients(){
-        for (String username : usersLoggedIn.keySet()) System.out.println("loggedin: " + username);
-
         return usersLoggedIn;
+    }
+
+    public static synchronized void removeClient(String username) {
+        usersLoggedIn.remove(username);
+        System.out.println("USER LOGGED OFF: " + username +"\tusers logged in: "+ usersLoggedIn.size());
     }
 }
