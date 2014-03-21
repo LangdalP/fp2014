@@ -2,6 +2,9 @@ package client;
 
 import model.*;
 import model.impl.ModelImpl;
+import protocol.MessageType;
+import protocol.TransferObject;
+import protocol.TransferType;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -38,10 +41,22 @@ public class ClientModelImpl extends ModelImpl {
     }
 
     @Override
+    public void addAttendeeToMeeting(Meeting meeting, Attendee attendee) {
+        super.addAttendeeToMeeting(meeting, attendee);
+        pcs.firePropertyChange(SYNC_CALENDAR, null,null);
+    }
+
+    @Override
     public void removeAttendeeFromMeeting(Meeting meeting, Attendee attendee) {
         super.removeAttendeeFromMeeting(meeting, attendee);
         System.out.println("should be null. " + getMapFutureMeetings().get(meeting.getMeetingID()));
         pcs.firePropertyChange(SYNC_CALENDAR, null, null);
+    }
+
+    @Override
+    public void setAttendeeStatus(Meeting meeting, Attendee attendee, boolean attendeeStatus) {
+        super.setAttendeeStatus(meeting, attendee, attendeeStatus);
+        pcs.firePropertyChange(SYNC_CALENDAR, null,null);
     }
 
     public void setMapMeetingRoomAvailable(Map<String, MeetingRoom> mapMeetingRoomAvailable) {

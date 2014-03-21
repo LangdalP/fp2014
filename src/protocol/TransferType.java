@@ -24,7 +24,7 @@ public enum TransferType {
     /** Obj0 = Meeting, Obj1 = Attendee */
     ADD_ATTENDEE_TO_MEETING,
 
-    /** Obj0 = Meeting, Obj1 = Employee*/
+    /** Obj0 = Meeting, Obj1 = Attendee*/
     REMOVE_ATTENDEE_FROM_MEETING,
 
     /**REQUEST: Obj0=MeetingRoom, Obj1=Date meetingStart, Obj2=int duration, Obj3=int minAttendees, RESPONS: Obj0=Map<String, MeetingRoom>   */
@@ -45,8 +45,8 @@ public enum TransferType {
     /**   */
     UPDATE_ALARM,
 
-    /**   */
-    UPDATE_ATTENDEE_STATUS,
+    /** REQUEST Obj0=Meeting, Ojb1=Attendee, Obj2=boolean attendeeStatus, RESPOSE obj0=Meeting, obj1=Attendee, Obj2=boolean attendeeStatus  */
+    SET_ATTENDEE_STATUS,
 
     ;
 }

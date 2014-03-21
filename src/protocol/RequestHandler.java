@@ -83,12 +83,17 @@ public class RequestHandler {
                 break;
             }
 
+            case SET_ATTENDEE_STATUS:{
+                model.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
+                break;
+            }
+
 
             case REMOVE_ATTENDEE_FROM_MEETING:{
                 Meeting meeting = (Meeting) obj.getObject(0);
                 Attendee attendee = (Attendee) obj.getObject(1);
                 model.removeAttendeeFromMeeting(meeting, attendee);
-//                sync.removeAttendeeFromMeeting(meeting, attendee);
+                sync.removeAttendeeFromMeeting(meeting, attendee);
                 break;
             }
             case GET_AVAILABLE_MEETING_ROOMS:{

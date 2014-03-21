@@ -1,9 +1,6 @@
 package client;
 
-import model.Employee;
-import model.Group;
-import model.Meeting;
-import model.MeetingRoom;
+import model.*;
 import protocol.MessageType;
 import protocol.TransferObject;
 
@@ -39,6 +36,19 @@ public class ResponseHandler {
             case GET_AVAILABLE_MEETING_ROOMS:{
                 Map<String, MeetingRoom> availableMeetingRooms = (Map<String, MeetingRoom>) obj.getObject(0);
                 model.setMapMeetingRoomAvailable(availableMeetingRooms);
+                break;
+            }
+            case ADD_ATTENDEE_TO_MEETING:{
+                model.addAttendeeToMeeting((Meeting) obj.getObject(0), (Attendee)obj.getObject(1));
+
+                break;
+            }
+            case REMOVE_ATTENDEE_FROM_MEETING:{
+                model.removeAttendeeFromMeeting((Meeting) obj.getObject(0), (Attendee) obj.getObject(1));
+                break;
+            }
+            case SET_ATTENDEE_STATUS: {
+                model.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
                 break;
             }
 

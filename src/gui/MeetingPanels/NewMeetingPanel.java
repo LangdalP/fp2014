@@ -550,12 +550,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         button.setAction(new AbstractAction("Slett avtale") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                model.removeAttendeeFromMeeting(mModel.meeting(), mModel.getUserAttende());
+                Meeting meet = mModel.meeting();
+                model.removeAttendeeFromMeeting(meet, mModel.getUserAttende());
                 pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
-//                model.getMapFutureMeetings().get(mModel.getMeetingID()).d
-//                System.out.println("varsle server og fjern fra model. ");
+                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.REMOVE_ATTENDEE_FROM_MEETING,meet, mModel.getUserAttende()));
             }
         });
+
         return button;
     }
 
