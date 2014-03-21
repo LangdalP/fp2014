@@ -51,7 +51,9 @@ public class ModelDbService {
 //        System.out.println("test");
        
         
-        new ModelDbService().addEmployee(new Employee("even.hansen.kalender.no", "Even Hansen"));
+//        new ModelDbService().addEmployee(new Employee("even.hansen.kalender.no", "Even Hansen"));
+        
+        new ModelDbService().removeMeetingById("idavtale");
       
         
 //        new ModelDbService().getUpcomingMeetingsInMeetingRoom("Rom424");
@@ -88,6 +90,7 @@ public class ModelDbService {
 
     public Employee getEmployeeWithPassword(String username) {return getEmployee(username, true);}
     public Employee getEmployee(String username) { return getEmployee(username, false);}
+    
     private Employee getEmployee(String username, boolean withPassword) {
         String sql = "select * from ansatt where epost = ?";
         Employee employee = null;
@@ -160,6 +163,7 @@ public class ModelDbService {
                     meeting.setMeetingTime(new Date(rs.getTimestamp("dato").getTime()));
                     meeting.setDuration(rs.getInt("varighet"));
                     meeting.setMeetingLocation(rs.getString("sted"));
+                    meeting.setDescription(rs.getString("beskrivelse"));
 
                     Employee owner = employeeMap.get(rs.getString("eier_ansatt"));
                     meeting.setMeetingOwner(owner);
@@ -257,7 +261,37 @@ public class ModelDbService {
     }
     
     public void removeMeetingById(String meetingID) {
-
+    	new ModelDbService().removeAttendee(meetingID);
+    	new ModelDbService().removeMeetingRoom(meetingID);
+    	  String sql = "DELETE FROM avtale where id = ?";
+    	  try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+    	        ps.setString(1, meetingID);
+    	        ps.executeUpdate();
+    	      } catch (SQLException e) {
+    	            e.printStackTrace();
+    	        }
+    	    }
+    
+    private void removeAttendee(String meetingID){
+    	String sql ="DELETE FROM deltager_ansatt where avtale_id = ?";
+	  	  try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+		        ps.setString(1, meetingID);
+		        ps.executeUpdate();
+		      } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+		    
+    }
+    
+    private void removeMeetingRoom(String meetingID){
+    	String sql ="DELETE FROM avtale_moterom where id = ?";
+	  	  try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
+		        ps.setString(1, meetingID);
+		        ps.executeUpdate();
+		      } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+		    
     }
 
     public List<Employee> getEmployeesInGroup(Group group) {

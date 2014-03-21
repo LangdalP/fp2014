@@ -1,11 +1,17 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +24,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
@@ -27,7 +32,7 @@ import model.Employee;
 import model.Meeting;
 import client.ClientModelImpl;
 
-public class CalendarPanel extends JPanel {
+public class CalendarPanel extends JPanel implements PropertyChangeListener, MouseListener {
 	
 	private static final Dimension TOP_LABEL_DIMENSION = new Dimension(80, 40);
 	private static final Dimension TIME_LABEL_DIMENSION = new Dimension(80, 30);
@@ -44,11 +49,15 @@ public class CalendarPanel extends JPanel {
 	private HashMap<Employee, List<Meeting>> meetingsByEmployee = new HashMap<>();
 	private GridBagLayout containerLayout = new GridBagLayout();
 	private HashMap<Integer, GridBagConstraints> constraints = new HashMap<>();
+	private CalendarPanel thisRef;
+	private PropertyChangeSupport pcs;
 	
 	public CalendarPanel(ClientModelImpl model) {
 		setLayout(new GridBagLayout());
 		this.model = model;
-		
+		this.thisRef = this;
+		this.pcs = new PropertyChangeSupport(this);
+		model.addPropertyChangeListener(this);
 		
 		init();
 	}
@@ -103,7 +112,7 @@ public class CalendarPanel extends JPanel {
 		long newTimeMs = currentMs - (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
 		
-		addDaysToContainer();
+		refreshDays();
 		
 	}
 	
@@ -114,7 +123,7 @@ public class CalendarPanel extends JPanel {
 		long newTimeMs = currentMs + (7*24*60*60*1000);
 		dayInWeek = new Date(newTimeMs);
 		
-		addDaysToContainer();
+		refreshDays();
 	}
 	
 	public void setEmployeesToShow(List<Employee> emps) {
@@ -125,13 +134,11 @@ public class CalendarPanel extends JPanel {
 			meetingsByEmployee.put(emp, meetingsForEmp);
 		}
 		
-		removeAllDayPanels();
-		addDaysToContainer();
+		refreshDays();
 	}
 	
-	private void addDaysToContainer() {
-		
-		System.out.println("Inside redraw");
+	private void refreshDays() {
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0; c.gridy = 0; c.gridheight = 1; c.gridwidth = 1;
 		Date[] allDaysOfWeek = getAllDaysOfWeek(dayInWeek);
@@ -140,12 +147,12 @@ public class CalendarPanel extends JPanel {
 			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
 			for (Employee emp : meetingsByEmployee.keySet()) {
 				List<Meeting> empMeetingsThisDay = getMeetingsOnDate(model.getMeetingsByEmployee(emp), day);
-				mapEmpMeets.put(emp, empMeetingsThisDay);
+                System.out.println(day + "\n " + empMeetingsThisDay);
+                mapEmpMeets.put(emp, empMeetingsThisDay);
 			}
 			
 			System.out.println(counter);
 			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
-			CalendarDayPanel oldPanel = (CalendarDayPanel) calendarContainer.getComponent(counter);
 			calendarContainer.add(dayPanel, constraints.get(counter), counter);
 			System.out.println(constraints.get(counter).gridx);
 			counter++;
@@ -154,16 +161,6 @@ public class CalendarPanel extends JPanel {
 		calendarContainer.revalidate();
 		calendarContainer.repaint();
 		repaint();
-	}
-	
-	private void removeAllDayPanels() {
-		if (calendarContainer.getComponentCount() != 8) {
-			System.out.println("Cannot remove!");
-			return;
-		}
-		for (int i = 7; i>0; i--) {
-			calendarContainer.remove(i);
-		}
 	}
 	
 	// Lagar panelet for ein dag, dvs. ei kolonne i kalenderen
@@ -233,7 +230,7 @@ public class CalendarPanel extends JPanel {
 		}
 	}
 	
-	// Inneheld alle møte, og teiknar horisontale strekar bort til tidspunkta
+	// Inneheld alle mï¿½te, og teiknar horisontale strekar bort til tidspunkta
 	private class MeetingContainerPanel extends JPanel {
 		
 		int numColumns = 1;
@@ -255,13 +252,13 @@ public class CalendarPanel extends JPanel {
 			int startMinute = meeting.getMeetingTime().getMinutes();
 			int duration = meeting.getDuration();
 			
-			// Sjekkar at møtet er mellom 8 og 20:
+			// Sjekkar at mï¿½tet er mellom 8 og 20:
 			if (startHour<8 || startHour>20) return;
 			
-			// Kjører sjekk om det blir overlapp
+			// Kjï¿½rer sjekk om det blir overlapp
 			numColumns = calculateMaxOverlap();
 			colWidth = DAY_COLUMN_MAX_WIDTH/numColumns;
-			// Fjernar alle avtalePanel frå hovudpanelet
+			// Fjernar alle avtalePanel frï¿½ hovudpanelet
 			removeAll();
 			addedMeetings.clear();
 			
@@ -297,6 +294,8 @@ public class CalendarPanel extends JPanel {
 				
 				CalendarMeetingPanel meetPan = new CalendarMeetingPanel(meet, colWidth);
 				meetPan.setBounds(xPos, yPos, colWidth, meetPan.getHeight());
+				meetPan.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				meetPan.addMouseListener(thisRef);
 				add(meetPan);
 				addedMeetings.add(meet);
 			}
@@ -517,65 +516,52 @@ public class CalendarPanel extends JPanel {
 		
 		return outMeets;
 	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent arg0) {
+		// Modellen har endra seg
+        System.out.println("SYNC RECEIVED");
+        refreshDays();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		CalendarMeetingPanel meetPan = (CalendarMeetingPanel) e.getComponent();
+		Meeting clickedMeet = meetPan.getMeeting();
+		boolean owner = false;
+		if (clickedMeet.getMeetingOwner().getUsername().equals(model.getUsername())) owner = true;
+		
+		String eventName = owner ? "EDIT_MEETING" : "SHOW_MEETING"; 
+		System.out.println("Clicked on " + clickedMeet.getMeetingID());
+		pcs.firePropertyChange(eventName, null, clickedMeet);
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		pcs.addPropertyChangeListener(listener);
+	}
 	
 }
-
-/*
-TESTKODE
-
-if (dayDate.getDay() == new Date().getDay()) {
-Meeting meeting1 = new Meeting("whatever id");
-Date testTime = new Date();
-testTime.setHours(12);
-testTime.setMinutes(0);
-meeting1.setDuration(60);
-meeting1.setMeetingTime(testTime);
-meeting1.setDescription("Møte");
-mCont.addMeeting(meeting1);
-
-Meeting meeting2 = new Meeting("whatever id2");
-Date testTime2 = new Date();
-testTime2.setHours(12);
-testTime2.setMinutes(30);
-meeting2.setDuration(60);
-meeting2.setMeetingTime(testTime2);
-meeting2.setDescription("Møte2");
-mCont.addMeeting(meeting2);
-
-Meeting meeting3 = new Meeting("whatever id3");
-Date testTime3 = new Date();
-testTime3.setHours(11);
-testTime3.setMinutes(30);
-meeting3.setDuration(60);
-meeting3.setMeetingTime(testTime3);
-meeting3.setDescription("Møte3");
-mCont.addMeeting(meeting3);
-
-Meeting meeting4 = new Meeting("whatever id4");
-Date testTime4 = new Date();
-testTime4.setHours(10);
-testTime4.setMinutes(0);
-meeting4.setDuration(90);
-meeting4.setMeetingTime(testTime4);
-meeting4.setDescription("Møte4");
-mCont.addMeeting(meeting4);
-
-Meeting meeting5 = new Meeting("whatever id5");
-Date testTime5 = new Date();
-testTime5.setHours(13);
-testTime5.setMinutes(0);
-meeting5.setDuration(90);
-meeting5.setMeetingTime(testTime5);
-meeting5.setDescription("Møte5");
-mCont.addMeeting(meeting5);
-
-Meeting meeting6 = new Meeting("whatever id6");
-Date testTime6 = new Date();
-testTime6.setHours(9);
-testTime6.setMinutes(0);
-meeting6.setDuration(60);
-meeting6.setMeetingTime(testTime6);
-meeting6.setDescription("Møte6");
-mCont.addMeeting(meeting6);
-}
-*/

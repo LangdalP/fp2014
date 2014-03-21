@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import model.Attendee;
@@ -43,6 +44,10 @@ public class CalendarMeetingPanel extends JPanel {
 	
 	public int getHeight() {
 		return heightPx;
+	}
+	
+	public Meeting getMeeting() {
+		return meet;
 	}
 	
 	private int numResponseYes() {

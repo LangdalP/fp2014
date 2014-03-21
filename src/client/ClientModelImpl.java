@@ -21,6 +21,7 @@ public class ClientModelImpl extends ModelImpl {
     private PropertyChangeSupport pcs;
 
     public static String ROOMS = "availableRooms";
+    public static String SYNC_ADD_MEETING = "SYNC_ADD_MEETING";
 
     public ClientModelImpl(Map<String, Meeting> mapFutureMeetings, Map<String, Employee> mapEmployees, Map<String, MeetingRoom> mapMeetingRooms, Map<String, Group> mapGroups) {
         super(mapFutureMeetings, mapEmployees, mapMeetingRooms, mapGroups);
@@ -31,6 +32,13 @@ public class ClientModelImpl extends ModelImpl {
 
     public Map<String, MeetingRoom> getMapMeetingRoomAvailable() {
         return mapMeetingRoomAvailable;
+    }
+
+    @Override
+    public void addMeeting(Meeting meeting) {
+        super.addMeeting(meeting);
+        System.out.println("fire sync model");
+        pcs.firePropertyChange(SYNC_ADD_MEETING, null, null);
     }
 
     public void setMapMeetingRoomAvailable(Map<String, MeetingRoom> mapMeetingRoomAvailable) {

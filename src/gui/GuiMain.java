@@ -1,23 +1,39 @@
 package gui;
 
-import java.awt.*;
+import gui.MeetingPanels.InfoMeetingPanel;
+import gui.MeetingPanels.MeetingModel;
+import gui.MeetingPanels.NewMeetingPanel;
+
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
+import javax.swing.*;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import client.ClientModelImpl;
-import model.impl.ModelImpl;
+import gui.MeetingPanels.EditPanel;
+import gui.MeetingPanels.InfoMeetingPanel;
+import gui.MeetingPanels.MeetingModel;
+import gui.MeetingPanels.NewMeetingPanel;
+import model.Meeting;
 import client.ClientMain;
+import client.ClientModelImpl;
 
-public class GuiMain extends JFrame {
+public class GuiMain extends JFrame implements PropertyChangeListener {
 	
 	private boolean loggedIn = false;
 	private JPanel contentPanel = new JPanel();
-	private JPanel upperPanel;
+	private HomePanel hPanel;
 	private JPanel calendarPanel;
 	private GridBagLayout layout = new GridBagLayout();
+	private GridBagConstraints topConstraint;
+	private GridBagConstraints bottomConstraint;
 	
 	private ClientModelImpl model;
 	
@@ -61,26 +77,25 @@ public class GuiMain extends JFrame {
 		this.model = model;
 		// M� sette upperPanel til "Hjem" og calendarPanel til kalender
 		setContentPane(contentPanel);
+		//contentPanel.setLayout(layout);
 		
-		upperPanel = new JPanel();		// Skal vere "Hjem"
+		hPanel = new HomePanel(model);		// Skal vere "Hjem"
+        hPanel.addPropertyChangeListener(this);
 		calendarPanel = new CalendarPanel(model);
+		calendarPanel.addPropertyChangeListener(this);
+		
 		GridBagConstraints c = new GridBagConstraints();
+		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
+		contentPanel.add(hPanel);
+		//c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
+		contentPanel.add(calendarPanel);
 		
-	//	NewMeetingPanel newMeetingPanel = new NewMeetingPanel(this.model);
-		InfoMeetingPanel panel = new InfoMeetingPanel(this.model);
-		
-		
-		c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
-	//	contentPanel.add(newMeetingPanel, c);
-		contentPanel.add(panel, c);
-		c.gridx = 0; c.gridy = 1; c.gridwidth = 1; c.gridheight = 1;
-		contentPanel.add(calendarPanel, c);
 		setLocation(0,0);
 		pack();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		setLocationByPlatform(true);
-		setTitle("CalendarPro 2.3");
+		setTitle("CalendarPro 2.3 Logged in as: " + model.getUsername());
 		setVisible(true);
 		
 	}
@@ -88,6 +103,9 @@ public class GuiMain extends JFrame {
 	public void loginDataEntered(String username, String password) {
 		System.out.println("Entered username: " + username + " and password: " + password);
 		boolean success = ClientMain.validateLogin(username, password);
+		if (!success) {
+			JOptionPane.showMessageDialog(null, "Innloggingen var feil");
+		}
 		setLoggedIn(success);
 	}
 	
@@ -123,9 +141,13 @@ public class GuiMain extends JFrame {
 
 		@Override
 		public void windowClosing(WindowEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+            System.out.println("window closing");
+            if (ClientMain.getLoggedin() == true) {
+                ClientMain.sendLogout();
+            }
+            ClientMain.closeConnection();
+            ClientMain.shutdownClient();
+        }
 
 		@Override
 		public void windowDeactivated(WindowEvent e) {
@@ -150,6 +172,41 @@ public class GuiMain extends JFrame {
 			// TODO Auto-generated method stub
 			
 		}
+	}
+
+    public static String SHOW_HOME = "SHOW_HOME";
+    public static String SHOW_MEETING = "SHOW_MEETING";
+    public static String EDIT_MEETING = "EDIT_MEETING";
+    public static String NEW_MEETING = "NEW_MEETING";
+
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		Meeting meet = (Meeting) evt.getNewValue();
+		System.out.println(evt.getPropertyName());
+		if (evt.getPropertyName().equals(EDIT_MEETING)) {
+			EditPanel editPanel = new EditPanel(model, new MeetingModel(meet));
+			contentPanel.add(editPanel, 0);
+			contentPanel.remove(1);
+		} else if (evt.getPropertyName().equals(SHOW_MEETING)) {
+			InfoMeetingPanel infoPanel = new InfoMeetingPanel(model, new MeetingModel(meet));
+			contentPanel.add(infoPanel, 0);
+			contentPanel.remove(1);
+		} else if (evt.getPropertyName().equals(SHOW_HOME)){
+            HomePanel hp = new HomePanel(model);
+            hp.addPropertyChangeListener(this);
+            contentPanel.add(hp, 0);
+            contentPanel.add(hp, 0);
+            contentPanel.remove(1);
+        }
+        else if (evt.getPropertyName().equals(NEW_MEETING)){
+            NewMeetingPanel panel = new NewMeetingPanel(model, new MeetingModel(meet));
+            contentPanel.add(panel, 0);
+            contentPanel.remove(1);
+        }
+
+		contentPanel.revalidate();
+		contentPanel.repaint();
 	}
 	
 }

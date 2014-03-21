@@ -42,6 +42,11 @@ public enum TransferType {
     GET_MEETINGS_BY_EMPLOYEE,
 
 
+    /**   */
+    UPDATE_ALARM,
+
+    /**   */
+    UPDATE_ATTENDEE_STATUS,
 
     ;
 }
