@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javax.swing.text.PlainDocument;
 
 import client.ClientModelImpl;
 import gui.EmailNotificationPanel;
+import gui.GuiMain;
 import gui.GuiTimeOfDay;
 import model.Attendee;
 import model.Employee;
@@ -37,7 +39,8 @@ import client.ClientMain;
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     private final Employee employee;
     protected MeetingModel mModel; //møte for panelet.
-	
+
+    protected PropertyChangeSupport pcs;
 	private GridBagLayout layout = new GridBagLayout();
 	
 	// Verdi-felt på venstresida
@@ -58,16 +61,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected JRadioButton locationRadioButton;
     protected JComboBox<String> roomsDropdown;
     protected JTextField locationTextField;
+    protected JButton sendEmailButton;
 
     protected ClientModelImpl model;
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
 
  //		knapper
-    
-    protected JButton lb = getLeftButton();
-    protected JButton rb = getRightButton();
-    
+
+//    protected JButton lb = getLeftButton();
+//    protected JButton rb = getRightButton();
+
     final String defaultText = "[Velg ett annet sted:]";
 
     public NewMeetingPanel(ClientModelImpl model, MeetingModel mModel) {
@@ -76,6 +80,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         mModel.setUsername(model.getUsername());
         this.employee = model.getMapEmployees().get(model.getUsername());
 		this.model.addPropertyChangeListener(this);
+        pcs = new PropertyChangeSupport(this);
 		setLayout(layout);
         mModel.addPropertyChangeListener(this);
 		init();
@@ -286,12 +291,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
         // START HØGRESIDE
 
-        DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
-
-        for (String key : model.getMapEmployees().keySet()) {
-//            if (key.equals(model.getUsername())) continue;
-            nameListModel.addElement(model.getMapEmployees().get(key));
-        }
+        DefaultListModel<Employee> nameListModel = getEmployeeDefaultListModel();
 
 
 
@@ -350,7 +350,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 			}
 		};
 		
-		JButton sendEmailButton = new JButton(openEmailBoxAction);
+		sendEmailButton = new JButton(openEmailBoxAction);
 		c.gridx = 2;
 		c.gridy = 3;
 		c.gridheight = 1;
@@ -438,15 +438,15 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
     
-        rp.add(lb , c);
+        rp.add(getLeftButton() , c);
 
       
         c.gridx = 1;
         c.gridy = 8;
         c.gridheight = 1;
         c.gridwidth = 2;
-       
-        rp.add(rb, c);
+
+        rp.add(getRightButton(), c);
 
         cl.gridx = 1;
         c.gridy = 0;
@@ -457,9 +457,23 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     }
 
+    protected DefaultListModel<Employee> getEmployeeDefaultListModel() {
+        DefaultListModel<Employee> nameListModel = new DefaultListModel<>();
+        for (String key : model.getMapEmployees().keySet()) {
+            nameListModel.addElement(model.getMapEmployees().get(key));
+        }
+        return nameListModel;
+    }
+
     public JButton getLeftButton(){
         JButton cancelButton =  new JButton("Avbryt");
-        cancelButton.setAction(new CancelAction("Avbryt"));
+//        cancelButton.setAction(new CancelAction("Avbryt"));
+        cancelButton.setAction(new AbstractAction("Avbryt") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+            }
+        });
         return cancelButton;
     	
     }
@@ -467,11 +481,34 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     public JButton getRightButton(){
     	
   	   JButton saveButton = new JButton("Lagre");
-       saveButton.setAction(new NewMeetingAction("Lagre"));
+       saveButton.setAction(new AbstractAction("Lagre") {
+
+           @Override
+           public void actionPerformed(ActionEvent e) {
+               System.out.println("Send Meeting to server. ");
+               mModel.setDescription(descText.getText());
+               mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+               System.out.println("size: " + mModel.getMapAttendees().size());
+               Meeting meeting = mModel.meeting();
+               meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
+               model.addMeeting(meeting);
+               ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+               pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+           }
+       });
        return saveButton;
     }
-    
 
+    public JButton getHomeButton() {
+        JButton button =  new JButton("Hjem");
+        button.setAction(new AbstractAction("Hjem") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+            }
+        });
+        return button;
+    }
 
 
 
@@ -550,41 +587,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         }
         return roomsArr;
     }
-
-    private class CancelAction extends AbstractAction{
-
-        private CancelAction(String tittel) {
-            putValue(AbstractAction.NAME, tittel);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            for (Meeting m : model.getMapFutureMeetings().values()){
-                System.out.println(model.getUsername() + "\t" + m.getDescription());
-            }
-        }
-    }
-
-    //SAVE BUTTON
-    private class NewMeetingAction extends AbstractAction {
-
-		public NewMeetingAction(String tittel) {
-			putValue(AbstractAction.NAME, tittel);
-
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-            System.out.println("Send Meeting to server. ");
-            mModel.setDescription(descText.getText());
-            mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
-            System.out.println("size: " + mModel.getMapAttendees().size());
-            Meeting meeting = mModel.meeting();
-            model.addMeeting(meeting);
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
-        }
-
-	}
 
 	private class LocationRadioButtonListener implements ActionListener {
 		public LocationRadioButtonListener() {
@@ -696,14 +698,16 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
             Attendee att = mModel.getMapAttendees().get(emp.getUsername());
             String isGoing = "";
+            String format = "%-30s %-5s";
             String text = null;
             if (att != null){
                 if (att.getHasResponded() && att.getAttendeeStatus()) isGoing = "Ja";
                 if (att.getHasResponded() && !att.getAttendeeStatus()) isGoing = "Nei";
-                text = String.format("%-30s %-5s", emp.getName(), isGoing);
+                if (!att.getHasResponded()) isGoing = "Ikke svart";
+                text = String.format(format, emp.getName(), isGoing);
             }
             if (text == null){
-                text = emp.getName();
+                text = String.format(format, emp.getName(), "LEGG TIL");
             }
             renderer.setText(text);
             renderer.setFont(theFont);
@@ -728,4 +732,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     }
 
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        pcs.addPropertyChangeListener(listener);
+    }
 }
