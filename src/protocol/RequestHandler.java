@@ -140,6 +140,14 @@ public class RequestHandler {
             	break;
             }
             
+            case EDIT_MEETING: {
+            	Meeting meetToEdit = (Meeting) obj.getObject(0);
+            	model.editMeeting(meetToEdit);
+            	dbModelImpl.editMeeting(meetToEdit);
+            	sync.editMeeting(meetToEdit);
+            	
+            }
+            
             case SET_ATTENDEE_LAST_NOTIFICATION: {
             	Meeting meeting = (Meeting) obj.getObject(0);
             	Attendee attendee = (Attendee) obj.getObject(1);

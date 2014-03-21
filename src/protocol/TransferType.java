@@ -23,6 +23,9 @@ public enum TransferType {
 
     /** Obj0 = Meeting, Obj1 = Attendee */
     ADD_ATTENDEE_TO_MEETING,
+    
+    /** Obj = Meeting */
+    EDIT_MEETING,
 
     /** Obj0 = Meeting, Obj1 = Employee*/
     REMOVE_ATTENDEE_FROM_MEETING,
