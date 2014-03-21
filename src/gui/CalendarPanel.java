@@ -69,7 +69,6 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 		
 		Employee myEmployee = model.getMapEmployees().get(model.getUsername());
 		empsToShow.add(myEmployee);
-		System.out.println(myEmployee);
 		meetingsByEmployee.put(myEmployee, model.getMeetingsByEmployee(myEmployee));
 		
 		calendarContainer.setLayout(containerLayout);
@@ -148,14 +147,11 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			Map<Employee, List<Meeting>> mapEmpMeets = new HashMap<>();
 			for (Employee emp : meetingsByEmployee.keySet()) {
 				List<Meeting> empMeetingsThisDay = getMeetingsOnDate(model.getMeetingsByEmployee(emp), day);
-                System.out.println(day + "\n " + empMeetingsThisDay);
                 mapEmpMeets.put(emp, empMeetingsThisDay);
 			}
 			
-			System.out.println(counter);
 			CalendarDayPanel dayPanel = new CalendarDayPanel(day, mapEmpMeets);
 			calendarContainer.add(dayPanel, constraints.get(counter), counter);
-			System.out.println(constraints.get(counter).gridx);
 			counter++;
 		}
 		
@@ -179,7 +175,7 @@ public class CalendarPanel extends JPanel implements PropertyChangeListener, Mou
 			setPreferredSize(new Dimension(80, 430));
 			setMinimumSize(new Dimension(80, 430));
 			
-			System.out.println("Creating day: " + dayDate.toString());
+//			System.out.println("Creating day: " + dayDate.toString());
 			
 			initTopLabel();
 			initMeetings();

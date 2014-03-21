@@ -15,7 +15,7 @@ public class EditPanel extends NewMeetingPanel {
 
 	public EditPanel(ClientModelImpl model, MeetingModel meeting) {
 		super(model, meeting);
-		init();
+//		init();
 	
 	}
 	
