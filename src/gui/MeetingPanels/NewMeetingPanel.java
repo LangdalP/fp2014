@@ -153,6 +153,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(startLabel, c);
         startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
+        GuiTimeOfDay g = GuiTimeOfDay.getGuiTimeOfDayFromDate(mModel.getMeetingTime());
+        startTimeDropdown.setEditable(true);
+        startTimeDropdown.setSelectedItem(g);
         startTimeDropdown.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -175,6 +178,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridwidth = 1;
         lp.add(durationLabel, c);
         durationDropdown = new JComboBox<>(durationComboBoxModel);
+        System.out.println("fadg" + g.getHours());
+        int hours = mModel.getDuration() / 60;
+        int minutes = mModel.getDuration() - (hours * 60);
+        durationDropdown.setEditable(true);
+        durationDropdown.setSelectedItem(new GuiTimeOfDay(hours, minutes));
         durationDropdown.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
