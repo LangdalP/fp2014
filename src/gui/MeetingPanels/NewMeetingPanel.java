@@ -495,6 +495,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                if (locationRadioButton.isSelected()) {
             	   mModel.setMeetingLocation(locationTextField.getText());
                }
+               
+               if (roomRadioButton.isSelected()) {
+            	   String roomName = (String) roomsComboBoxModel.getSelectedItem();
+            	   System.out.println(roomName);
+            	   mModel.setMeetingRoom(model.getMapMeetingRoom().get(roomName));
+               }
+               
                System.out.println("size: " + mModel.getMapAttendees().size());
                Meeting meeting = mModel.meeting();
                meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
