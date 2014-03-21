@@ -158,9 +158,9 @@ public class ModelImpl implements CalendarModel {
     public void setAttendeeLastNotification(Meeting meeting, Attendee att, Date lastNot) {
     	List<Attendee> meetingAtts = mapFutureMeetings.get(meeting.getMeetingID()).getAttendees();
     	for (Attendee attendee : meetingAtts) {
-    		if (attendee.getEmployee().getUsername().equals(att.getEmployee().getUsername())) {
-    			attendee.setLastNotification(lastNot);
-    		}
+//    		if (attendee.getEmployee().getUsername().equals(att.getEmployee().getUsername())) {
+//    			attendee.setLastNotification(lastNot);
+//    		}
     	}
     	
     }
