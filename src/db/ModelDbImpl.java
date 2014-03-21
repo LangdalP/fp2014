@@ -103,7 +103,7 @@ public class ModelDbImpl implements CalendarModel {
 
 	@Override
 	public Map<String, Meeting> getMapFutureMeetings() {
-        Map<String, Meeting> map = dbService.getMapMeetings(false);
+        Map<String, Meeting> map = dbService.getMapMeetings(null); // Hentar eigentlig alle møte no
         return map;
 	}
 
