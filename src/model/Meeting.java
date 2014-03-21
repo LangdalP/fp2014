@@ -27,7 +27,7 @@ public class Meeting implements Serializable{
         Calendar cal = new GregorianCalendar();
         meetingTime = new GregorianCalendar(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 8, 0).getTime();
         duration = 30;
-        System.out.println("new Meeting:" + meetingTime);
+//        System.out.println("new Meeting:" + meetingTime);
 
     }
 
@@ -43,8 +43,7 @@ public class Meeting implements Serializable{
 		this.mapAttendees = attendees;
 		this.guestAmount = guestAmount;
 		this.meetingRoom = meetingRoom;
-        this.mapAttendees = attendees;
-        
+
         if (meetingRoom != null) {
         	meetingRoomBooked = true;
         }
@@ -126,7 +125,6 @@ public class Meeting implements Serializable{
     }
 	
 	public void addAttendee(Attendee attendee){
-        System.out.println("adding: " + attendee.getEmployee());
         mapAttendees.put(attendee.getEmployee().getUsername(), attendee);
 	}
 	
