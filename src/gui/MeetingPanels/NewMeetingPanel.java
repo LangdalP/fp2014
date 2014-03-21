@@ -7,6 +7,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.List;
 
@@ -37,7 +38,8 @@ import client.ClientMain;
 public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     private final Employee employee;
     protected MeetingModel mModel; //møte for panelet.
-	
+
+    protected PropertyChangeSupport pcs;
 	private GridBagLayout layout = new GridBagLayout();
 	
 	// Verdi-felt på venstresida
@@ -580,6 +582,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
             System.out.println("size: " + mModel.getMapAttendees().size());
             Meeting meeting = mModel.meeting();
+            meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
             model.addMeeting(meeting);
             ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
         }
@@ -728,4 +731,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     }
 
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        pcs.addPropertyChangeListener(listener);
+    }
 }
