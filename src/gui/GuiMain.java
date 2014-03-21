@@ -111,7 +111,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		System.out.println("Entered username: " + username + " and password: " + password);
 		boolean success = ClientMain.validateLogin(username, password);
 		if (!success) {
-			JOptionPane.showMessageDialog(null, "Innloggingen var feil");
+			JOptionPane.showMessageDialog(null, "Feil brukernavn eller passord");
 		}
 		setLoggedIn(success);
 	}
