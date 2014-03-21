@@ -13,13 +13,14 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import model.Attendee;
 import model.Employee;
 import model.Meeting;
 import client.ClientMain;
@@ -207,6 +208,15 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
             infoPanel.addPropertyChangeListener(this);
 			contentPanel.add(infoPanel, 0);
 			contentPanel.remove(1);
+			
+			List<Attendee> atts = meet.getAttendees();
+			for (Attendee att : atts) {
+				if (att.getEmployee().getUsername().equals(model.getUsername())) {
+					att.setLastNotification(new Date());
+					System.out.println(att.getLastNotification());
+				}
+			}
+			
 		} else if (evt.getPropertyName().equals(SHOW_HOME)){
             HomePanel hp = new HomePanel(model);
             hp.addPropertyChangeListener(this);
