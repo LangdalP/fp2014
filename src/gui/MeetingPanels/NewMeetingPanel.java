@@ -68,8 +68,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
  //		knapper
     
-    protected JButton lb = getLeftButton();
-    protected JButton rb = getRightButton();
+//    protected JButton lb = getLeftButton();
+//    protected JButton rb = getRightButton();
     
     final String defaultText = "[Velg ett annet sted:]";
 
@@ -442,7 +442,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
     
-        rp.add(lb , c);
+        rp.add(getLeftButton() , c);
 
       
         c.gridx = 1;
@@ -450,7 +450,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 2;
        
-        rp.add(rb, c);
+        rp.add(getRightButton(), c);
 
         cl.gridx = 1;
         c.gridy = 0;
@@ -463,8 +463,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     public JButton getLeftButton(){
         JButton cancelButton =  new JButton("Avbryt");
-        cancelButton.setAction(new CancelAction("Avbryt"));
-        cancelButton.addActionListener(new ActionListener() {
+//        cancelButton.setAction(new CancelAction("Avbryt"));
+        cancelButton.setAction(new AbstractAction("Avbryt") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
@@ -477,7 +477,21 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     public JButton getRightButton(){
     	
   	   JButton saveButton = new JButton("Lagre");
-       saveButton.setAction(new NewMeetingAction("Lagre"));
+       saveButton.setAction(new AbstractAction("Lagre") {
+
+           @Override
+           public void actionPerformed(ActionEvent e) {
+               System.out.println("Send Meeting to server. ");
+               mModel.setDescription(descText.getText());
+               mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+               System.out.println("size: " + mModel.getMapAttendees().size());
+               Meeting meeting = mModel.meeting();
+               meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
+               model.addMeeting(meeting);
+               ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+               pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+           }
+       });
        return saveButton;
     }
     
@@ -560,43 +574,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         }
         return roomsArr;
     }
-
-    private class CancelAction extends AbstractAction{
-
-        private CancelAction(String tittel) {
-            putValue(AbstractAction.NAME, tittel);
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            for (Meeting m : model.getMapFutureMeetings().values()){
-                System.out.println(model.getUsername() + "\t" + m.getDescription());
-            }
-        }
-    }
-
-    //SAVE BUTTON
-    private class NewMeetingAction extends AbstractAction {
-
-		public NewMeetingAction(String tittel) {
-			putValue(AbstractAction.NAME, tittel);
-
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-            System.out.println("Send Meeting to server. ");
-            mModel.setDescription(descText.getText());
-            mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
-            System.out.println("size: " + mModel.getMapAttendees().size());
-            Meeting meeting = mModel.meeting();
-            meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
-            model.addMeeting(meeting);
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
-            pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
-        }
-
-	}
 
 	private class LocationRadioButtonListener implements ActionListener {
 		public LocationRadioButtonListener() {
