@@ -125,6 +125,10 @@ public class RequestHandler {
                 objOutput.writeObject(new TransferObject(MessageType.RESPONSE, TransferType.GET_MEETINGS_BY_EMPLOYEES, meetings));
                 break;
             }
+            
+            case REMOVE_MEETING: {
+            	
+            }
 
 
         }
