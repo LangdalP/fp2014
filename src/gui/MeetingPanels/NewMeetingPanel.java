@@ -62,6 +62,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected JComboBox<String> roomsDropdown;
     protected JTextField locationTextField;
     protected JButton sendEmailButton;
+    
+    protected JPanel lp;
+    protected JPanel rp;
 
     protected ClientModelImpl model;
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
@@ -89,7 +92,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     
     private void init() {
 
-        JPanel lp = new JPanel();
+        lp = new JPanel();
         lp.setLayout(new GridBagLayout());
 
         // Testkode
@@ -305,7 +308,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
 
         // Testkode slutt
-        JPanel rp = new JPanel();
+        rp = new JPanel();
         rp.setLayout(new GridBagLayout());
 
         c = new GridBagConstraints();
@@ -452,14 +455,14 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridx = 1;
         c.gridy = 8;
         c.gridheight = 1;
-        c.gridwidth = 2;
+        c.gridwidth = 1;
 
         rp.add(getRightButton(), c);
 
         cl.gridx = 1;
-        c.gridy = 0;
-        c.gridwidth = 1;
-        c.gridheight = 1;
+        cl.gridy = 0;
+        cl.gridwidth = 1;
+        cl.gridheight = 1;
         cl.insets = new Insets(0, 50, 0, 0);
         add(rp, cl);
 
@@ -496,11 +499,23 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                System.out.println("Send Meeting to server. ");
                mModel.setDescription(descText.getText());
                mModel.setMeetingTime(GuiTimeOfDay.getDate(mModel.getMeetingTime(), startTimeDropdown));
+               
+               if (locationRadioButton.isSelected()) {
+            	   mModel.setMeetingLocation(locationTextField.getText());
+               }
+               
+               if (roomRadioButton.isSelected()) {
+            	   String roomName = (String) roomsComboBoxModel.getSelectedItem();
+            	   System.out.println(roomName);
+            	   mModel.setMeetingRoom(model.getMapMeetingRoom().get(roomName));
+               }
+               
                System.out.println("size: " + mModel.getMapAttendees().size());
                Meeting meeting = mModel.meeting();
                meeting.setMeetingOwner(model.getMapEmployees().get(model.getUsername()));
                model.addMeeting(meeting);
                ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.ADD_MEETING, meeting));
+               System.out.println(meeting);
                pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
            }
        });
