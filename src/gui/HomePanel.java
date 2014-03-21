@@ -1,7 +1,5 @@
 package gui;
 
-import gui.NewMeetingPanel.EmployeeCellRenderer;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -14,8 +12,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -24,7 +20,6 @@ import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 
 import model.Employee;
-
 import client.ClientModelImpl;
 
 public class HomePanel extends JPanel implements PropertyChangeListener{
