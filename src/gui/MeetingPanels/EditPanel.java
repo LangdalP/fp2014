@@ -4,6 +4,10 @@ import client.ClientModelImpl;
 import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class EditPanel extends NewMeetingPanel {
 
 	public EditPanel(ClientModelImpl model, MeetingModel meeting) {
@@ -14,17 +18,21 @@ public class EditPanel extends NewMeetingPanel {
 	}
 	
 	public void init(){
-		
-		
-		//knapper
-		
-//		rb.setLabel("Lagre");
-//		lb.setLabel("Hjem");
-	}
 
-	/**
-	 * @param args
-	 */
-	
 
+    }
+
+    @Override
+    public JButton getRightButton() {
+        //dont save, send edit meeting.
+
+        JButton button = new JButton("UPDATE");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("update clicked.");
+            }
+        });
+       return button;
+    }
 }
