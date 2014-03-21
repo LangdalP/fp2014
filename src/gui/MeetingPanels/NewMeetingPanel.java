@@ -16,6 +16,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -87,6 +88,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
     protected ClientModelImpl model;
     protected DefaultComboBoxModel<String> roomsComboBoxModel;
     private String[] rooms;
+    
+    private PropertyChangeSupport pcs;
 
  //		knapper
     
@@ -103,6 +106,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		this.model.addPropertyChangeListener(this);
 		setLayout(layout);
         mModel.addPropertyChangeListener(this);
+        pcs = new PropertyChangeSupport(this);
 		init();
 	}
 
@@ -751,6 +755,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         }
 
 
+    }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    	pcs.addPropertyChangeListener(listener);
     }
 
 }
