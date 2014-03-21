@@ -80,12 +80,15 @@ public class RequestHandler {
                 Meeting meeting = (Meeting) obj.getObject(0);
                 Attendee attendee = (Attendee) obj.getObject(1);
                 model.addAttendeeToMeeting(meeting, attendee);
+                dbModelImpl.addAttendeeToMeeting(meeting, attendee);
+                sync.addAttendeeToMeeting(meeting, attendee);
                 break;
             }
 
             case SET_ATTENDEE_STATUS:{
                 System.out.println("SET_ATTENDEE_STATUS ON SERVER: ");
                 model.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
+
                 sync.setAttendeeStatus((Meeting) obj.getObject(0), (Attendee) obj.getObject(1), (boolean) obj.getObject(2));
                 break;
             }
