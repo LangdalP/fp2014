@@ -47,6 +47,7 @@ public enum TransferType {
 
     /**   */
     UPDATE_ATTENDEE_STATUS,
+    /** REQUEST: obj0 = Meeting */
     REMOVE_MEETING
 
     ;
