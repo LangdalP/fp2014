@@ -39,8 +39,8 @@ public class InfoMeetingPanel extends NewMeetingPanel {
 		
 		//knapper
 		
-		rb.setVisible(false);
-		lb.setLabel("Hjem");
+//		rb.setVisible(false);
+//		lb.setLabel("Hjem");
 	}
 	
 }

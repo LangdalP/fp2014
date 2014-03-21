@@ -18,8 +18,8 @@ public class EditPanel extends NewMeetingPanel {
 		
 		//knapper
 		
-		rb.setLabel("Lagre");
-		lb.setLabel("Hjem");
+//		rb.setLabel("Lagre");
+//		lb.setLabel("Hjem");
 	}
 
 	/**
