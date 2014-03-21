@@ -8,6 +8,7 @@ import protocol.TransferType;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,8 @@ import java.util.Map;
  * Created by Kenneth on 18.03.14.
  */
 public class ClientModelImpl extends ModelImpl {
-    private Map<String, MeetingRoom> mapMeetingRoomAvailable;
+
+	private Map<String, MeetingRoom> mapMeetingRoomAvailable;
     private String username;
     private PropertyChangeSupport pcs;
 
@@ -65,6 +67,20 @@ public class ClientModelImpl extends ModelImpl {
         System.out.println("fire pcs");
         pcs.firePropertyChange(ROOMS, null, null);   //sender varsel. mottaker får oppdaterte verdier fra modellen.
     }
+    
+    @Override
+	public void setAttendeeLastNotification(Meeting meeting, Attendee att,
+			Date lastNot) {
+		super.setAttendeeLastNotification(meeting, att, lastNot);
+		pcs.firePropertyChange(SYNC_CALENDAR, null, null);
+	}
+
+
+	@Override
+	public void removeMeeting(String meetingid) {
+		super.removeMeeting(meetingid);
+		pcs.firePropertyChange(SYNC_CALENDAR, null, null);
+	}
 
     public String getUsername() {
         return username;

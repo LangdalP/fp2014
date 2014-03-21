@@ -146,6 +146,16 @@ public class ModelImpl implements CalendarModel {
         sb.append("\n");
         return sb.toString();
     }
+    
+    public void setAttendeeLastNotification(Meeting meeting, Attendee att, Date lastNot) {
+    	List<Attendee> meetingAtts = mapFutureMeetings.get(meeting.getMeetingID()).getAttendees();
+    	for (Attendee attendee : meetingAtts) {
+    		if (attendee.getEmployee().getUsername().equals(att.getEmployee().getUsername())) {
+    			attendee.setLastNotification(lastNot);
+    		}
+    	}
+    	
+    }
 
     public Map<String, MeetingRoom> getAvailableMeetingRooms(MeetingRoom mr, Date meetingStart, Integer duration, Integer minAttendees) {
         if (minAttendees == null) minAttendees = 0;
