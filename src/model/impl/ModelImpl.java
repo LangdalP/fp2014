@@ -82,6 +82,7 @@ public class ModelImpl implements CalendarModel {
         List<Meeting> meetings = new ArrayList<>();
         for (Meeting m : mapFutureMeetings.values()){
             for (Attendee att : m.getAttendees()){
+            	System.out.println(att);
                 if (att.getEmployee().getUsername().equals(employee.getUsername())) meetings.add(m);
             }
         }
