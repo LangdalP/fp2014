@@ -1,5 +1,9 @@
 package gui;
 
+import gui.MeetingPanels.InfoMeetingPanel;
+import gui.MeetingPanels.MeetingModel;
+import gui.MeetingPanels.NewMeetingPanel;
+
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,15 +11,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.UUID;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import gui.MeetingPanels.InfoMeetingPanel;
-import gui.MeetingPanels.MeetingModel;
-import gui.MeetingPanels.NewMeetingPanel;
 import model.Meeting;
 import client.ClientMain;
 import client.ClientModelImpl;
@@ -81,8 +81,8 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		
 		GridBagConstraints c = new GridBagConstraints();
 		
-        Meeting meeting = model.getMapFutureMeetings().get("mote3");
-		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
+//        Meeting meeting = model.getMapFutureMeetings().get("mote3");
+//		NewMeetingPanel panel = new NewMeetingPanel(this.model, meeting);
 
 		//c.gridx = 0; c.gridy = 0; c.gridwidth = 1; c.gridheight = 1;
 		contentPanel.add(hPanel);
