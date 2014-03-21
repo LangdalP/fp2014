@@ -7,15 +7,13 @@ import gui.MeetingPanels.NewMeetingPanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import gui.MeetingPanels.EditPanel;
 import gui.MeetingPanels.InfoMeetingPanel;
@@ -118,6 +116,16 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 	}
 	
 	
+	private void showAlarm(Meeting meeting){
+		Toolkit.getDefaultToolkit().beep();
+//		if(meeting.getMeetngLocation() == null) {
+//			JOptionPane.showMessageDialog(null, "Alarm for møte: " + meeting.getDescription() + ", møterom: " + meeting.getMeetingRoom().getName() + " kl: " + meeting.getMeetingTime().toString());		
+//		}
+//		else{
+			JOptionPane.showMessageDialog(null, "Alarm for møte: " + meeting.getDescription() + ", sted: " + meeting.getMeetngLocation() + " kl: " + meeting.getMeetingTime().toString());
+//		}
+	}
+	
 	private class WindowClosedListener implements WindowListener {
 		
 		public WindowClosedListener() {
@@ -185,6 +193,7 @@ public class GuiMain extends JFrame implements PropertyChangeListener {
 		Meeting meet = (Meeting) evt.getNewValue();
 		System.out.println(evt.getPropertyName());
 		if (evt.getPropertyName().equals(EDIT_MEETING)) {
+			showAlarm(meet);
 			EditPanel editPanel = new EditPanel(model, new MeetingModel(meet));
             editPanel.addPropertyChangeListener(this);
 			contentPanel.add(editPanel, 0);
