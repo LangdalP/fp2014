@@ -399,6 +399,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 2;
         Dimension dim = new Dimension(175, 20);
+        roomsDropdown.setEditable(true);
+        if (mModel.getMeetingRoom() != null) roomsDropdown.setSelectedItem(mModel.getMeetingRoom().getName());
         roomsDropdown.setPreferredSize(dim);
         roomsDropdown.setMaximumSize(dim);
         roomsDropdown.setMinimumSize(dim);
@@ -591,34 +593,36 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                 for (int i=0; i < addEmpList.getModel().getSize(); i++){
                     Employee emp = addEmpList.getModel().getElementAt(i);
                     Attendee att = mModel.getMapAttendees().get(emp.getUsername());
-                        if (addEmpList.isSelectedIndex(i)){
-                            if (att == null) mModel.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
-                        }
-                        else  {
-                            if (!emp.getUsername().equals(model.getUsername())) mModel.getMapAttendees().remove(emp.getUsername());
-                        }
+                    if (addEmpList.isSelectedIndex(i)){
+                        if (att == null) mModel.addAttendee(new Attendee(emp, false, false, new Date(), false, null));
+                    }
+                    else  {
+                        if (!emp.getUsername().equals(model.getUsername())) mModel.getMapAttendees().remove(emp.getUsername());
+                    }
                 }
+                sendRequestAvailableRooms();
+
             }
         };
     }
 
 
+    private void sendRequestAvailableRooms(){
+        int antAttendees = mModel.getNrAttendees();
+        System.out.println("ant attendees to meeting: " + antAttendees);
+        String meetingRoomName = roomsDropdown.getSelectedItem().toString();
+        Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
+        GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
+        int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
+        MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
+        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime, duration, antAttendees));
+
+    }
 
     private ActionListener actionUpdateAvailableRooms = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            int antAttendees = 0;
-            if (participateYesButton.isSelected()) antAttendees++;
-            antAttendees += addEmpList.getSelectedValuesList().size();
-            antAttendees += Integer.parseInt(extraField.getText());
-
-            System.out.println(antAttendees);
-            String meetingRoomName = roomsDropdown.getSelectedItem().toString();
-            Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
-            GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
-            int duration = guiTime.getHours() * 60 + guiTime.getMinutes();
-            MeetingRoom mr = model.getMapMeetingRoom().get(meetingRoomName);
-            ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mr, meetingtime, duration, antAttendees));
+                 sendRequestAvailableRooms();
         }
     };
 
@@ -760,7 +764,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             String format = "%-30s %-5s";
             boolean isUser = emp.getUsername().equals(model.getUsername());
 
-            if (att == null){
+            if (att == null && !isUser){
                 text = String.format(format, emp.getName(), "LEGG TIL");
             }
             else {

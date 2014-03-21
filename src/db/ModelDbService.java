@@ -419,7 +419,7 @@ public class ModelDbService {
     }
     
     public void updateAttendee(Attendee attendee, Meeting meeting) {
-    	String sql = "update deltager_ansatt set epost=?, deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=?";
+    	String sql = "update deltager_ansatt set deltagelse_status=?, sist_varslet=?, alarm_tid=?, alarm_satt=? where avtale_id=? and epost=?";
     	try (PreparedStatement ps = DbConnection.getInstance().prepareStatement(sql)) {
     		ps.setString(1, attendee.getEmployee().getUsername());
             ps.setBoolean(2, attendee.getAttendeeStatus());
