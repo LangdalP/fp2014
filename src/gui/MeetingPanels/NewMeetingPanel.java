@@ -148,6 +148,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
             }
         });
+        datePicker.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 1;
         c.gridheight = 1;
@@ -164,6 +165,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         startTimeDropdown = new JComboBox<>(startTimeComboBoxModel);
         GuiTimeOfDay g = GuiTimeOfDay.getGuiTimeOfDayFromDate(mModel.getMeetingTime());
         startTimeDropdown.setEditable(true);
+        startTimeDropdown.addActionListener(actionUpdateAvailableRooms);
         startTimeDropdown.setSelectedItem(g);
         startTimeDropdown.addActionListener(new ActionListener() {
             @Override
@@ -192,6 +194,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         int minutes = mModel.getDuration() - (hours * 60);
         durationDropdown.setEditable(true);
         durationDropdown.setSelectedItem(new GuiTimeOfDay(hours, minutes));
+        durationDropdown.addActionListener(actionUpdateAvailableRooms);
         durationDropdown.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
