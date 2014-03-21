@@ -672,7 +672,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 		    	 if (text.isEmpty()) {
 		    		 return true;
 		    	 }
-		         Integer.parseInt(text);
+		         int num = Integer.parseInt(text);
+		         if (num < 0) {
+		        	 return false;
+		         }
 		         return true;
 		      } catch (NumberFormatException e) {
 		         return false;
