@@ -400,13 +400,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridheight = 1;
         c.gridwidth = 1;
         rp.add(roomRadioButton, c);
-        roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(true));
+        roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(model.getMapMeetingRoom()));
 //        if (mModel.getMeetingRoom() != null)  roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
 
 
         roomsDropdown = new JComboBox<>(roomsComboBoxModel);
 //        if (mModel.getMeetingRoom() != null)roomsDropdown.setSelectedItem(mModel.getMeetingRoom().getName());
-
+       roomsDropdown.setEditable(true);
 
         c.gridx = 1;
         c.gridy = 5;
@@ -649,12 +649,11 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 	}
 
 
-    public String[] getRooms(boolean init) {
-        List<MeetingRoom> rooms = null;
-        if (init) rooms = new ArrayList<>(model.getMapMeetingRoom().values());
-        else rooms = new ArrayList<>(model.getMapMeetingRoomAvailable().values());
+    public String[] getRooms(Map<String, MeetingRoom> map) {
+        List<MeetingRoom> rooms = new ArrayList<>(model.getMapMeetingRoomAvailable().values());
         String[] roomsArr = new String[rooms.size()+1];
         roomsArr[0] = "Velg rom";
+        if (mModel.getMeetingRoom() != null) roomsArr[0] = mModel.getMeetingRoom().getName();
         for (int i = 1; i < rooms.size(); i++){
             roomsArr[i] = rooms.get(i).getName();
         }
@@ -797,10 +796,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         System.out.println("Fire RECEIVED");
         String EV = evt.getPropertyName();
         if (EV.equals(ClientModelImpl.ROOMS)) {
-            System.out.println("Rooms updated!");
-            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(false));
+            if (roomsDropdown == null) return;
+            System.out.println("Rooms updated!" + rooms);
+            Map<String, MeetingRoom> map = (Map<String, MeetingRoom>) evt.getNewValue();
+            roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(map));
             if (mModel.getMeetingRoom() != null)roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
             roomsDropdown.setModel(roomsComboBoxModel);
+
 
 
         }
