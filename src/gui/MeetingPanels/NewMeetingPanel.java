@@ -223,6 +223,13 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             }
         });
         participateYesButton.addActionListener(actionUpdateAvailableRooms);
+        participateYesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                alarmYesButton.setEnabled(true);
+                alarmNoButton.setEnabled(true);
+            }
+        });
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
@@ -241,6 +248,14 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             }
         });
         participateNoButton.addActionListener(actionUpdateAvailableRooms);
+        participateNoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                alarmYesButton.setEnabled(false);
+                alarmNoButton.setEnabled(false);
+                alarmTimeDropdown.setEnabled(false);
+            }
+        });
         c.gridx = 3;
         c.gridy = 4;
         c.gridheight = 1;
@@ -266,6 +281,8 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mModel.getUserAttende().setHasAlarm(true);
+                alarmTimeDropdown.setEnabled(true);
+                alarmNoButton.setEnabled(true);
             }
         });
         c.gridx = 1;
@@ -278,6 +295,12 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mModel.getUserAttende().setHasAlarm(false);
+            }
+        });
+        alarmNoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                alarmTimeDropdown.setEnabled(false);
             }
         });
         alarmNoButton.setEnabled(mModel.hasAlarm());
@@ -364,9 +387,9 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mModel.setGuestAmount(Integer.parseInt(extraField.getText()));
+                sendRequestAvailableRooms();
             }
         });
-        extraField.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 3;
         c.gridheight = 1;
@@ -411,7 +434,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         c.gridx = 1;
         c.gridy = 5;
         c.gridheight = 1;
-        c.gridwidth = 1;
+        c.gridwidth = 2;
         Dimension dim = new Dimension(175, 20);
         roomsDropdown.setPreferredSize(dim);
         roomsDropdown.setMaximumSize(dim);
@@ -431,12 +454,6 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         });
         rp.add(roomsDropdown, c);
         
-        roomLabel = new JLabel("Eksempeltekst");
-        c.gridx = 2;
-        c.gridy = 5;
-        c.gridheight = 1;
-        c.gridwidth = 1;
-        rp.add(roomLabel, c);
 
         locationRadioButton = new JRadioButton();
         locationRadioButton.addActionListener(roomOrLocationListener);
@@ -522,6 +539,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         });
         add(deleteButton, c);
 
+        if (mModel.getUserAttende().getHasResponded() && mModel.getUserAttende().getAttendeeStatus()) {
+            alarmYesButton.setEnabled(true);
+            alarmNoButton.setEnabled(true);
+        }
 
     }
 
@@ -651,11 +672,15 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
 
     public String[] getRooms(Map<String, MeetingRoom> map) {
         List<MeetingRoom> rooms = new ArrayList<>(model.getMapMeetingRoomAvailable().values());
+        if (map.isEmpty()) {
+            String[] noRooms = new String[1];
+            noRooms[0] = "Ingen rom tilgjengelig";
+        }
         String[] roomsArr = new String[rooms.size()+1];
         roomsArr[0] = "Velg rom";
-        if (mModel.getMeetingRoom() != null) roomsArr[0] = mModel.getMeetingRoom().getName();
-        for (int i = 1; i < rooms.size(); i++){
-            roomsArr[i] = rooms.get(i).getName();
+        if (mModel.getMeetingRoom() != null && map.keySet().contains(mModel.getMeetingRoom().getName())) roomsArr[0] = mModel.getMeetingRoom().getName();
+        for (int i = 0; i < rooms.size(); i++){
+            roomsArr[i+1] = rooms.get(i).getName();
         }
         return roomsArr;
     }
@@ -797,11 +822,10 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
         String EV = evt.getPropertyName();
         if (EV.equals(ClientModelImpl.ROOMS)) {
             if (roomsDropdown == null) return;
-            System.out.println("Rooms updated!" + rooms);
             Map<String, MeetingRoom> map = (Map<String, MeetingRoom>) evt.getNewValue();
+            System.out.println("Rooms updated!" + map);
             roomsComboBoxModel = new DefaultComboBoxModel<>(getRooms(map));
-            if (mModel.getMeetingRoom() != null)roomsComboBoxModel.setSelectedItem(mModel.getMeetingRoom().getName());
-            roomsDropdown.setModel(roomsComboBoxModel);
+             roomsDropdown.setModel(roomsComboBoxModel);
 
 
 
