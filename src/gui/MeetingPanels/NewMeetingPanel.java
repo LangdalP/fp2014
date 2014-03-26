@@ -142,6 +142,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
             public void actionPerformed(ActionEvent e) {
                 Date date = GuiTimeOfDay.getDate(datePicker.getDate(), startTimeDropdown);
                 mModel.setMeetingTime(date);
+                System.out.println("mModel meetingTime: " + mModel.getMeetingTime());
 
             }
         });
@@ -221,6 +222,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                 pcs.firePropertyChange(UPDATE_EMP_LIST, null,null);
             }
         });
+        participateYesButton.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 1;
         c.gridy = 4;
         c.gridheight = 1;
@@ -238,6 +240,7 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                 pcs.firePropertyChange(UPDATE_EMP_LIST, null,null);
             }
         });
+        participateNoButton.addActionListener(actionUpdateAvailableRooms);
         c.gridx = 3;
         c.gridy = 4;
         c.gridheight = 1;
@@ -616,26 +619,17 @@ public class NewMeetingPanel extends JPanel implements PropertyChangeListener {
                         if (!emp.getUsername().equals(model.getUsername())) mModel.getMapAttendees().remove(emp.getUsername());
                     }
                 }
-//                sendRequestAvailableRooms();
+                sendRequestAvailableRooms();
 
             }
+
         };
     }
 
 
     private void sendRequestAvailableRooms(){
-        int antAttendees = mModel.getNrAttendees();
-        System.out.println("ant attendees to meeting: " + antAttendees);
-        Date meetingtime =computeDateFromDateAndTimeOfDay((GuiTimeOfDay) startTimeDropdown.getSelectedItem());
-
-        int duration = 30;
-        if (durationDropdown != null){
-            GuiTimeOfDay guiTime = (GuiTimeOfDay) durationDropdown.getSelectedItem();
-            duration = guiTime.getHours() * 60 + guiTime.getMinutes();
-
-        }
-        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, meetingtime, duration, antAttendees));
-
+        System.out.println(mModel.getMeetingTime() + "\t" + mModel.getDuration()+ "\tnrAtt:" + mModel.getNrAttendees());
+        ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.GET_AVAILABLE_MEETING_ROOMS, mModel.getMeetingTime(), mModel.getDuration(), mModel.getNrAttendees()));
     }
 
     private ActionListener actionUpdateAvailableRooms = new ActionListener() {

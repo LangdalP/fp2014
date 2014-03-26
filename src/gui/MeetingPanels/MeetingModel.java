@@ -40,7 +40,8 @@ public class MeetingModel extends Meeting  {
 
 
     public int getNrAttendees() {
-        int nrAttendees = getMapAttendees().size() + getGuestAmount() +1;
+        int owner = (getUserAttende().getAttendeeStatus()) ? 1 : 0;
+        int nrAttendees = getMapAttendees().size() + getGuestAmount() + owner;
         return nrAttendees;
     }
 
