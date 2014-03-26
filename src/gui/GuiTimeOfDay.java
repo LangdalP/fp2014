@@ -118,17 +118,6 @@ public class GuiTimeOfDay {
     }
 
     public static Date getAlarmTime(Date meetingTime, JComboBox<GuiTimeOfDay> alarmTimeDropdown) {
-        int hours = 0, minutes = 30;
-        if (alarmTimeDropdown != null){
-             GuiTimeOfDay t = (GuiTimeOfDay) alarmTimeDropdown.getSelectedItem();
-            hours = t.getHours();
-             minutes = t.getMinutes();
-        }
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(meetingTime);
-        Calendar ret = cal;
-        ret.set(Calendar.HOUR, cal.get(Calendar.HOUR - hours));
-        ret.set(Calendar.MINUTE, cal.get(Calendar.MINUTE - minutes));
-        return ret.getTime();
+        return getDate(meetingTime, alarmTimeDropdown);
     }
 }
