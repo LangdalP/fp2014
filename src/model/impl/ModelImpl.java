@@ -82,7 +82,6 @@ public class ModelImpl implements CalendarModel {
         List<Meeting> meetings = new ArrayList<>();
         for (Meeting m : mapFutureMeetings.values()){
             for (Attendee att : m.getAttendees()){
-            	System.out.println(att);
                 if (att.getEmployee().getUsername().equals(employee.getUsername())) meetings.add(m);
             }
         }
@@ -174,7 +173,7 @@ public class ModelImpl implements CalendarModel {
         System.out.println(meetingStart + "\tduration:" + duration + " minAttendees: " + minAttendees);
         //finner alle rom som IKKE er ledige.
         for (Meeting m : mapFutureMeetings.values()){
-            if (m.getMeetingTime().getTime() >= mStart && m.getMeetingTime().getTime() <= mEnd){
+            if (m.getMeetingTime().getTime() >= mStart && m.getMeetingTime().getTime() < mEnd){
                  //not available
                 if (m.getMeetingRoom() != null) roomsNotAvailable.add(m.getMeetingRoom().getName());
             }

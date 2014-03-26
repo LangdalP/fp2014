@@ -63,22 +63,17 @@ public class EditPanel extends NewMeetingPanel {
             	model.editMeeting(meeting);
                 ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.EDIT_MEETING, meeting));
                 pcs.firePropertyChange(GuiMain.SHOW_HOME, null, null);
+
+                if (mModel.getUserAttende().getAttendeeStatus()){
+                    ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.SET_ATTENDEE_STATUS, mModel.meeting(), mModel.getUserAttende(), true));
+                }
+                if (mModel.getUserAttende().getHasResponded() && !mModel.getUserAttende().getAttendeeStatus()){
+                    ClientMain.sendTransferObject(new TransferObject(MessageType.REQUEST, TransferType.SET_ATTENDEE_STATUS, mModel.meeting(), mModel.getUserAttende(), false));
+
+                }
             }
         });
        return button;
     }
 
-    @Override
-    public String[] getRooms(boolean init) {
-        List<MeetingRoom> rooms = null;
-        if (init) rooms = new ArrayList<>(model.getMapMeetingRoom().values());
-        else rooms = new ArrayList<>(model.getMapMeetingRoomAvailable().values());
-        String[] roomsArr = new String[rooms.size()+1];
-        roomsArr[0] = "Velg rom";
-        if (mModel.getMeetingRoom() != null) roomsArr[0] = mModel.getMeetingRoom().getName();
-        for (int i = 1; i < rooms.size(); i++){
-            roomsArr[i] = rooms.get(i).getName();
-        }
-        return roomsArr;
-    }
 }
