@@ -65,7 +65,7 @@ public class ClientModelImpl extends ModelImpl {
         Map<String, MeetingRoom> oldMap = mapMeetingRoomAvailable;
         this.mapMeetingRoomAvailable = mapMeetingRoomAvailable;
         System.out.println("fire pcs");
-        pcs.firePropertyChange(ROOMS, null, null);   //sender varsel. mottaker får oppdaterte verdier fra modellen.
+        pcs.firePropertyChange(ROOMS, null, mapMeetingRoomAvailable);   //sender varsel. mottaker får oppdaterte verdier fra modellen.
     }
     
     @Override
